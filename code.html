@@ -1,0 +1,321 @@
+[26.03.2026 19:34] Meshokdeneg: <!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ASL | Терминал доступа</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000000;
+            font-family: 'Courier New', 'Fira Code', 'Consolas', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.1s ease;
+        }
+
+        /* Красная вспышка при ошибке */
+        body.flash-red {
+            background: #4a0000;
+            transition: background 0.05s ease;
+        }
+
+        .terminal-window {
+            max-width: 700px;
+            width: 100%;
+            background: #0c0c0c;
+            border: 1px solid #2a9d2a;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(42, 157, 42, 0.2);
+            overflow: hidden;
+        }
+
+        /* Заголовок окна CMD */
+        .cmd-titlebar {
+            background: #1e1e1e;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2a9d2a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cmd-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .cmd-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3c3c3c;
+        }
+        .cmd-control.close { background: #ff5f5f; }
+        .cmd-control.minimize { background: #ffbd2e; }
+        .cmd-control.maximize { background: #27c93f; }
+        .cmd-title {
+            color: #2a9d2a;
+            font-size: 12px;
+            margin-left: 8px;
+            flex: 1;
+        }
+        .cmd-path {
+            color: #2a9d2a;
+            font-size: 11px;
+            background: #1a1a1a;
+            padding: 4px 12px;
+            border-bottom: 1px solid #2a9d2a;
+            font-family: monospace;
+        }
+
+        /* Основная область терминала */
+        .cmd-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-line {
+            color: #2a9d2a;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .output-line.prompt {
+            color: #2a9d2a;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .input-prompt {
+            color: #2a9d2a;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .input-field {
+            background: transparent;
+            border: none;
+            color: #2a9d2a;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            min-width: 150px;
+        }
+        .input-field::placeholder {
+            color: #2a9d2a;
+            opacity: 0.5;
+        }
+
+        button {
+            background: #1e3a1e;
+            border: 1px solid #2a9d2a;
+            color: #2a9d2a;
+            padding: 6px 16px;
+            font-family: monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #2a9d2a;
+            color: #000;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #2a9d2a;
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+[26.03.2026 19:34] Meshokdeneg: /* Адаптация под телефон */
+        @media (max-width: 600px) {
+            .cmd-content {
+                padding: 15px;
+            }
+            .output-line {
+                font-size: 12px;
+            }
+            .input-field {
+                font-size: 12px;
+            }
+            .input-line {
+                flex-wrap: wrap;
+            }
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* Анимация появления */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .fade-out {
+            animation: fadeOut 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal-window">
+        <div class="cmd-titlebar">
+            <div class="cmd-controls">
+                <div class="cmd-control close"></div>
+                <div class="cmd-control minimize"></div>
+                <div class="cmd-control maximize"></div>
+            </div>
+            <div class="cmd-title">C:\Windows\system32\cmd.exe</div>
+        </div>
+        <div class="cmd-path">
+            C:\Users\ASL_Admin\Desktop\access&gt;
+        </div>
+        <div class="cmd-content" id="cmdContent">
+            <div class="output-line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div class="output-line">     APEX SYNTHESIS LABORATORY — ТЕРМИНАЛ ДОСТУПА</div>
+            <div class="output-line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div class="output-line">&nbsp;</div>
+            <div class="output-line">> Система авторизации v.2.3.1</div>
+            <div class="output-line">> Для доступа к защищённым протоколам введите код.</div>
+            <div class="output-line">&nbsp;</div>
+            <div class="output-line">> Доступные команды: G-Pres, SYNTHESIS, VOID, CHRONOS, AETHERA, PRIMORDIA</div>
+            <div class="output-line">&nbsp;</div>
+            <div class="input-line">
+                <span class="input-prompt">C:\ASL&gt;</span>
+                <input type="text" id="codeInput" class="input-field" placeholder="введите код..." autocomplete="off">
+                <button id="submitBtn">ВВОД</button>
+            </div>
+            <div class="output-line" id="statusMessage"></div>
+            <div class="output-line" id="cursorLine"></div>
+        </div>
+    </div>
+
+    <script>
+        const codeInput = document.getElementById('codeInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const cursorLine = document.getElementById('cursorLine');
+        let isProcessing = false;
+
+        // Словарь кодов → куда перекидывать
+        const redirectMap = {
+            'G-Pres': '/protocol/g-pres.html',
+            'SYNTHESIS': '/synth/alternative.html',
+            'VOID': '/void/',
+            'CHRONOS': '/sectors/chronos.html',
+            'AETHERA': '/sectors/aethera.html',
+            'PRIMORDIA': '/sectors/primordia.html'
+        };
+
+        // Эффект красной вспышки
+        function redFlash() {
+            document.body.classList.add('flash-red');
+            setTimeout(() => {
+                document.body.classList.remove('flash-red');
+            }, 200);
+        }
+
+        // Эффект плавного исчезновения страницы
+        function fadeOutAndRedirect(url) {
+            const terminal = document.querySelector('.terminal-window');
+            terminal.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+
+        // Проверка кода
+        async function checkCode() {
+            if (isProcessing) return;
+            
+            const code = codeInput.value.trim();
+            if (!code) {
+                statusMessage.innerHTML = '<span style="color:#ff6b6b">> ОШИБКА: поле пустое. Введите код доступа.</span>';
+                redFlash();
+                return;
+            }
+[26.03.2026 19:34] Meshokdeneg: isProcessing = true;
+            submitBtn.disabled = true;
+            codeInput.disabled = true;
+            
+            // Показываем "Сверяю..."
+            statusMessage.innerHTML = '<span style="color:#2a9d2a">> Сверяю с базой данных...</span>';
+            
+            // Имитация задержки 10 секунд
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            
+            // Проверяем код
+            const redirectUrl = redirectMap[code];
+            
+            if (redirectUrl) {
+                // Успех
+                statusMessage.innerHTML = '<span style="color:#2a9d2a">> ОДОБРЕНО. Перенаправление...</span>';
+                await new Promise(resolve => setTimeout(resolve, 800));
+                fadeOutAndRedirect(redirectUrl);
+            } else {
+                // Ошибка
+                statusMessage.innerHTML = '<span style="color:#ff6b6b">> ОТКАЗАНО. Код не найден в базе.</span>';
+                redFlash();
+                
+                // Чистим поле и возвращаем ввод
+                codeInput.value = '';
+                codeInput.disabled = false;
+                submitBtn.disabled = false;
+                isProcessing = false;
+                codeInput.focus();
+                
+                // Через 2 секунды убираем сообщение об ошибке
+                setTimeout(() => {
+                    if (statusMessage.innerHTML.includes('ОТКАЗАНО')) {
+                        statusMessage.innerHTML = '';
+                    }
+                }, 2500);
+            }
+        }
+
+        // Обработчики событий
+        submitBtn.addEventListener('click', checkCode);
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkCode();
+            }
+        });
+
+        // Фокус на поле ввода при загрузке
+        codeInput.focus();
+
+        // Эффект мигающего курсора в конце (для атмосферы)
+        function addCursor() {
+            cursorLine.innerHTML = '<span class="input-prompt">C:\\ASL&gt;</span> <span class="cursor-blink"></span>';
+        }
+        addCursor();
+    </script>
+</body>
+</html>

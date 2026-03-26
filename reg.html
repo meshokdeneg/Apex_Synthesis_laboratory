@@ -1,0 +1,378 @@
+Meshokdeneg, [20.02.2026 20:48]
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL | Бланк трудоустройства</title>
+    <style>
+        /* Стили для фонового изображения (Фон №1) */
+        body {
+            margin: 0;
+            padding: 20px;
+            background: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg') repeat;
+            background-size: 64px 64px;
+            font-family: 'Times New Roman', serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Контейнер бланка — белый лист (Фон №2) */
+        .document-container {
+            background: #fff;
+            color: #000;
+            max-width: 700px;
+            width: 100%;
+            padding: 40px 50px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            position: relative;
+            border: 2px solid #b0b0b0;
+        }
+
+        .document-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .document-header h1 {
+            font-size: 28px;
+            margin: 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .document-header h2 {
+            font-size: 18px;
+            margin: 5px 0;
+            font-weight: normal;
+            color: #444;
+        }
+
+        .form-row {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: baseline;
+            border-bottom: 1px solid #aaa;
+            padding-bottom: 5px;
+        }
+
+        .form-label {
+            width: 150px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .form-input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-family: 'Times New Roman', serif;
+            padding: 5px 10px;
+            outline: none;
+            border-bottom: 1px dashed #888;
+        }
+
+        .form-input:focus {
+            border-bottom: 2px solid #000;
+        }
+
+        /* Стили для текстового поля "О себе" */
+        .form-textarea {
+            flex: 1;
+            border: 1px dashed #888;
+            background: transparent;
+            font-size: 18px;
+            font-family: 'Times New Roman', serif;
+            padding: 10px;
+            outline: none;
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        .form-textarea:focus {
+            border: 2px solid #000;
+        }
+
+        input[type="date"].form-input {
+            font-family: 'Times New Roman', serif;
+            color: #333;
+        }
+
+        /* Стили для проверки пароля */
+        .password-container {
+            flex: 1;
+        }
+
+        .password-input-wrapper input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-family: 'Times New Roman', serif;
+            padding: 5px 10px;
+            outline: none;
+            border-bottom: 1px dashed #888;
+        }
+
+        .password-input-wrapper input:focus {
+            border-bottom: 2px solid #000;
+        }
+
+        .password-requirements {
+            margin-top: 10px;
+            padding-left: 10px;
+        }
+
+        .requirement {
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .requirement.valid {
+            color: #27ae60;
+        }
+
+        .requirement.invalid {
+            color: #c0392b;
+        }
+
+Meshokdeneg, [20.02.2026 20:48]
+.signature-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        .signature-item {
+            width: 45%;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #000;
+            margin-top: 10px;
+            height: 20px;
+        }
+
+        .signature-label {
+            font-size: 14px;
+            color: #555;
+            text-align: right;
+        }
+
+        .submit-btn {
+            background: #333;
+            color: #fff;
+            border: none;
+            font-size: 20px;
+            font-family: 'Times New Roman', serif;
+            padding: 12px 30px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 20px;
+            border-radius: 2px;
+            transition: background 0.2s, opacity 0.2s;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #000;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #666;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            border-top: 1px dashed #aaa;
+            padding-top: 15px;
+        }
+
+        @media (max-width: 500px) {
+            body { padding: 10px; }
+            .form-row { flex-direction: column; }
+            .form-label { width: auto; margin-bottom: 5px; }
+            .document-container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="document-container">
+        <!-- Шапка бланка -->
+        <div class="document-header">
+            <h1>APEX SYNTHESIS LABORATORY</h1>
+            <h2>Отдел кадров TToS • Бланк трудоустройства № ASL‑2026</h2>
+        </div>
+
+        <!-- Форма -->
+        <form action="https://formspree.io/f/xvzbrzjl" method="POST" id="registrationForm">
+            <!-- Поле Фамилия -->
+            <div class="form-row">
+                <span class="form-label">Фамилия</span>
+                <input type="text" name="surname" class="form-input" placeholder="surname" required>
+            </div>
+
+            <!-- Поле Имя -->
+            <div class="form-row">
+                <span class="form-label">Имя</span>
+                <input type="text" name="name" class="form-input" placeholder="name" required>
+            </div>
+
+            <!-- Поле Никнейм -->
+            <div class="form-row">
+                <span class="form-label">Никнейм</span>
+                <input type="text" name="nickname" class="form-input" placeholder="nickname" required>
+            </div>
+
+            <!-- Поле Электронная почта -->
+            <div class="form-row">
+                <span class="form-label">Электронная почта</span>
+                <input type="email" name="email" class="form-input" placeholder="email" required>
+            </div>
+
+            <!-- Поле Дата рождения -->
+            <div class="form-row">
+                <span class="form-label">Дата рождения</span>
+                <input type="date" name="birthdate" class="form-input" required>
+            </div>
+
+            <!-- Поле Пароль с проверкой -->
+            <div class="form-row">
+                <span class="form-label">Пароль</span>
+                <div class="password-container">
+                    <div class="password-input-wrapper">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="password-requirements" id="passwordRequirements">
+                        <div class="requirement invalid" id="reqLength">
+
+<span class="req-icon">❌</span> Минимум 8 символов
+                        </div>
+                        <div class="requirement invalid" id="reqLetter">
+                            <span class="req-icon">❌</span> Хотя бы одна буква (a-z, A-Z)
+                        </div>
+                        <div class="requirement invalid" id="reqNumber">
+                            <span class="req-icon">❌</span> Хотя бы одна цифра (0-9)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Поле О себе -->
+            <div class="form-row" style="align-items: flex-start;">
+                <span class="form-label">О себе</span>
+                <textarea name="about" class="form-textarea" placeholder="Расскажите о себе: опыт, навыки, почему хотите работать в ASL..."></textarea>
+            </div>
+
+            <!-- Блок подписи и даты -->
+            <div class="signature-row">
+                <div class="signature-item">
+                    <div class="signature-label">Подпись сотрудника</div>
+                    <div class="signature-line"></div>
+                </div>
+                <div class="signature-item">
+                    <div class="signature-label">Дата заполнения</div>
+                    <div class="signature-line"></div>
+                </div>
+            </div>
+
+            <!-- Кнопка отправки -->
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>ПОДАТЬ ЗАЯВЛЕНИЕ</button>
+
+            <!-- Примечание -->
+            <div class="footer-note">
+                * Заполненные данные будут переданы в отдел кадров ASL. Ожидайте решения в течение 72 часов.
+            </div>
+        </form>
+    </div>
+
+    <script>
+    // Находим поле пароля
+    const passwordInput = document.getElementById('password');
+    
+    // Находим все требования
+    const reqLength = document.getElementById('reqLength');
+    const reqLetter = document.getElementById('reqLetter');
+    const reqNumber = document.getElementById('reqNumber');
+    
+    // Находим все иконки внутри требований
+    const lengthIcon = document.querySelector('#reqLength .req-icon');
+    const letterIcon = document.querySelector('#reqLetter .req-icon');
+    const numberIcon = document.querySelector('#reqNumber .req-icon');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Функция проверки пароля
+    function checkPassword() {
+        const password = passwordInput.value;
+        
+        // Проверки
+        const isLengthValid = password.length >= 8;
+        const isLetterValid = /[a-zA-Z]/.test(password);
+        const isNumberValid = /[0-9]/.test(password);
+        
+        // Обновляем визуал
+        updateRequirement(reqLength, lengthIcon, isLengthValid);
+        updateRequirement(reqLetter, letterIcon, isLetterValid);
+        updateRequirement(reqNumber, numberIcon, isNumberValid);
+        
+        // Кнопка активна только если всё ок
+        submitBtn.disabled = !(isLengthValid && isLetterValid && isNumberValid);
+    }
+
+    // Функция обновления одного требования
+    function updateRequirement(element, icon, isValid) {
+        if (isValid) {
+            element.classList.remove('invalid');
+            element.classList.add('valid');
+            icon.textContent = '✅';
+        } else {
+            element.classList.remove('valid');
+            element.classList.add('invalid');
+            icon.textContent = '❌';
+        }
+    }
+
+    // Вешаем обработчик на поле пароля
+    if (passwordInput) {
+        passwordInput.addEventListener('input', checkPassword);
+    }
+
+    // Проверяем при загрузке страницы (если поле уже заполнено)
+    window.addEventListener('load', function() {
+        if (passwordInput) {
+            checkPassword();
+        }
+    });
+
+    // Блокируем отправку, если кнопка неактивна
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        if (submitBtn.disabled) {
+            e.preventDefault();
+            alert('Пожалуйста, выполните все требования к паролю');
+        }
+    });
+</script>
+</body>
+</html>
