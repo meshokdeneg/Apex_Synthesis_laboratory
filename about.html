@@ -521,6 +521,7 @@
         <img id="lightboxImage" src="" alt="">
     </div>
 </div>
+    <div class="secret-black-square" id="secretBlackSquare" onclick="window.location.href='code.html'"></div>
 
 <script>
     // Функции галереи
@@ -618,6 +619,23 @@
     .hidden-red-secret:hover {
         transform: scale(1.1);
         background: #c0392b;
+    }
+    .secret-black-square {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 64px;
+        height: 64px;
+        background-color: #000000;
+        border: 2px solid #FF8C00;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 1000;
+        box-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+    .secret-black-square:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px #FF8C00;
     }
 </style>
 
