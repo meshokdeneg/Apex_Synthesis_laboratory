@@ -2,9 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>ASL | О лаборатории</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ASL | Терминал доступа</title>
     <style>
-        /* ===== БАЗА ===== */
         * {
             margin: 0;
             padding: 0;
@@ -12,195 +12,185 @@
         }
 
         body {
-            background-image: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg');
-            background-repeat: repeat;
-            background-size: 64px 64px;
-            margin: 0;
-            padding: 100px;
+            background: #000000;
+            font-family: 'Courier New', 'Fira Code', 'Consolas', monospace;
             min-height: 100vh;
-        }
-
-        /* ===== КОНТЕЙНЕР ===== */
-        .quartz-wall {
-            background-image: url(https://i.pinimg.com/originals/04/9c/42/049c428069d74da7d513c2f95b0df588.jpg);
-            background-repeat: repeat;
-            background-size: 1010px 1010px;
-            position: relative;
-            padding: 30px 30px 64px 30px;
-            border: 2px solid #b0b0b0;
-            max-width: 1400px;
-            width: 90%;
-            margin: 0 auto;
-        }
-
-        /* ===== ТИПОГРАФИКА ===== */
-        h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 48px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            border-bottom: 4px solid #f0b800;
-            padding-bottom: 15px;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        h1::before {
-            content: '⚡';
-            position: absolute;
-            left: -30px;
-            top: 10px;
-            font-size: 40px;
-            color: #ff6600;
-            transform: rotate(15deg);
-        }
-
-        h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 28px;
-            margin: 40px 0 20px;
-            border-left: 6px solid #2a6f9c;
-            padding-left: 20px;
-        }
-
-        h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 22px;
-            margin: 30px 0 10px;
-            color: #333;
-        }
-
-        p {
-            margin-bottom: 20px;
-            font-size: 18px;
-            text-align: justify;
-        }
-
-        /* ===== КНОПКИ В СТИЛЕ FICSIT ===== */
-        .button {
-            display: inline-block;
-            background: #e0e0e0;
-            border: 3px solid #333;
-            border-radius: 0;
-            padding: 12px 30px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 18px;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: #000;
-            box-shadow: 5px 5px 0 #888;
-            transition: all 0.1s ease;
-            margin: 5px 15px 5px 0;
-            letter-spacing: 1px;
-        }
-
-        .button:hover {
-            background: #d0d0d0;
-            transform: translate(3px, 3px);
-            box-shadow: 2px 2px 0 #888;
-        }
-
-        .button.accent {
-            background: #f0b800;
-            border-color: #b87c00;
-            box-shadow: 5px 5px 0 #b87c00;
-        }
-
-        .button.accent:hover {
-            background: #e0a800;
-        }
-
-        /* ===== КАРТОЧКИ ДЛЯ ПЕРСОНАЛИЙ ===== */
-        .person-card {
-            display: grid;
-            grid-template-columns: 1fr 3fr;
-            gap: 15px;
-            border-bottom: 2px dashed #aaa;
-            padding: 20px 0;
-        }
-
-        .person-name {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 20px;
-            color: #2a6f9c;
-        }
-
-        .person-desc {
-            color: #333;
-        }
-
-        /* ===== БЛОК СЕКТОРОВ ===== */
-        .sectors {
             display: flex;
-            gap: 20px;
-            margin: 30px 0;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.1s ease;
+        }
+
+        /* Красная вспышка при ошибке */
+        body.flash-red {
+            background: #4a0000;
+            transition: background 0.05s ease;
+        }
+
+        .terminal-window {
+            max-width: 700px;
+            width: 100%;
+            background: #0c0c0c;
+            border: 1px solid #2a9d2a;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(42, 157, 42, 0.2);
+            overflow: hidden;
+        }
+
+        /* Заголовок окна CMD */
+        .cmd-titlebar {
+            background: #1e1e1e;
+            padding: 8px 12px;
+            border-bottom: 1px solid #2a9d2a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .cmd-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .cmd-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3c3c3c;
+        }
+        .cmd-control.close { background: #ff5f5f; }
+        .cmd-control.minimize { background: #ffbd2e; }
+        .cmd-control.maximize { background: #27c93f; }
+        .cmd-title {
+            color: #2a9d2a;
+            font-size: 12px;
+            margin-left: 8px;
+            flex: 1;
+        }
+        .cmd-path {
+            color: #2a9d2a;
+            font-size: 11px;
+            background: #1a1a1a;
+            padding: 4px 12px;
+            border-bottom: 1px solid #2a9d2a;
+            font-family: monospace;
+        }
+
+        /* Основная область терминала */
+        .cmd-content {
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .output-line {
+            color: #2a9d2a;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .output-line.prompt {
+            color: #2a9d2a;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
             flex-wrap: wrap;
         }
-
-        .sector {
-            flex: 1 1 200px;
-            background: rgba(255,255,255,0.7);
-            border: 2px solid #333;
-            padding: 20px;
-            box-shadow: 5px 5px 0 #888;
-        }
-
-        .sector h3 {
-            margin-top: 0;
-            color: #2a6f9c;
-        }
-
-        /* ===== БЕЗУМНЫЕ ДЕТАЛИ ===== */
-        .madness-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f0f0f0;
-            border: 2px solid #888;
-            padding: 20px;
-            margin: 40px 0;
-            transform: rotate(0.2deg);
-            box-shadow: inset 0 0 10px #aaa;
-        }
-
-        .graph {
-            width: 200px;
-            height: 80px;
-            background: repeating-linear-gradient(90deg, #000, #000 2px, transparent 2px, transparent 10px);
-            clip-path: polygon(0% 100%, 10% 20%, 30% 60%, 50% 10%, 70% 80%, 90% 30%, 100% 100%);
-        }
-
-        /* ===== ПОДВАЛ ===== */
-        .footer {
-            margin-top: 60px;
-            border-top: 2px solid #333;
-            padding-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Courier New', monospace;
+        .input-prompt {
+            color: #2a9d2a;
             font-size: 14px;
-            color: #666;
-        }
-
-        .stamp {
-            color: #ff6600;
             font-weight: bold;
         }
+        .input-field {
+            background: transparent;
+            border: none;
+            color: #2a9d2a;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            min-width: 150px;
+        }
+        .input-field::placeholder {
+            color: #2a9d2a;
+            opacity: 0.5;
+        }
 
-        /* ===== СТИЛИ ДЛЯ ГАЛЕРЕИ (скопированы из index.html) ===== */
+        button {
+            background: #1e3a1e;
+            border: 1px solid #2a9d2a;
+            color: #2a9d2a;
+            padding: 6px 16px;
+            font-family: monospace;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #2a9d2a;
+            color: #000;
+        }
+
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background: #2a9d2a;
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Адаптация под телефон */
+        @media (max-width: 600px) {
+            .cmd-content {
+                padding: 15px;
+            }
+            .output-line {
+                font-size: 12px;
+            }
+            .input-field {
+                font-size: 12px;
+            }
+            .input-line {
+                flex-wrap: wrap;
+            }
+            button {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
+
+        /* Анимация появления */
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .fade-out {
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        /* ===== СТИЛИ ДЛЯ ГАЛЕРЕИ (адаптированы под терминал) ===== */
         .gallery-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
             z-index: 3000;
             display: none;
@@ -209,21 +199,23 @@
         }
 
         .gallery-content {
-            background: rgba(30, 30, 30, 0.95);
-            border: 3px solid #FF8C00;
-            border-radius: 20px;
+            background: #0c0c0c;
+            border: 2px solid #2a9d2a;
+            border-radius: 12px;
             padding: 30px;
             max-width: 800px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
+            color: #2a9d2a;
         }
 
         .gallery-content h2 {
-            color: #FF8C00;
+            color: #2a9d2a;
             margin-bottom: 20px;
             text-align: center;
+            font-family: monospace;
         }
 
         .gallery-grid {
@@ -237,23 +229,23 @@
             width: 100%;
             height: 150px;
             object-fit: cover;
-            border: 2px solid #4A90E2;
-            border-radius: 10px;
+            border: 2px solid #2a9d2a;
+            border-radius: 8px;
             transition: 0.3s;
             cursor: pointer;
         }
 
         .gallery-grid img:hover {
             transform: scale(1.05);
-            border-color: #FF8C00;
-            box-shadow: 0 0 20px #FF8C00;
+            border-color: #ff8c00;
+            box-shadow: 0 0 20px #ff8c00;
         }
 
         .close-gallery {
             position: absolute;
             top: 15px;
             right: 20px;
-            color: #FF8C00;
+            color: #2a9d2a;
             font-size: 35px;
             font-weight: bold;
             cursor: pointer;
@@ -262,7 +254,7 @@
         }
 
         .close-gallery:hover {
-            color: #4A90E2;
+            color: #ff8c00;
             transform: rotate(90deg);
         }
 
@@ -290,105 +282,82 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            border: 3px solid #FF8C00;
+            border: 3px solid #2a9d2a;
             border-radius: 10px;
-            box-shadow: 0 0 40px rgba(255, 140, 0, 0.5);
+            box-shadow: 0 0 40px rgba(42, 157, 42, 0.5);
         }
 
         .close-lightbox {
             position: absolute;
             top: -40px;
             right: 0;
-            color: #FF8C00;
+            color: #2a9d2a;
             font-size: 40px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
             line-height: 1;
-            text-shadow: 0 0 20px #FF8C00;
+            text-shadow: 0 0 20px #2a9d2a;
         }
 
         .close-lightbox:hover {
-            color: #4A90E2;
+            color: #ff8c00;
             transform: scale(1.2);
         }
+
+        /* Кнопка в стиле терминала для галереи */
+        .gallery-btn {
+            background: #1e3a1e;
+            border: 1px solid #2a9d2a;
+            color: #2a9d2a;
+            padding: 8px 16px;
+            font-family: monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+        .gallery-btn:hover {
+            background: #2a9d2a;
+            color: #000;
+        }
     </style>
-    <!-- Подключаем шрифт Montserrat -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="quartz-wall">
-        <!-- Заголовок -->
-        <h1>APEX SYNTHESIS LABORATORY</h1>
-
-        <!-- Безумная вставка -->
-        <div class="madness-box">
-            <span>⚠️ МОНИТОРИНГ ЭКСПЕРИМЕНТА #6</span>
-            <div class="graph"></div>
-            <span>∫f(x)dx ≈ ???</span>
-        </div>
-
-        <!-- Что такое ASL -->
-        <h2>▍Что такое ASL?</h2>
-        <p><strong>Apex Synthesis Laboratory</strong> — корпорация, не признающая границ возможного. Возникла как побочный продукт <strong>Синтеза</strong> — коллапса и пересборки реальностей. Наш догмат: <em>«Если это можно вообразить, это можно создать!»</em>. Мы занимаемся всем, до чего дотянемся: от квантовой биологии до архитектуры снов.</p>
-
-        <!-- Принцип Чайника -->
-        <h2>▍Принцип Чайника (ASL-Инверсия)</h2>
-        <p>Основной метод: <strong>«Решение достигается, когда каждый данный объект использован не по инструкции».</strong> Чайник может быть резонатором, балластом, уликой или детонатором. Всё зависит от контекста и безумия инженера.</p>
-
-        <!-- Ключевые персоны -->
-        <h2>▍Ключевые субъекты</h2>
-        <div class="person-card">
-            <div class="person-name">Meshokdeneg</div>
-            <div class="person-desc">Сингулярный Админ, создатель, источник канона. Достиг синтеза с сингулярностью.</div>
-        </div>
-        <div class="person-card">
-            <div class="person-name">Strika_Jarvis</div>
-            <div class="person-desc">Правая рука, координатор, дипломат.</div>
-        </div>
-        <div class="person-card">
-            <div class="person-name">Глюк (GLUK)</div>
-            <div class="person-desc">Операционный узел. Чёрный куб с нервной системой #00FF9D. Именно он управляет большей частью комплекса.</div>
-        </div>
-        <div class="person-card">
-            <div class="person-name">Другие роботы</div>
-            <div class="person-desc">Автоматические системы для уборки, строительства и тонких экспериментов.</div>
-        </div>
-
-        <!-- Концепт-секторы -->
-        <h2>▍Концепт-секторы</h2>
-        <div class="sectors">
-            <div class="sector">
-                <h3>[CHRONOS]</h3>
-                <p>Хронофизика, временные петли, манипуляции с прошлым и будущим.</p>
+    <div class="terminal-window">
+        <div class="cmd-titlebar">
+            <div class="cmd-controls">
+                <div class="cmd-control close"></div>
+                <div class="cmd-control minimize"></div>
+                <div class="cmd-control maximize"></div>
             </div>
-            <div class="sector">
-                <h3>[AETHERA]</h3>
-                <p>Энергия, поля, антигравитация, эфирные технологии.</p>
-            </div>
-            <div class="sector">
-                <h3>[PRIMORDIA]</h3>
-                <p>Первичная материя, алхимия, базовые элементы реальности.</p>
-            </div>
+            <div class="cmd-title">C:\Windows\system32\cmd.exe</div>
         </div>
-
-        <!-- Отделы ASL -->
-        <h2>▍Отделы ASL</h2>
-        <p>Главный игровой отдел — <strong>The Time of Science (TToS)</strong>. Именно TToS создаёт карты и головоломки, которые вы можете скачать.</p>
-
-        <!-- Эксперименты -->
-        <h2>▍Неактивные эксперименты</h2>
-        <p><strong>Эксперимент №6 «Панельки»</strong> — социальный симулятор в Minecraft, эволюционирующий в экономику симбиоза с ASL через систему контрактов и логистики.</p>
-
-        <!-- Подвал (с двумя кнопками) -->
-        <div class="footer">
-            <span>ASL • отдел TToS • версия 2.0</span>
-            <span class="stamp">✻ СИНТЕЗ ПОДТВЕРЖДЁН ✻</span>
-            <div>
-                <!-- Кнопка "НА ГЛАВНУЮ" (уже была) -->
-                <a href="index.html" class="button" style="margin:0; padding:8px 20px;">НА ГЛАВНУЮ</a>
-                <!-- Новая кнопка "ГАЛЕРЕЯ ЭКСПЕРИМЕНТОВ" -->
-                <button class="button accent" onclick="openGallery()" style="margin-left:10px; padding:8px 20px;">ГАЛЕРЕЯ ЭКСПЕРИМЕНТОВ</button>
+        <div class="cmd-path">
+            C:\Users\ASL_Admin\Desktop\access&gt;
+        </div>
+        <div class="cmd-content" id="cmdContent">
+            <div class="output-line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div class="output-line">     APEX SYNTHESIS LABORATORY — ТЕРМИНАЛ ДОСТУПА</div>
+            <div class="output-line">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+            <div class="output-line">&nbsp;</div>
+            <div class="output-line">> Система авторизации v.2.3.1</div>
+            <div class="output-line">> Для доступа к защищённым протоколам введите код.</div>
+            <div class="output-line">&nbsp;</div>
+            <div class="output-line">> Доступные команды: G-Pres, SYNTHESIS, VOID, CHRONOS, AETHERA, PRIMORDIA</div>
+            <div class="output-line">&nbsp;</div>
+            <div class="input-line">
+                <span class="input-prompt">C:\ASL&gt;</span>
+                <input type="text" id="codeInput" class="input-field" placeholder="введите код..." autocomplete="off">
+                <button id="submitBtn">ВВОД</button>
+            </div>
+            <div class="output-line" id="statusMessage"></div>
+            <div class="output-line" id="cursorLine"></div>
+            <!-- Добавленная кнопка галереи -->
+            <div class="output-line" style="margin-top: 20px;">
+                <button class="gallery-btn" onclick="openGallery()">[ ГАЛЕРЕЯ ЭКСПЕРИМЕНТОВ ]</button>
             </div>
         </div>
     </div>
@@ -411,21 +380,109 @@
     </div>
 
     <script>
-        // Функции для галереи
-function openGallery() {
-    const modal = document.getElementById('galleryModal');
-    const grid = document.getElementById('galleryGrid');
-    grid.innerHTML = '';
-    for (let i = 1; i <= 20; i++) {
-        const img = document.createElement('img');
-        img.src = 'photo/' + i + '.png';   // <- изменённая строка
-        img.alt = 'Эксперимент ' + i;
-        img.onclick = function() { openLightbox(this.src); };
-        img.onerror = function() { this.src = 'photo/placeholder.png'; }; // если заглушка в корне
-        grid.appendChild(img);
-    }
-    modal.style.display = 'flex';
-}
+        const codeInput = document.getElementById('codeInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const cursorLine = document.getElementById('cursorLine');
+        let isProcessing = false;
+
+        // Словарь кодов → куда перекидывать
+        const redirectMap = {
+            'G-Pres': '/protocol/g-pres.html',
+            'SYNTHESIS': '/synth/alternative.html',
+            'VOID': '/void/',
+            'CHRONOS': '/sectors/chronos.html',
+            'AETHERA': '/sectors/aethera.html',
+            'PRIMORDIA': '/sectors/primordia.html'
+        };
+
+        // Эффект красной вспышки
+        function redFlash() {
+            document.body.classList.add('flash-red');
+            setTimeout(() => {
+                document.body.classList.remove('flash-red');
+            }, 200);
+        }
+
+        // Эффект плавного исчезновения страницы
+        function fadeOutAndRedirect(url) {
+            const terminal = document.querySelector('.terminal-window');
+            terminal.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = url;
+            }, 500);
+        }
+
+        // Проверка кода
+        async function checkCode() {
+            if (isProcessing) return;
+            
+            const code = codeInput.value.trim();
+            if (!code) {
+                statusMessage.innerHTML = '<span style="color:#ff6b6b">> ОШИБКА: поле пустое. Введите код доступа.</span>';
+                redFlash();
+                return;
+            }
+            isProcessing = true;
+            submitBtn.disabled = true;
+            codeInput.disabled = true;
+            
+            statusMessage.innerHTML = '<span style="color:#2a9d2a">> Сверяю с базой данных...</span>';
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            
+            const redirectUrl = redirectMap[code];
+            
+            if (redirectUrl) {
+                statusMessage.innerHTML = '<span style="color:#2a9d2a">> ОДОБРЕНО. Перенаправление...</span>';
+                await new Promise(resolve => setTimeout(resolve, 800));
+                fadeOutAndRedirect(redirectUrl);
+            } else {
+                statusMessage.innerHTML = '<span style="color:#ff6b6b">> ОТКАЗАНО. Код не найден в базе.</span>';
+                redFlash();
+                codeInput.value = '';
+                codeInput.disabled = false;
+                submitBtn.disabled = false;
+                isProcessing = false;
+                codeInput.focus();
+                setTimeout(() => {
+                    if (statusMessage.innerHTML.includes('ОТКАЗАНО')) {
+                        statusMessage.innerHTML = '';
+                    }
+                }, 2500);
+            }
+        }
+
+        // Обработчики событий
+        submitBtn.addEventListener('click', checkCode);
+        codeInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkCode();
+            }
+        });
+
+        codeInput.focus();
+
+        function addCursor() {
+            cursorLine.innerHTML = '<span class="input-prompt">C:\\ASL&gt;</span> <span class="cursor-blink"></span>';
+        }
+        addCursor();
+
+        // ===== ФУНКЦИИ ГАЛЕРЕИ =====
+        function openGallery() {
+            const modal = document.getElementById('galleryModal');
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            for (let i = 1; i <= 20; i++) {
+                const img = document.createElement('img');
+                img.src = 'photo/' + i + '.png';
+                img.alt = 'Эксперимент ' + i;
+                img.onclick = function() { openLightbox(this.src); };
+                img.onerror = function() { this.src = 'photo/placeholder.png'; };
+                grid.appendChild(img);
+            }
+            modal.style.display = 'flex';
+        }
 
         function closeGallery() {
             document.getElementById('galleryModal').style.display = 'none';
@@ -440,7 +497,6 @@ function openGallery() {
             document.getElementById('lightboxModal').style.display = 'none';
         }
 
-        // Закрытие модалок при клике на фон
         window.onclick = function(event) {
             const gallery = document.getElementById('galleryModal');
             if (event.target == gallery) gallery.style.display = 'none';
