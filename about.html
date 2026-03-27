@@ -560,5 +560,104 @@
         if (event.target == lightbox) lightbox.style.display = 'none';
     };
 </script>
+    <!-- СЕКРЕТНЫЙ КВАРЦЕВЫЙ БЛОК -->
+<style>
+    .secret-quartz {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 80px;
+        height: 80px;
+        background: #d4d8d0;
+        background-image: linear-gradient(45deg, #b8bcb0 25%, transparent 25%),
+                          linear-gradient(-45deg, #b8bcb0 25%, transparent 25%);
+        background-size: 20px 20px;
+        border: 2px solid #8a8f7a;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1000;
+        border-radius: 4px;
+    }
+
+    .secret-quartz:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    }
+
+    /* Анимация отваливания */
+    @keyframes fallOff {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(200px) rotate(45deg); opacity: 0; }
+    }
+
+    .secret-quartz.falling {
+        animation: fallOff 0.5s forwards;
+        pointer-events: none;
+    }
+
+    /* Скрытая красная кнопка */
+    .hidden-red-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        width: 80px;
+        height: 80px;
+        background: #e74c3c;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        cursor: pointer;
+        z-index: 1001;
+        box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
+        transition: transform 0.2s;
+    }
+
+    .hidden-red-btn:hover {
+        transform: scale(1.1);
+        background: #c0392b;
+    }
+</style>
+
+<div class="secret-quartz" id="secretQuartz"></div>
+<div class="hidden-red-btn" id="secretRedBtn">🔴</div>
+
+<script>
+    const quartzBlock = document.getElementById('secretQuartz');
+    const redBtn = document.getElementById('secretRedBtn');
+    let clickTimer = null;
+    let clickCount = 0;
+
+    // Двойной клик по кварцевому блоку
+    quartzBlock.addEventListener('click', function(e) {
+        clickCount++;
+
+        if (clickCount === 1) {
+            clickTimer = setTimeout(() => {
+                clickCount = 0;
+            }, 300);
+        } else if (clickCount === 2) {
+            clearTimeout(clickTimer);
+            clickCount = 0;
+
+            // Анимация отваливания
+            quartzBlock.classList.add('falling');
+
+            // Через 0.5 секунды показываем красную кнопку
+            setTimeout(() => {
+                quartzBlock.style.display = 'none';
+                redBtn.style.display = 'flex';
+            }, 500);
+        }
+    });
+
+    // Клик по красной кнопке → переход на code.html
+    redBtn.addEventListener('click', function() {
+        window.location.href = 'code.html';
+    });
+</script>
 </body>
 </html>
