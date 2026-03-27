@@ -626,12 +626,77 @@
 <div class="hidden-red-btn" id="secretRedBtn">🔴</div>
 
 <script>
-    const quartzBlock = document.getElementById('secretQuartz');
-    const redBtn = document.getElementById('secretRedBtn');
+<!-- СЕКРЕТНЫЙ КВАРЦЕВЫЙ БЛОК (встроен в фон, чуть темнее) -->
+<style>
+    .secret-quartz-bg {
+        position: fixed;
+        bottom: 40px;
+        left: 40px;
+        width: 80px;
+        height: 80px;
+        background-image: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg');
+        background-size: 64px 64px;
+        background-repeat: repeat;
+        background-color: rgba(0, 0, 0, 0.15);
+        background-blend-mode: multiply;
+        border: 2px solid #6a6f5a;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        z-index: 1000;
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .secret-quartz-bg:hover {
+        filter: brightness(0.95);
+        transform: scale(1.02);
+    }
+
+    /* Анимация отваливания */
+    @keyframes fallOffBlock {
+        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(150px) rotate(30deg); opacity: 0; }
+    }
+
+    .secret-quartz-bg.falling {
+        animation: fallOffBlock 0.5s forwards;
+        pointer-events: none;
+    }
+
+    /* Скрытая красная кнопка (появляется на том же месте) */
+    .hidden-red-secret {
+        position: fixed;
+        bottom: 40px;
+        left: 40px;
+        width: 80px;
+        height: 80px;
+        background: #e74c3c;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        cursor: pointer;
+        z-index: 1001;
+        box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
+        transition: transform 0.2s;
+    }
+
+    .hidden-red-secret:hover {
+        transform: scale(1.1);
+        background: #c0392b;
+    }
+</style>
+
+<div class="secret-quartz-bg" id="secretQuartzBlock"></div>
+<div class="hidden-red-secret" id="secretRedBtnBlock">🔴</div>
+
+<script>
+    const quartzBlock = document.getElementById('secretQuartzBlock');
+    const redBtnBlock = document.getElementById('secretRedBtnBlock');
     let clickTimer = null;
     let clickCount = 0;
 
-    // Двойной клик по кварцевому блоку
     quartzBlock.addEventListener('click', function(e) {
         clickCount++;
 
@@ -643,19 +708,16 @@
             clearTimeout(clickTimer);
             clickCount = 0;
 
-            // Анимация отваливания
             quartzBlock.classList.add('falling');
 
-            // Через 0.5 секунды показываем красную кнопку
             setTimeout(() => {
                 quartzBlock.style.display = 'none';
-                redBtn.style.display = 'flex';
+                redBtnBlock.style.display = 'flex';
             }, 500);
         }
     });
 
-    // Клик по красной кнопке → переход на code.html
-    redBtn.addEventListener('click', function() {
+    redBtnBlock.addEventListener('click', function() {
         window.location.href = 'code.html';
     });
 </script>
