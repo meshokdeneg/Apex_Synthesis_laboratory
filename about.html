@@ -421,7 +421,7 @@ function openGallery() {
         img.src = 'photo/' + i + '.png';   // <- изменённая строка
         img.alt = 'Эксперимент ' + i;
         img.onclick = function() { openLightbox(this.src); };
-        img.onerror = function() { this.src = 'placeholder.png'; }; // если заглушка в корне
+        img.onerror = function() { this.src = 'photo/placeholder.png'; }; // если заглушка в корне
         grid.appendChild(img);
     }
     modal.style.display = 'flex';
