@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -148,7 +147,8 @@
         .requirement.invalid {
             color: #c0392b;
         }
-.signature-row {
+
+        .signature-row {
             display: flex;
             justify-content: space-between;
             margin-top: 40px;
@@ -224,36 +224,36 @@
             <h2>Отдел кадров TToS • Бланк трудоустройства № ASL‑2026</h2>
         </div>
 
-        <!-- Форма -->
-        <form action="https://formspree.io/f/xvzbrzjl" method="POST" id="registrationForm">
+        <!-- Форма (убрали action, теперь обрабатываем локально) -->
+        <form id="registrationForm">
             <!-- Поле Фамилия -->
             <div class="form-row">
                 <span class="form-label">Фамилия</span>
-                <input type="text" name="surname" class="form-input" placeholder="surname" required>
+                <input type="text" id="surname" name="surname" class="form-input" placeholder="surname" required>
             </div>
 
             <!-- Поле Имя -->
             <div class="form-row">
                 <span class="form-label">Имя</span>
-                <input type="text" name="name" class="form-input" placeholder="name" required>
+                <input type="text" id="name" name="name" class="form-input" placeholder="name" required>
             </div>
 
             <!-- Поле Никнейм -->
             <div class="form-row">
                 <span class="form-label">Никнейм</span>
-                <input type="text" name="nickname" class="form-input" placeholder="nickname" required>
+                <input type="text" id="nickname" name="nickname" class="form-input" placeholder="nickname" required>
             </div>
 
             <!-- Поле Электронная почта -->
             <div class="form-row">
                 <span class="form-label">Электронная почта</span>
-                <input type="email" name="email" class="form-input" placeholder="email" required>
+                <input type="email" id="email" name="email" class="form-input" placeholder="email" required>
             </div>
 
             <!-- Поле Дата рождения -->
             <div class="form-row">
                 <span class="form-label">Дата рождения</span>
-                <input type="date" name="birthdate" class="form-input" required>
+                <input type="date" id="birthdate" name="birthdate" class="form-input" required>
             </div>
 
             <!-- Поле Пароль с проверкой -->
@@ -265,8 +265,7 @@
                     </div>
                     <div class="password-requirements" id="passwordRequirements">
                         <div class="requirement invalid" id="reqLength">
-
-<span class="req-icon">❌</span> Минимум 8 символов
+                            <span class="req-icon">❌</span> Минимум 8 символов
                         </div>
                         <div class="requirement invalid" id="reqLetter">
                             <span class="req-icon">❌</span> Хотя бы одна буква (a-z, A-Z)
@@ -281,7 +280,7 @@
             <!-- Поле О себе -->
             <div class="form-row" style="align-items: flex-start;">
                 <span class="form-label">О себе</span>
-                <textarea name="about" class="form-textarea" placeholder="Расскажите о себе: опыт, навыки, почему хотите работать в ASL..."></textarea>
+                <textarea id="about" name="about" class="form-textarea" placeholder="Расскажите о себе: опыт, навыки, почему хотите работать в ASL..."></textarea>
             </div>
 
             <!-- Блок подписи и даты -->
@@ -307,70 +306,82 @@
     </div>
 
     <script>
-    // Находим поле пароля
-    const passwordInput = document.getElementById('password');
-    
-    // Находим все требования
-    const reqLength = document.getElementById('reqLength');
-    const reqLetter = document.getElementById('reqLetter');
-    const reqNumber = document.getElementById('reqNumber');
-    
-    // Находим все иконки внутри требований
-    const lengthIcon = document.querySelector('#reqLength .req-icon');
-    const letterIcon = document.querySelector('#reqLetter .req-icon');
-    const numberIcon = document.querySelector('#reqNumber .req-icon');
-    const submitBtn = document.getElementById('submitBtn');
+        // Находим поля
+        const surnameInput = document.getElementById('surname');
+        const nameInput = document.getElementById('name');
+        const nicknameInput = document.getElementById('nickname');
+        const emailInput = document.getElementById('email');
+        const birthdateInput = document.getElementById('birthdate');
+        const passwordInput = document.getElementById('password');
+        const aboutInput = document.getElementById('about');
+        
+        // Находим требования
+        const reqLength = document.getElementById('reqLength');
+        const reqLetter = document.getElementById('reqLetter');
+        const reqNumber = document.getElementById('reqNumber');
+        
+        // Иконки
+        const lengthIcon = document.querySelector('#reqLength .req-icon');
+        const letterIcon = document.querySelector('#reqLetter .req-icon');
+        const numberIcon = document.querySelector('#reqNumber .req-icon');
+        const submitBtn = document.getElementById('submitBtn');
 
-    // Функция проверки пароля
-    function checkPassword() {
-        const password = passwordInput.value;
-        
-        // Проверки
-        const isLengthValid = password.length >= 8;
-        const isLetterValid = /[a-zA-Z]/.test(password);
-        const isNumberValid = /[0-9]/.test(password);
-        
-        // Обновляем визуал
-        updateRequirement(reqLength, lengthIcon, isLengthValid);
-        updateRequirement(reqLetter, letterIcon, isLetterValid);
-        updateRequirement(reqNumber, numberIcon, isNumberValid);
-        
-        // Кнопка активна только если всё ок
-        submitBtn.disabled = !(isLengthValid && isLetterValid && isNumberValid);
-    }
-
-    // Функция обновления одного требования
-    function updateRequirement(element, icon, isValid) {
-        if (isValid) {
-            element.classList.remove('invalid');
-            element.classList.add('valid');
-            icon.textContent = '✅';
-        } else {
-            element.classList.remove('valid');
-            element.classList.add('invalid');
-            icon.textContent = '❌';
+        // Функция проверки пароля
+        function checkPassword() {
+            const password = passwordInput.value;
+            
+            const isLengthValid = password.length >= 8;
+            const isLetterValid = /[a-zA-Z]/.test(password);
+            const isNumberValid = /[0-9]/.test(password);
+            
+            updateRequirement(reqLength, lengthIcon, isLengthValid);
+            updateRequirement(reqLetter, letterIcon, isLetterValid);
+            updateRequirement(reqNumber, numberIcon, isNumberValid);
+            
+            submitBtn.disabled = !(isLengthValid && isLetterValid && isNumberValid);
         }
-    }
 
-    // Вешаем обработчик на поле пароля
-    if (passwordInput) {
+        function updateRequirement(element, icon, isValid) {
+            if (isValid) {
+                element.classList.remove('invalid');
+                element.classList.add('valid');
+                icon.textContent = '✅';
+            } else {
+                element.classList.remove('valid');
+                element.classList.add('invalid');
+                icon.textContent = '❌';
+            }
+        }
+
         passwordInput.addEventListener('input', checkPassword);
-    }
+        window.addEventListener('load', checkPassword);
 
-    // Проверяем при загрузке страницы (если поле уже заполнено)
-    window.addEventListener('load', function() {
-        if (passwordInput) {
-            checkPassword();
-        }
-    });
+        // Обработка отправки формы
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // не даём перезагрузить страницу
 
-    // Блокируем отправку, если кнопка неактивна
-    document.getElementById('registrationForm').addEventListener('submit', function(e) {
-        if (submitBtn.disabled) {
-            e.preventDefault();
-            alert('Пожалуйста, выполните все требования к паролю');
-        }
-    });
-</script>
+            if (submitBtn.disabled) {
+                alert('Пожалуйста, выполните все требования к паролю');
+                return;
+            }
+
+            // Собираем данные пользователя
+            const userData = {
+                surname: surnameInput.value,
+                name: nameInput.value,
+                nickname: nicknameInput.value,
+                email: emailInput.value,
+                birthdate: birthdateInput.value,
+                password: passwordInput.value,
+                about: aboutInput.value
+            };
+
+            // Сохраняем в localStorage (ключ asl_user – именно его ждёт главная страница)
+            localStorage.setItem('asl_user', JSON.stringify(userData));
+
+            // Перенаправляем на главную
+            window.location.href = 'file:///C:/Users/User/Desktop/Новая%20папка%20(11)/ASL.html';
+        });
+    </script>
 </body>
 </html>
