@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASL | Лаборатория Синтеза</title>
     <style>
-        /* ===== СТИЛИ ОСНОВНОГО САЙТА ===== */
+        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
         * {
             margin: 0;
             padding: 0;
@@ -257,7 +257,7 @@
             100% { background-position: 28px 0; }
         }
 
-        /* ===== КРАСНАЯ КНОПКА И ДЕКОРАТИВНЫЙ СЧЁТЧИК ===== */
+        /* ===== КРАСНАЯ КНОПКА ===== */
         .red-button-container {
             display: flex;
             flex-direction: row;
@@ -277,15 +277,15 @@
             border: 6px solid #fff;
             box-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
             cursor: pointer;
-            transition: 0.3s;
-            margin: 0 !important;
             transition: transform 0.1s ease;
+            margin: 0 !important;
         }
 
         .red-smiley-button:hover {
             transform: scale(1.1);
             box-shadow: 0 0 80px rgba(255, 0, 0, 1);
         }
+
         .red-smiley-button:active {
             transform: scale(0.95);
         }
@@ -294,7 +294,6 @@
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(5px);
             border: 4px solid #3579DC;
-            border-radius: 0px;
             padding: 10px 20px;
             font-family: 'Courier New', monospace;
             color: #FF8C00;
@@ -303,12 +302,6 @@
             gap: 10px;
             align-items: center;
             box-shadow: 0 0 15px rgba(255,140,0,0.5);
-        }
-
-        .counter-label {
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .counter-value {
@@ -330,8 +323,6 @@
         .btn {
             padding: 15px 30px;
             font-size: 18px;
-            font-family: 'Segoe UI', monospace;
-            font-weight: 1400;
             background: rgba(0, 0, 0, 0.5);
             border: 2px solid #4A90E2;
             border-radius: 0px;
@@ -355,10 +346,6 @@
             transform: translateY(-3px);
         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
         .btn-blue {
             border-color: #4A90E2;
             font-size: 50px;
@@ -366,7 +353,6 @@
 
         .btn-light {
             border-color: #FF8C00;
-            color: #fff;
             font-size: 50px;
         }
 
@@ -375,6 +361,7 @@
             color: #000;
         }
 
+        /* Модальные окна */
         .feedback-modal {
             position: fixed;
             top: 0;
@@ -397,7 +384,6 @@
             padding: 40px;
             max-width: 500px;
             width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
             position: relative;
             color: #fff;
             display: flex;
@@ -407,7 +393,6 @@
         .feedback-content h2 {
             color: #FF8C00;
             margin-bottom: 20px;
-            font-size: 28px;
             text-align: center;
         }
 
@@ -420,32 +405,19 @@
             border: 2px solid #4A90E2;
             border-radius: 10px;
             color: #fff;
-            font-size: 16px;
-            font-family: 'Segoe UI', monospace;
-        }
-
-        .feedback-content textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .feedback-content input:focus,
-        .feedback-content textarea:focus {
-            outline: none;
-            border-color: #FF8C00;
         }
 
         .feedback-content button {
             background: #4A90E2;
-            color: #fff;
             border: none;
             border-radius: 10px;
-            padding: 12px 20px;
+            padding: 12px;
             font-size: 18px;
             cursor: pointer;
             width: 100%;
             transition: 0.3s;
             margin-bottom: 15px;
+            color: #fff;
         }
 
         .feedback-content button:hover {
@@ -474,7 +446,7 @@
             transform: rotate(90deg);
         }
 
-        /* ===== СТИЛИ МАГАЗИНА ===== */
+        /* Стили магазина (встроенного) */
         .shop {
             display: none;
             width: 100%;
@@ -485,7 +457,6 @@
             font-size: 36px;
             color: #FF8C00;
             margin-bottom: 30px;
-            font-weight: 300;
             text-align: center;
         }
 
@@ -509,15 +480,13 @@
 
         .shop-item:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.3);
             border-color: #FF8C00;
         }
 
         .item-name {
             font-size: 20px;
-            color: #fff;
-            margin-bottom: 10px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
 
         .item-price {
@@ -526,7 +495,6 @@
             margin: 15px 0;
         }
 
-        /* Модальное окно деталей товара */
         .item-details-modal {
             position: fixed;
             top: 0;
@@ -551,14 +519,12 @@
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
-            color: #fff;
             text-align: center;
         }
 
         .item-details-content h2 {
             color: #FF8C00;
             margin-bottom: 20px;
-            font-size: 32px;
         }
 
         .item-details-image {
@@ -577,8 +543,6 @@
         }
 
         .item-details-description {
-            font-size: 18px;
-            line-height: 1.6;
             margin: 20px 0;
             color: #ccc;
         }
@@ -599,7 +563,6 @@
             color: #fff;
             cursor: pointer;
             transition: 0.3s;
-            margin: 20px 0;
         }
 
         .item-details-buy-btn:hover {
@@ -611,20 +574,17 @@
             position: absolute;
             top: 15px;
             right: 20px;
-            color: #FF8C00;
             font-size: 35px;
-            font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
-            line-height: 1;
+            color: #FF8C00;
         }
 
         .close-item-details:hover {
-            color: #4A90E2;
             transform: rotate(90deg);
+            color: #4A90E2;
         }
 
-        /* Lightbox для товаров */
         .shop-lightbox {
             display: none;
             position: fixed;
@@ -633,7 +593,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.9);
             backdrop-filter: blur(10px);
             justify-content: center;
             align-items: center;
@@ -644,7 +604,6 @@
             max-height: 90%;
             border: 3px solid #FF8C00;
             border-radius: 10px;
-            box-shadow: 0 0 40px rgba(255,140,0,0.5);
         }
 
         .shop-lightbox-close {
@@ -653,17 +612,9 @@
             right: 35px;
             color: #FF8C00;
             font-size: 40px;
-            font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
         }
 
-        .shop-lightbox-close:hover {
-            color: #4A90E2;
-            transform: rotate(90deg);
-        }
-
-        /* КНОПКА ПРОФИЛЯ */
         .profile-button {
             position: absolute;
             top: 20px;
@@ -674,7 +625,6 @@
             overflow: hidden;
             cursor: pointer;
             border: 3px solid #4A90E2;
-            box-shadow: 0 0 20px rgba(74, 144, 226, 0.5);
             transition: 0.3s;
             z-index: 250;
             background: rgba(0, 0, 0, 0.3);
@@ -688,11 +638,9 @@
 
         .profile-button:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
             border-color: #FF8C00;
         }
 
-        /* МОДАЛЬНОЕ ОКНО ПРОФИЛЯ */
         .profile-modal {
             position: fixed;
             top: 0;
@@ -716,7 +664,6 @@
             max-width: 500px;
             width: 90%;
             position: relative;
-            color: #fff;
         }
 
         .profile-content h2 {
@@ -731,7 +678,6 @@
 
         .profile-form-group label {
             display: block;
-            color: #ccc;
             margin-bottom: 8px;
             font-size: 14px;
         }
@@ -743,12 +689,6 @@
             border: 2px solid #4A90E2;
             border-radius: 10px;
             color: #fff;
-            font-size: 16px;
-        }
-
-        .profile-form-group input:focus {
-            outline: none;
-            border-color: #FF8C00;
         }
 
         .profile-save-btn {
@@ -757,9 +697,9 @@
             background: #4A90E2;
             border: none;
             border-radius: 10px;
-            color: white;
             font-size: 18px;
             font-weight: bold;
+            color: #fff;
             cursor: pointer;
             transition: 0.3s;
             margin-top: 20px;
@@ -775,18 +715,9 @@
             right: 20px;
             color: #FF8C00;
             font-size: 35px;
-            font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
-            line-height: 1;
         }
 
-        .close-profile:hover {
-            color: #4A90E2;
-            transform: rotate(90deg);
-        }
-
-        /* Стили подвала */
         .site-footer {
             width: 100%;
             margin-top: 60px;
@@ -794,9 +725,7 @@
             border-top: 2px solid #4A90E2;
             background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
-            font-family: 'Courier New', monospace;
             font-size: 14px;
-            color: #ccc;
         }
 
         .footer-content {
@@ -829,10 +758,8 @@
 
         .footer-link:hover {
             color: #FF8C00;
-            border-bottom-color: #FF8C00;
         }
 
-        /* ===== КОНТЕЙНЕР КАК В ABOUT ===== */
         .quartz-wall {
             background-image: url(https://i.pinimg.com/originals/04/9c/42/049c428069d74da7d513c2f95b0df588.jpg);
             background-repeat: repeat;
@@ -847,7 +774,7 @@
             border-radius: 4px;
         }
 
-        /* ===== ЧЕРДАК ===== */
+        /* ЧЕРДАК */
         .attic {
             position: relative;
             width: 100%;
@@ -871,7 +798,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Стили для контейнера APEX */
         .attic-content {
             position: relative;
             z-index: 2;
@@ -893,9 +819,7 @@
             font-weight: bold;
             padding: 8px 20px;
             cursor: pointer;
-            transition: color 0.3s, text-shadow 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            transition: color 0.3s;
             display: none;
             position: relative;
             top: 30px;
@@ -904,10 +828,8 @@
 
         .attic-logout-btn:hover {
             color: #FF8C00;
-            text-shadow: 0 0 5px #FF8C00;
         }
 
-        /* ===== СТИЛИ ДЛЯ КНОПОК ЛИЧНОГО КАБИНЕТА ===== */
         .dashboard {
             display: none;
             width: 100%;
@@ -918,11 +840,10 @@
 
         .info-text {
             font-size: 20px;
-            color: #CCCCCC;
+            color: #ccc;
             margin: 20px 0;
             text-transform: uppercase;
             letter-spacing: 2px;
-            text-shadow: 0 0 10px #F9F9F9;
         }
 
         .dashboard-buttons {
@@ -933,9 +854,7 @@
             margin-top: 20px;
         }
 
-        .dash-btn,
-        .dash-btn:link,
-        .dash-btn:visited {
+        .dash-btn {
             padding: 35px 40px !important;
             font-size: 22px !important;
             min-width: 250px !important;
@@ -947,11 +866,8 @@
             cursor: pointer !important;
             transition: 0.3s !important;
             text-align: center !important;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
             text-decoration: none !important;
+            display: inline-block !important;
         }
 
         .dash-btn:hover {
@@ -961,7 +877,6 @@
             border-color: #FF8C00 !important;
         }
 
-        /* Карусель */
         .carousel-container {
             width: 350px;
             height: 120px;
@@ -969,9 +884,8 @@
             position: relative;
             cursor: pointer;
             border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
             background-color: #222;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s;
         }
         .carousel-container:hover {
             transform: scale(1.05);
@@ -982,14 +896,12 @@
             height: 100%;
             transition: transform 0.5s ease;
         }
-
         .carousel-slide img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             flex-shrink: 0;
         }
-
         .carousel-indicators {
             position: absolute;
             bottom: 5px;
@@ -999,54 +911,148 @@
             justify-content: center;
             gap: 8px;
         }
-
         .carousel-indicators span {
             width: 8px;
             height: 8px;
-            background-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.5);
             border-radius: 50%;
             cursor: pointer;
         }
-
         .carousel-indicators span.active {
-            background-color: #FF8C00;
-            box-shadow: 0 0 5px #FF8C00;
+            background: #FF8C00;
+        }
+
+        /* ===== ВСПЛЫВАЮЩИЕ СООБЩЕНИЯ (справа) ===== */
+        .float-message {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            border: 2px solid #FF8C00;
+            border-radius: 40px;
+            padding: 10px 20px;
+            font-family: 'Segoe UI', monospace;
+            font-size: 18px;
+            color: #FF8C00;
+            white-space: nowrap;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatUpSlow 4s forwards;
+        }
+
+        @keyframes floatUpSlow {
+            0% {
+                bottom: 80px;
+                opacity: 1;
+            }
+            100% {
+                bottom: calc(100% - 30px);
+                opacity: 0;
+            }
+        }
+
+        /* ===== ВЫДВИЖНОЙ ЯЩИК ===== */
+        .drawer {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            z-index: 1000;
+            pointer-events: auto; /* разрешаем взаимодействие */
+        }
+        /* Ручка (почти незаметная) */
+        .drawer-handle {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 80px;
+            background: rgba(100, 100, 120, 0.25);
+            border-radius: 0 8px 8px 0;
+            cursor: ew-resize;
+            pointer-events: auto;
+            transition: background 0.2s;
+            box-shadow: 0 0 2px rgba(0,0,0,0.2);
+            z-index: 1002;
+        }
+        .drawer-handle:hover {
+            background: rgba(100, 100, 120, 0.5);
+        }
+        /* Выдвижная часть */
+        .drawer-content {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) translateX(-100%);
+            width: 260px;
+            background: rgba(30, 25, 20, 0.95);
+            backdrop-filter: blur(8px);
+            border: 2px solid #4A90E2;
+            border-left: none;
+            border-radius: 0 20px 20px 0;
+            padding: 20px;
+            transition: transform 0.3s ease-out;
+            pointer-events: auto;
+            box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+            color: #FF8C00;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            text-align: center;
+            z-index: 1001;
+        }
+        /* Бумажка внутри */
+        .drawer-paper {
+            background: #fef7e0;
+            padding: 20px;
+            border-radius: 12px;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 24px;
+            font-family: monospace;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2);
+            transform: rotate(-2deg);
+        }
+        /* Открытое состояние */
+        .drawer.open .drawer-content {
+            transform: translateY(-50%) translateX(0);
+        }
+        .drawer.open .drawer-handle {
+            left: 260px;
+            background: rgba(255, 140, 0, 0.6);
+        }
+        /* когда ящик закрыт – контент не перехватывает клики */
+        .drawer:not(.open) .drawer-content {
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <!-- ЧЕРДАК -->
     <div class="attic">
-        <div class="attic-content">
-            APEX
-        </div>
-
-        <!-- Центральная часть: карусель -->
+        <div class="attic-content">APEX</div>
         <div class="carousel-container" id="carouselContainer">
             <div class="carousel-slide" id="carouselSlide">
-                <img src="file:///C:/Users/User/Desktop/Новая%20папка%20(11)/реклама.png" alt="Реклама 1">
-                <img src="file:///C:/Users/User/Desktop/Новая%20папка%20(11)/реклама1.png" alt="Реклама 2">
-                <img src="file:///C:/Users/User/Desktop/Новая%20папка%20(11)/реклама2.png" alt="Реклама 3">
-                <img src="file:///C:/Users/User/Desktop/Новая%20папка%20(11)/реклама3.png" alt="Реклама 4">
+                <img src="реклама.png" alt="Реклама 1">
+                <img src="реклама1.png" alt="Реклама 2">
+                <img src="реклама2.png" alt="Реклама 3">
+                <img src="реклама3.png" alt="Реклама 4">
             </div>
             <div class="carousel-indicators" id="carouselIndicators"></div>
         </div>
-
         <button class="attic-logout-btn" id="atticLogoutBtn" onclick="logout()" style="display: none;">ВЫЙТИ</button>
     </div>
 
-    <!-- Lightbox для увеличения фото товара -->
     <div class="shop-lightbox" id="shopLightbox">
         <span class="shop-lightbox-close" onclick="closeShopLightbox()">&times;</span>
         <img class="shop-lightbox-content" id="shopLightboxImg">
     </div>
-
     <div class="overlay"></div>
-
     <div class="bottom-left-container">
         <div class="feedback-button" onclick="openFeedbackModal()">?</div>
     </div>
-
     <div class="test-cube-container" onclick="cubeClick()">
         <div class="test-cube" id="test-cube">
             <div class="cube-face front"></div>
@@ -1071,7 +1077,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ДЕТАЛЕЙ ТОВАРА -->
     <div class="item-details-modal" id="itemDetailsModal">
         <div class="item-details-content">
             <span class="close-item-details" onclick="closeItemDetails()">&times;</span>
@@ -1088,30 +1093,23 @@
             <div class="logo">
                 A<span>S</span>L<span class="logo-tagline">-Если это можно вообразить, это можно создать!</span>
             </div>
-
-            <!-- КРАСНАЯ КНОПКА С ДЕКОРАТИВНЫМ СЧЁТЧИКОМ -->
             <div class="red-button-container">
                 <div class="red-smiley-button" id="redSmiley" onclick="redButtonClick()"></div>
                 <div class="decorative-counter" id="decorativeCounter">
                     <span class="counter-value" id="decorativeCount">0</span>
                 </div>
             </div>
-
             <div class="buttons" id="main-buttons">
-                <a href="file:///C:/Users/User/Desktop/Новая%20папка%20(11)/reg%20(4).html" class="btn btn-blue">ЗАРЕГИСТРИРОВАТЬСЯ</a>
+                <a href="reg%20.html" class="btn btn-blue">ЗАРЕГИСТРИРОВАТЬСЯ</a>
                 <a href="about.html" class="btn btn-light">О ASL</a>
             </div>
-
-            <!-- ЛИЧНЫЙ КАБИНЕТ -->
             <div class="dashboard" id="dashboard">
                 <div class="info-text">ЗА КАЖДОЕ НАЖАТИЕ МЫ БУДЕМ СБРАСЫВАТЬ ОДИН КУБ НА ТЕСТИРОВЩИКА</div>
                 <div class="dashboard-buttons">
-                    <a href="file:///C:/Users/User/Desktop/Новая%20папка%20(11)/shop.html" class="dash-btn">🛒 МАГАЗИН</a>
+                    <a href="shop.html" class="dash-btn">🛒 МАГАЗИН</a>
                     <a href="about.html" class="dash-btn">ℹ️ О ASL</a>
                 </div>
             </div>
-
-            <!-- МАГАЗИН (список товаров) -->
             <div class="shop" id="shop">
                 <div class="shop-title">🛒 МАГАЗИН ASL</div>
                 <div class="shop-items" id="shopItemsGrid"></div>
@@ -1120,7 +1118,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ ПРОФИЛЯ -->
     <div class="profile-modal" id="profileModal">
         <div class="profile-content">
             <span class="close-profile" onclick="closeProfileModal()">&times;</span>
@@ -1147,7 +1144,6 @@
         </div>
     </div>
 
-    <!-- ПОДВАЛ -->
     <footer class="site-footer">
         <div class="footer-content">
             <span class="footer-info">ASL • отдел TToS • версия 2.0</span>
@@ -1156,65 +1152,34 @@
         </div>
     </footer>
 
-    <!-- КНОПКА ПРОФИЛЯ -->
     <div class="profile-button" id="profileButton" onclick="openProfileModal()" style="display: none;">
         <img src="https://i.pinimg.com/originals/58/05/34/580534a241f377ea13478ef988376294.jpg" alt="Profile">
     </div>
 
+    <div class="drawer" id="drawer">
+        <div class="drawer-handle" id="drawerHandle"></div>
+        <div class="drawer-content">
+            <div class="drawer-paper">
+                📜 32048-239
+            </div>
+        </div>
+    </div>
+
     <script>
-        // ===== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ =====
         let cubeCount; // не используется, но оставлено
         let currentUser = null;
-        let clickCount = 0;
         let decorativeCount = 0;
 
         // Массив товаров
         const shopItems = [
-            {
-                id: 'radio',
-                name: 'Радио-тостерная тарелка',
-                description: 'Эта тарелка не только разогревает еду, но и ловит сигналы из других измерений. Идеально для экспериментов с пространством.',
-                price: 1337,
-                image: 'photo/1.png'
-            },
-            {
-                id: 'car',
-                name: 'Машина на ядерном реакторе',
-                description: 'Компактный автомобиль, работающий на урановых стержнях. Разгон до 100 км/ч за 2 секунды. Радиация в комплекте.',
-                price: 5000,
-                image: 'photo/2.png'
-            },
-            {
-                id: 'microwave',
-                name: 'Микроволновка с реактивным двигателем',
-                description: 'Разогревает пищу за 0.5 секунды. Также может служить ранцевым ускорителем. Осторожно: не используйте внутри помещений.',
-                price: 9999,
-                image: 'photo/3.png'
-            },
-            {
-                id: 'fridge',
-                name: 'Холодильник ГЛУКа',
-                description: 'Хранит продукты вечно. Иногда разговаривает. Любит тёмные углы.',
-                price: 2500,
-                image: 'photo/4.png'
-            },
-            {
-                id: 'kettle',
-                name: 'Квантовый чайник',
-                description: 'Находится во всех комнатах одновременно. Наливает чай, даже если вы его не включали.',
-                price: 777,
-                image: 'photo/5.png'
-            },
-            {
-                id: 'portal',
-                name: 'Портал в другой мир',
-                description: 'Создаёт временной портал в случайную реальность. Вход бесплатный, выход не гарантирован.',
-                price: 1000000,
-                image: 'photo/6.png'
-            }
+            { id: 'radio', name: 'Радио-тостерная тарелка', description: 'Эта тарелка не только разогревает еду, но и ловит сигналы из других измерений.', price: 1337, image: 'photo/1.png' },
+            { id: 'car', name: 'Машина на ядерном реакторе', description: 'Компактный автомобиль, работающий на урановых стержнях.', price: 5000, image: 'photo/2.png' },
+            { id: 'microwave', name: 'Микроволновка с реактивным двигателем', description: 'Разогревает пищу за 0.5 секунды.', price: 9999, image: 'photo/3.png' },
+            { id: 'fridge', name: 'Холодильник ГЛУКа', description: 'Хранит продукты вечно. Иногда разговаривает.', price: 2500, image: 'photo/4.png' },
+            { id: 'kettle', name: 'Квантовый чайник', description: 'Находится во всех комнатах одновременно.', price: 777, image: 'photo/5.png' },
+            { id: 'portal', name: 'Портал в другой мир', description: 'Создаёт временной портал в случайную реальность.', price: 1000000, image: 'photo/6.png' }
         ];
 
-        // Функции для увеличения фото
         function openShopLightbox(src) {
             document.getElementById('shopLightboxImg').src = src;
             document.getElementById('shopLightbox').style.display = 'flex';
@@ -1224,37 +1189,52 @@
             document.getElementById('shopLightbox').style.display = 'none';
         }
 
-        // Анимация куба
+        // Анимация куба (непрерывное вращение)
         setInterval(() => {
             const cube = document.getElementById('test-cube');
             cube.style.transform = `rotateX(${Date.now() / 50 % 360}deg) rotateY(${Date.now() / 100 % 360}deg)`;
         }, 50);
 
+        // Функция клика по кубу – сообщения с вероятностью 10% (можно изменить)
         function cubeClick() {
-            clickCount++;
-            
-            if (clickCount % 50 === 0) {
-                const phrases = [
-                    "глюк: Эй, полегче с кубом!",
-                    "глюк: Ты чего такой агрессивный?",
-                    "глюк: Куб не игрушка!",
-                    "глюк: Осторожно, куб может обидеться!",
-                    "глюк: 50 нажатий! Ты в ударе!",
-                    "глюк: Кубу нужен перерыв...",
-                    "глюк: Не ломай куб, он нам нужен!",
-                    "глюк: Ты пытаешься вызвать глюк?",
-                    "глюк: Ещё чуть-чуть и куб засветится!",
-                    "глюк: Зачем ты это делаешь?",
-                    "глюк: Куб начинает светиться!",
-                    "глюк: Осторожно, куб может взорваться!",
-                    "глюк: Ты кликаешь быстрее чем я думаю!",
-                    "глюк: Поздравляю с 50-м нажатием!",
-                    "глюк: Ты получил достижение 'Кликер'!"
-                ];
-                const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-                alert(randomPhrase);
+            // 10% шанс показать сообщение (измените 0.1 на нужное)
+            if (Math.random() > 0.1) {
+                // всё равно выполняем анимацию куба
+                const cube = document.getElementById('test-cube');
+                cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
+                setTimeout(() => { cube.style.transform = ''; }, 200);
+                return;
             }
-            
+
+            const phrases = [
+                "😊", "😂", "😎", "🤔", "😱", "🤯", "🥳", "😈", "👾", "🤖",
+                "глюк: Эй, полегче с кубом!",
+                "глюк: Ты чего такой агрессивный?",
+                "глюк: Куб не игрушка!",
+                "глюк: Осторожно, куб может обидеться!",
+                "глюк: Кубу нужен перерыв...",
+                "глюк: Не ломай куб, он нам нужен!",
+                "глюк: Ты пытаешься вызвать глюк?",
+                "глюк: Ещё чуть-чуть и куб засветится!",
+                "глюк: Зачем ты это делаешь?",
+                "глюк: Куб начинает светиться!",
+                "глюк: Осторожно, куб может взорваться!",
+                "глюк: Ты кликаешь быстрее чем я думаю!",
+                "глюк: Поздравляю с нажатием!",
+                "глюк: Ты получил достижение 'Кликер'!"
+            ];
+            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+
+            const msg = document.createElement('div');
+            msg.textContent = randomPhrase;
+            msg.className = 'float-message';
+            // Небольшой разброс по высоте, чтобы сообщения не накладывались
+            const randomBottom = 80 + Math.random() * 40;
+            msg.style.bottom = randomBottom + 'px';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 4000); // удаляем после анимации
+
+            // Эффект нажатия на куб
             const cube = document.getElementById('test-cube');
             cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
             setTimeout(() => {
@@ -1282,41 +1262,28 @@
             const grid = document.getElementById('shopItemsGrid');
             grid.innerHTML = '';
             shopItems.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'shop-item';
-                itemDiv.setAttribute('data-id', item.id);
-                itemDiv.innerHTML = `
-                    <div class="item-name">${item.name}</div>
-                    <div class="item-price">${item.price} кубов</div>
-                `;
-                itemDiv.addEventListener('click', () => openItemDetails(item.id));
-                grid.appendChild(itemDiv);
+                const div = document.createElement('div');
+                div.className = 'shop-item';
+                div.innerHTML = `<div class="item-name">${item.name}</div><div class="item-price">${item.price} кубов</div>`;
+                div.onclick = () => openItemDetails(item.id);
+                grid.appendChild(div);
             });
         }
 
         function openItemDetails(itemId) {
             const item = shopItems.find(i => i.id === itemId);
             if (!item) return;
-
-            document.getElementById('detailsTitle').textContent = item.name;
-            document.getElementById('detailsDescription').textContent = item.description;
-            document.getElementById('detailsPrice').textContent = item.price + ' кубов';
-
-            const imageContainer = document.getElementById('detailsImage');
+            document.getElementById('detailsTitle').innerText = item.name;
+            document.getElementById('detailsDescription').innerText = item.description;
+            document.getElementById('detailsPrice').innerText = item.price + ' кубов';
+            const imgContainer = document.getElementById('detailsImage');
             const img = document.createElement('img');
             img.src = item.image;
-            img.alt = item.name;
-            img.style.cursor = 'pointer';
             img.onclick = () => openShopLightbox(item.image);
-            img.onerror = () => img.src = 'placeholder.png';
-            imageContainer.innerHTML = '';
-            imageContainer.appendChild(img);
-
-            const buyBtn = document.getElementById('detailsBuyBtn');
-            buyBtn.replaceWith(buyBtn.cloneNode(true));
-            const newBuyBtn = document.getElementById('detailsBuyBtn');
-            newBuyBtn.addEventListener('click', () => buyItemFromDetails(item.id));
-
+            imgContainer.innerHTML = '';
+            imgContainer.appendChild(img);
+            const btn = document.getElementById('detailsBuyBtn');
+            btn.onclick = () => buyItemFromDetails(item.id);
             document.getElementById('itemDetailsModal').style.display = 'flex';
         }
 
@@ -1358,18 +1325,14 @@
         window.onclick = function(event) {
             const feedback = document.getElementById('feedbackModal');
             if (event.target == feedback) feedback.style.display = 'none';
-            
             const details = document.getElementById('itemDetailsModal');
             if (event.target == details) details.style.display = 'none';
-
-            const shopLightbox = document.getElementById('shopLightbox');
-            if (event.target == shopLightbox) shopLightbox.style.display = 'none';
-
+            const lightbox = document.getElementById('shopLightbox');
+            if (event.target == lightbox) lightbox.style.display = 'none';
             const profile = document.getElementById('profileModal');
             if (event.target == profile) profile.style.display = 'none';
         };
 
-        // Проверка сохраненной сессии
         const savedUser = localStorage.getItem('asl_user');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
@@ -1405,54 +1368,30 @@
             const newName = document.getElementById('profileName').value.trim();
             const newNickname = document.getElementById('profileNickname').value.trim();
             const newPassword = document.getElementById('profilePassword').value.trim();
-
             if (!newSurname || !newName || !newNickname) {
                 alert('Фамилия, имя и никнейм обязательны!');
                 return;
             }
-
             currentUser.surname = newSurname;
             currentUser.name = newName;
             currentUser.nickname = newNickname;
-            
-            if (newPassword) {
-                currentUser.password = newPassword;
-            }
-
+            if (newPassword) currentUser.password = newPassword;
             localStorage.setItem('asl_user', JSON.stringify(currentUser));
-
             alert('Данные успешно обновлены!');
             closeProfileModal();
         }
-
-        // ===== ДОПОЛНИТЕЛЬНАЯ ГАРАНТИЯ ПРАВИЛЬНОГО ОТОБРАЖЕНИЯ =====
-        (function ensureDisplay() {
-            const saved = localStorage.getItem('asl_user');
-            const main = document.getElementById('main-buttons');
-            const dash = document.getElementById('dashboard');
-            if (saved) {
-                if (main) main.style.display = 'none';
-                if (dash) dash.style.display = 'block';
-            } else {
-                if (main) main.style.display = 'flex';
-                if (dash) dash.style.display = 'none';
-            }
-        })();
 
         // Карусель
         const carouselSlide = document.getElementById('carouselSlide');
         const carouselContainer = document.getElementById('carouselContainer');
         const slides = document.querySelectorAll('.carousel-slide img');
         const indicatorsContainer = document.getElementById('carouselIndicators');
-
         let currentIndex = 0;
         const slideCount = slides.length;
         let autoInterval;
 
-        // Создаём индикаторы
         for (let i = 0; i < slideCount; i++) {
             const dot = document.createElement('span');
-            dot.classList.add('carousel-dot');
             if (i === 0) dot.classList.add('active');
             dot.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1462,57 +1401,82 @@
             indicatorsContainer.appendChild(dot);
         }
 
-        const dots = document.querySelectorAll('.carousel-dot');
-
+        const dots = document.querySelectorAll('.carousel-indicators span');
         function goToSlide(index) {
             if (index < 0) index = slideCount - 1;
             if (index >= slideCount) index = 0;
             currentIndex = index;
-            const translateX = -currentIndex * 100;
-            carouselSlide.style.transform = `translateX(${translateX}%)`;
-            
+            carouselSlide.style.transform = `translateX(${-currentIndex * 100}%)`;
             dots.forEach((dot, i) => {
                 if (i === currentIndex) dot.classList.add('active');
                 else dot.classList.remove('active');
             });
         }
 
-        function nextSlide() {
-            goToSlide(currentIndex + 1);
-        }
+        function nextSlide() { goToSlide(currentIndex + 1); }
+        function startAutoSlide() { autoInterval = setInterval(nextSlide, 3000); }
+        function stopAutoSlide() { if (autoInterval) clearInterval(autoInterval); }
+        function resetAutoSlide() { stopAutoSlide(); startAutoSlide(); }
 
-        function startAutoSlide() {
-            autoInterval = setInterval(nextSlide, 3000);
-        }
-
-        function stopAutoSlide() {
-            if (autoInterval) clearInterval(autoInterval);
-        }
-
-        function resetAutoSlide() {
-            stopAutoSlide();
-            startAutoSlide();
-        }
-
-        carouselContainer.addEventListener('click', () => {
-            alert('Недостаточно средств');
-        });
-
+        carouselContainer.addEventListener('click', () => alert('Недостаточно средств'));
         startAutoSlide();
         carouselContainer.addEventListener('mouseenter', stopAutoSlide);
         carouselContainer.addEventListener('mouseleave', startAutoSlide);
 
-        // Анимация плавающего градиента для чердака
+        // Анимация плавающего градиента чердака
         let angle = 0;
         function animateGradient() {
             angle = (angle + 0.1) % 360;
             const attic = document.querySelector('.attic');
-            if (attic) {
-                attic.style.background = `linear-gradient(${angle}deg, #2c3e50, #4a5b6e, #2c3e50)`;
-            }
+            if (attic) attic.style.background = `linear-gradient(${angle}deg, #2c3e50, #4a5b6e, #2c3e50)`;
             requestAnimationFrame(animateGradient);
         }
         animateGradient();
+
+        // ===== ЯЩИК =====
+        (function() {
+            const drawer = document.getElementById('drawer');
+            const handle = document.getElementById('drawerHandle');
+            let isDragging = false;
+            let startX = 0;
+            let currentTranslate = 0;
+            const maxTranslate = 260;
+
+            function onMouseMove(e) {
+                if (!isDragging) return;
+                let delta = e.clientX - startX;
+                let newTranslate = currentTranslate + delta;
+                newTranslate = Math.max(0, Math.min(maxTranslate, newTranslate));
+                drawer.classList.toggle('open', newTranslate >= maxTranslate / 2);
+            }
+
+            function onMouseUp() {
+                if (!isDragging) return;
+                isDragging = false;
+                if (!drawer.classList.contains('open')) {
+                    drawer.classList.remove('open');
+                }
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+
+            function onMouseDown(e) {
+                e.preventDefault();
+                isDragging = true;
+                startX = e.clientX;
+                currentTranslate = drawer.classList.contains('open') ? maxTranslate : 0;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
+
+            handle.addEventListener('mousedown', onMouseDown);
+
+            document.addEventListener('click', function(e) {
+                if (drawer.classList.contains('open') && !drawer.contains(e.target)) {
+                    drawer.classList.remove('open');
+                }
+            });
+        })();
     </script>
 </body>
 </html>
