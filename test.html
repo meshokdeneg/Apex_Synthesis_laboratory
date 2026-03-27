@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL | Тест: Преданность ASL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg') repeat;
+            background-size: 64px 64px;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .test-container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            border: 2px solid #FF8C00;
+        }
+
+        .header {
+            background: #1a2a2f;
+            padding: 25px 30px;
+            text-align: center;
+            border-bottom: 3px solid #FF8C00;
+        }
+
+        .header h1 {
+            color: #FF8C00;
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #1a2a2f;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .option:hover {
+            background: #e0e0e0;
+        }
+
+        .option input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .option label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+            position: relative;
+            min-height: 80px;
+        }
+
+        .normal-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+
+        .normal-btn:hover {
+            background: #219a52;
+            transform: scale(1.02);
+        }
+
+        .escape-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.05s linear;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .escape-btn:hover {
+            background: #c0392b;
+        }
+
+        .next-btn {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        .next-btn:hover {
+            background: #357abd;
+        }
+
+        .progress {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+            background: #f0f0f0;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            width: auto;
+            float: right;
+        }
+
+        .result {
+            text-align: center;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result h3 {
+            color: #FF8C00;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer a {
+            color: #FF8C00;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="test-container">
+    <div class="header">
+        <h1>⚛️ ТЕСТ: ПРЕДАННОСТЬ ASL</h1>
+        <p>10 вопросов. С каждым разом сложнее. Вы готовы?</p>
+    </div>
+
+    <div class="content">
+        <div class="clearfix">
+            <div class="progress" id="progress">Вопрос 1 из 10</div>
+        </div>
+
+        <div id="questionContainer"></div>
+        <div id="resultContainer" class="result"></div>
+    </div>
+
+    <div class="footer">
+        <a href="index.html">← На главную</a> | <a href="about.html">О ASL</a>
+    </div>
+</div>
+
+<script>
+    // ========== ВОПРОСЫ (от простого к сложному) ==========
+    const questions = [
+        {
+            text: "Что для вас ASL?",
+            options: ["Обычная лаборатория", "Будущее!", "Игровой проект", "Ничего"],
+            correct: 1,
+            hint: "Мы строим будущее"
+        },
+        {
+            text: "Кто такой ГЛюК?",
+            options: ["Главный Лаборант", "Главный Компьютер", "Главный Кубик", "Главный Инженер"],
+            correct: 1,
+            hint: "GLUK — Главный Лабораторный Управляющий Компьютер"
+        },
+        {
+            text: "Кто такой meshokdeneg?",
+            options: ["Сингулярный админ", "Старший инженер", "Главный тестировщик", "Операционный узел"],
+            correct: 0,
+            hint: "Сингулярный Админ — создатель ASL"
+        },
+        {
+            text: "Какой принцип мы используем в тестах?",
+            options: ["Принцип Куба", "Принцип Чайника", "Принцип Синтеза", "Принцип Глюка"],
+            correct: 1,
+            hint: "Использовать предметы не по инструкции"
+        },
+        {
+            text: "На какую корпорацию мы любим делать отсылки?",
+            options: ["Black Mesa", "Aperture Science", "Umbrella Corporation", "Weyland-Yutani"],
+            correct: 1,
+            hint: "Portal 2 — наш главный вдохновитель"
+        },
+        {
+            text: "Какой отдел отвечает за создание тестов?",
+            options: ["CHRONOS", "AETHERA", "PRIMORDIA", "The Time of Science (TToS)"],
+            correct: 3,
+            hint: "Отдел, который строит тесты и эксперименты"
+        },
+        {
+            text: "Когда вышла первая карта ASL?",
+            options: ["18 ноября 2024", "1 января 2025", "15 марта 2024", "20 декабря 2025"],
+            correct: 0,
+            hint: "День рождения проекта"
+        },
+        {
+            text: "Что такое 'Принцип Чайника' на практике?",
+            options: [
+                "Кипятить воду для чая",
+                "Использовать чайник как молоток",
+                "Применять предметы способом, не предусмотренным инструкцией",
+                "Чайник должен быть всегда горячим"
+            ],
+            correct: 2,
+            hint: "Не ищи правильный путь. Ищи неправильный, который работает."
+        },
+        {
+            text: "Что произошло во время 'Синтеза'?",
+            options: [
+                "Создали новый чайник",
+                "Коллапс и пересборка правил реальности",
+                "Запустили первый сервер",
+                "Изобрели куб"
+            ],
+            correct: 1,
+            hint: "Событие, с которого всё началось"
+        },
+        {
+            text: "Нравится ли вам ASL?",
+            options: ["ДА!", "НЕТ"],
+            correct: 0,
+            isSpecial: true,
+            hint: "Правильный ответ только один..."
+        }
+    ];
+
+    let currentQuestion = 0;
+    let answers = new Array(questions.length).fill(null);
+    let escapeActive = false;
+    let escapeBtn = null;
+    let escapeContainer = null;
+    let escapeInterval = null;
+
+    const questionContainer = document.getElementById('questionContainer');
+    const resultContainer = document.getElementById('resultContainer');
+    const progressSpan = document.getElementById('progress');
+
+    // Функция для убегающей кнопки (последний вопрос)
+    function setupEscapeButton() {
+        const btnGroup = document.querySelector('.btn-group');
+        if (!btnGroup) return;
+
+        const yesBtn = btnGroup.querySelector('.normal-btn');
+        const noBtn = btnGroup.querySelector('.escape-btn');
+
+        if (!noBtn || !yesBtn) return;
+
+        escapeActive = true;
+        let moveTimeout = null;
+
+        function moveButton() {
+            if (!escapeActive) return;
+            const container = btnGroup.parentElement;
+            const btnGroupRect = btnGroup.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            // Ограничиваем перемещение внутри контейнера
+            const maxX = Math.max(0, btnGroupRect.width - noBtn.offsetWidth - 20);
+            const maxY = Math.max(0, btnGroupRect.height - noBtn.offsetHeight - 20);
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            noBtn.style.position = 'relative';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+        }
+
+        noBtn.addEventListener('mouseenter', function() {
+            if (escapeActive) {
+                moveButton();
+            }
+        });
+
+        yesBtn.addEventListener('click', function() {
+            if (escapeActive) {
+                escapeActive = false;
+                answers[currentQuestion] = 0;
+                nextQuestion();
+            }
+        });
+
+        noBtn.addEventListener('click', function(e) {
+            if (escapeActive) {
+                e.preventDefault();
+                alert('Вы не можете выбрать "НЕТ"! 😈 Только "ДА" ведёт вперёд.');
+                return false;
+            }
+        });
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQuestion];
+        progressSpan.textContent = `Вопрос ${currentQuestion + 1} из ${questions.length}`;
+
+        if (q.isSpecial) {
+            // Последний вопрос с убегающей кнопкой
+            questionContainer.innerHTML = `
+                <div class="question">
+                    <div class="question-text">${q.text}</div>
+                    <div class="options" style="display: none;"></div>
+                    <div class="btn-group" style="min-height: 100px;">
+                        <button class="normal-btn" style="padding: 15px 40px; font-size: 20px;">✅ ДА!</button>
+                        <button class="escape-btn" style="padding: 15px 40px; font-size: 20px;">❌ НЕТ</button>
+                    </div>
+                    <p style="margin-top: 20px; font-size: 14px; color: #e74c3c; text-align: center;">
+                        ⚠️ Кнопка "НЕТ" убегает от курсора... попробуй её поймать 😈
+                    </p>
+                </div>
+            `;
+
+            setTimeout(() => {
+                setupEscapeButton();
+            }, 50);
+        } else {
+            // Обычные вопросы
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                const isChecked = answers[currentQuestion] === idx;
+                optionsHtml += `
+                    <div class="option" onclick="selectOption(${idx})">
+                        <input type="radio" name="question" value="${idx}" ${isChecked ? 'checked' : ''}>
+                        <label>${opt}</label>
+                    </div>
+                `;
+            });
+
+            questionContainer.innerHTML = `
+                <div class="question">
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+                        ${optionsHtml}
+                    </div>
+                    <button class="next-btn" id="nextBtn">ДАЛЕЕ →</button>
+                </div>
+            `;
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.addEventListener('click', () => {
+                const selected = document.querySelector('input[name="question"]:checked');
+                if (selected) {
+                    answers[currentQuestion] = parseInt(selected.value);
+                    nextQuestion();
+                } else {
+                    alert('Выберите ответ!');
+                }
+            });
+        }
+    }
+
+    function nextQuestion() {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            renderQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        let score = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (answers[i] === questions[i].correct) {
+                score++;
+            }
+        }
+
+        let message = '';
+        let rank = '';
+        let color = '#FF8C00';
+
+        if (score === 10) {
+            rank = 'СИНГУЛЯРНЫЙ АДМИН';
+            message = 'Ты — часть ASL. Глюк одобряет. Синтез завершён.';
+            color = '#FFD700';
+        } else if (score >= 8) {
+            rank = 'СТАРШИЙ ИССЛЕДОВАТЕЛЬ';
+            message = 'Почти идеально. Ещё немного практики — и ты достигнешь сингулярности.';
+            color = '#4A90E2';
+        } else if (score >= 6) {
+            rank = 'ЛАБОРАНТ';
+            message = 'Неплохо, но Принцип Чайника требует изучения. Вернись к странице "О ASL".';
+            color = '#27ae60';
+        } else {
+            rank = 'ТЕСТИРУЕМЫЙ';
+            message = 'Ты только начал путь. Прочитай лор ASL и попробуй снова.';
+            color = '#e74c3c';
+        }
+
+        questionContainer.style.display = 'none';
+        resultContainer.style.display = 'block';
+        resultContainer.innerHTML = `
+            <h3 style="color: ${color};">🏆 РЕЗУЛЬТАТ: ${rank}</h3>
+            <p style="font-size: 18px; margin: 15px 0;">${message}</p>
+            <p style="margin-top: 15px;">Правильных ответов: ${score} из ${questions.length}</p>
+            <div style="margin-top: 25px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="normal-btn" onclick="location.href='index.html'">🏠 НА ГЛАВНУЮ</button>
+                <button class="normal-btn" style="background: #4A90E2;" onclick="location.reload()">🔄 ПРОЙТИ СНОВА</button>
+            </div>
+        `;
+    }
+
+    window.selectOption = function(idx) {
+        answers[currentQuestion] = idx;
+        const radios = document.querySelectorAll('input[name="question"]');
+        radios.forEach((radio, i) => {
+            radio.checked = (i === idx);
+        });
+    };
+
+    // Запуск
+    renderQuestion();
+</script>
+</body>
+</html>
