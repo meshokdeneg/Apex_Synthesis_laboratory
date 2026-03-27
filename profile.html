@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ASL | Профиль игрока</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg') repeat;
+            background-size: 64px 64px;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* НЕВИДИМАЯ СТЕНКА (полупрозрачный фон) */
+        .profile-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(2px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 2px #FF8C00, 0 0 0 6px #1a2a2f;
+            overflow: hidden;
+        }
+
+        /* ШАПКА */
+        .header {
+            background: linear-gradient(135deg, #1a2a2f, #0f1a1f);
+            padding: 20px 30px;
+            border-bottom: 4px solid #FF8C00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            color: #FF8C00;
+            font-size: 24px;
+        }
+
+        .header h1 span {
+            color: white;
+            font-size: 18px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #aaa;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #FF8C00;
+        }
+
+        /* ОСНОВНОЙ КОНТЕНТ */
+        .content {
+            padding: 30px;
+        }
+
+        /* ПРОФИЛЬ (АВАТАР + ИНФО) */
+        .profile-main {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .avatar-section {
+            text-align: center;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #2c3e2f, #1a2a1a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            border: 4px solid #FF8C00;
+            margin-bottom: 10px;
+        }
+
+        .rank-badge {
+            background: linear-gradient(135deg, #FF8C00, #e07c00);
+            padding: 5px 15px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .info-section {
+            flex: 1;
+        }
+
+        .info-row {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #666;
+            width: 90px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .edit-btn {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .edit-btn:hover {
+            background: #357abd;
+        }
+
+        /* СТАТИСТИКА */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 16px;
+            text-align: center;
+            border-left: 4px solid #FF8C00;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a2a2f;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* РАЗВОРАЧИВАЮЩАЯСЯ ЗОНА (аккордеон) */
+        .accordion {
+            margin-top: 20px;
+        }
+
+        .accordion-item {
+            margin-bottom: 15px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+
+        .accordion-header {
+            background: #fff;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #1a2a2f;
+            transition: 0.2s;
+            border-left: 4px solid #FF8C00;
+        }
+
+        .accordion-header:hover {
+            background: #f0f0f0;
+        }
+
+        .accordion-header .arrow {
+            transition: transform 0.3s;
+            font-size: 20px;
+        }
+
+        .accordion-item.open .accordion-header .arrow {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            padding: 0 20px;
+        }
+
+        .accordion-item.open .accordion-content {
+            max-height: 500px;
+            padding: 15px 20px 20px;
+        }
+
+        /* Стили для контента внутри аккордеона */
+        .friend-list, .search-section, .shop-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .friend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .friend-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .friend-status {
+            font-size: 12px;
+            color: #27ae60;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .search-result {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #eee;
+        }
+
+        .add-friend-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .shop-item-name {
+            font-weight: bold;
+        }
+
+        .shop-item-price {
+            color: #FF8C00;
+            font-weight: bold;
+        }
+
+        .buy-btn {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* ФУТЕР */
+        .footer {
+            background: #1a2a2f;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .footer a {
+            color: #FF8C00;
+            text-decoration: none;
+        }
+
+        /* АДАПТАЦИЯ ПОД ТЕЛЕФОН */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .content {
+                padding: 20px;
+            }
+            .profile-main {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .info-row {
+                justify-content: center;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .accordion-header {
+                font-size: 16px;
+                padding: 12px 15px;
+            }
+            .header h1 {
+                font-size: 18px;
+            }
+            .nav-links {
+                gap: 12px;
+            }
+            .nav-links a {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="profile-container">
+    <div class="header">
+        <h1>⚛️ ASL <span>| Профиль</span></h1>
+        <div class="nav-links">
+            <a href="index.html">Главная</a>
+            <a href="about.html">О ASL</a>
+            <a href="gallery.html">Галерея</a>
+            <a href="#" id="logoutBtn">Выйти</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- ПРОФИЛЬ -->
+        <div class="profile-main">
+            <div class="avatar-section">
+                <div class="avatar" id="avatar">🧊</div>
+                <div class="rank-badge" id="rankBadge">ЛАБОРАНТ</div>
+            </div>
+            <div class="info-section">
+                <div class="info-row">
+                    <span class="info-label">Никнейм:</span>
+                    <span class="info-value" id="nickname">Загрузка...</span>
+                    <button class="edit-btn" onclick="editField('nickname')">✎</button>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Имя:</span>
+                    <span class="info-value" id="name">Загрузка...</span>
+                    <button class="edit-btn" onclick="editField('name')">✎</button>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" id="email">Загрузка...</span>
+                    <button class="edit-btn" onclick="editField('email')">✎</button>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">О себе:</span>
+                    <span class="info-value" id="about">Загрузка...</span>
+                    <button class="edit-btn" onclick="editField('about')">✎</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- СТАТИСТИКА -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="cubesCount">0</div>
+                <div class="stat-label">КУБОВ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="testsPassed">0</div>
+                <div class="stat-label">ТЕСТОВ ПРОЙДЕНО</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="achievementsCount">0</div>
+                <div class="stat-label">ДОСТИЖЕНИЙ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="friendsCount">0</div>
+                <div class="stat-label">ДРУЗЕЙ</div>
+            </div>
+        </div>
+
+        <!-- РАЗВОРАЧИВАЮЩАЯСЯ ЗОНА (АККОРДЕОН) -->
+        <div class="accordion">
+            <!-- ПОИСК ДРУЗЕЙ -->
+            <div class="accordion-item" id="accordionSearch">
+                <div class="accordion-header" onclick="toggleAccordion('accordionSearch')">
+                    🔍 ПОИСК ДРУЗЕЙ
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="search-section">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Введите никнейм...">
+                        <button class="edit-btn" onclick="searchFriend()" style="background: #27ae60;">НАЙТИ</button>
+                        <div id="searchResult"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- СПИСОК ДРУЗЕЙ -->
+            <div class="accordion-item" id="accordionFriends">
+                <div class="accordion-header" onclick="toggleAccordion('accordionFriends')">
+                    👥 МОИ ДРУЗЬЯ
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="friend-list" id="friendsList">
+                        <div style="color:#888; text-align:center;">У вас пока нет друзей</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ИГРОВОЙ МАГАЗИН -->
+            <div class="accordion-item" id="accordionShop">
+                <div class="accordion-header" onclick="toggleAccordion('accordionShop')">
+                    🛒 ИГРОВОЙ МАГАЗИН
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="shop-section" id="shopItems">
+                        <!-- товары будут добавлены через JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="index.html">← На главную</a> | <span>© 2026 Apex Synthesis Laboratory</span>
+    </div>
+</div>
+
+<script>
+    // ========== ЗАГРУЗКА ДАННЫХ ИЗ LOCALSTORAGE ==========
+    function loadProfile() {
+        // Данные пользователя
+        const userData = JSON.parse(localStorage.getItem('asl_user')) || {
+            nickname: 'Игрок_ASL',
+            name: 'Новый сотрудник',
+            email: 'player@asl.lab',
+            about: 'Я здесь, чтобы проходить тесты и искать кубы.'
+        };
+        
+        document.getElementById('nickname').textContent = userData.nickname;
+        document.getElementById('name').textContent = userData.name;
+        document.getElementById('email').textContent = userData.email;
+        document.getElementById('about').textContent = userData.about;
+        
+        // Статистика
+        const cubes = localStorage.getItem('cubeCount') || 100;
+        const testsPassed = localStorage.getItem('testsPassed') || 0;
+        const achievements = localStorage.getItem('achievements') || 0;
+        const friends = JSON.parse(localStorage.getItem('friends')) || [];
+        
+        document.getElementById('cubesCount').textContent = cubes;
+        document.getElementById('testsPassed').textContent = testsPassed;
+        document.getElementById('achievementsCount').textContent = achievements;
+        document.getElementById('friendsCount').textContent = friends.length;
+        
+        // Ранг (по кубам)
+        updateRank(cubes);
+        
+        // Загружаем список друзей
+        renderFriendsList(friends);
+        
+        // Загружаем магазин
+        renderShop();
+    }
+    
+    function updateRank(cubes) {
+        const rankBadge = document.getElementById('rankBadge');
+        let rank = 'КУБ-НЕДОНОСОК';
+        if (cubes >= 10000) rank = 'СИНГУЛЯРНЫЙ АДМИН';
+        else if (cubes >= 5000) rank = 'ГЛАВНЫЙ ИССЛЕДОВАТЕЛЬ';
+        else if (cubes >= 2000) rank = 'СТАРШИЙ ИНЖЕНЕР';
+        else if (cubes >= 1000) rank = 'ИНЖЕНЕР';
+        else if (cubes >= 500) rank = 'ЛАБОРАНТ';
+        else if (cubes >= 100) rank = 'СТАЖЁР';
+        else rank = 'КУБ-НЕДОНОСОК';
+        rankBadge.textContent = rank;
+    }
+    
+    function renderFriendsList(friends) {
+        const container = document.getElementById('friendsList');
+        if (!friends || friends.length === 0) {
+            container.innerHTML = '<div style="color:#888; text-align:center;">У вас пока нет друзей</div>';
+            return;
+        }
+        container.innerHTML = friends.map(friend => `
+            <div class="friend-item">
+                <div>
+                    <div class="friend-name">${friend.nickname}</div>
+                    <div class="friend-status">${friend.status || 'онлайн'}</div>
+                </div>
+                <button class="add-friend-btn" onclick="removeFriend('${friend.nickname}')" style="background:#e74c3c;">Удалить</button>
+            </div>
+        `).join('');
+    }
+    
+    function renderShop() {
+        const shopItems = [
+            { name: 'Серебряный куб', price: 500, icon: '🔘' },
+            { name: 'Золотой куб', price: 2000, icon: '🟡' },
+            { name: 'Рамка профиля', price: 300, icon: '🖼️' },
+            { name: 'Цвет ника (оранжевый)', price: 150, icon: '🎨' },
+            { name: 'Аватарка "Глюк"', price: 1000, icon: '🟢' }
+        ];
+        
+        const container = document.getElementById('shopItems');
+        container.innerHTML = shopItems.map(item => `
+            <div class="shop-item">
+                <div>
+                    <span class="shop-item-name">${item.icon} ${item.name}</span>
+                </div>
+                <div>
+                    <span class="shop-item-price">${item.price} кубов</span>
+                    <button class="buy-btn" onclick="buyItem('${item.name}', ${item.price})">Купить</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function buyItem(name, price) {
+        let cubes = parseInt(localStorage.getItem('cubeCount') || 100);
+        if (cubes >= price) {
+            cubes -= price;
+            localStorage.setItem('cubeCount', cubes);
+            document.getElementById('cubesCount').textContent = cubes;
+            updateRank(cubes);
+            alert(`✅ Вы купили "${name}" за ${price} кубов!`);
+        } else {
+            alert(`❌ Не хватает кубов! Нужно ${price}, у вас ${cubes}`);
+        }
+    }
+    
+    function searchFriend() {
+        const query = document.getElementById('searchInput').value.trim();
+        const resultDiv = document.getElementById('searchResult');
+        if (!query) {
+            resultDiv.innerHTML = '<div class="search-result" style="color:#888;">Введите никнейм</div>';
+            return;
+        }
+        // Имитация поиска (в реальности — запрос к базе)
+        resultDiv.innerHTML = `
+            <div class="search-result">
+                <div>
+                    <strong>${query}</strong>
+                    <div style="font-size:12px;">статус: онлайн</div>
+                </div>
+                <button class="add-friend-btn" onclick="addFriend('${query}')">+ Добавить в друзья</button>
+            </div>
+        `;
+    }
+    
+    function addFriend(nickname) {
+        let friends = JSON.parse(localStorage.getItem('friends')) || [];
+        if (friends.some(f => f.nickname === nickname)) {
+            alert('Этот пользователь уже в друзьях!');
+            return;
+        }
+        friends.push({ nickname: nickname, status: 'онлайн' });
+        localStorage.setItem('friends', JSON.stringify(friends));
+        document.getElementById('friendsCount').textContent = friends.length;
+        renderFriendsList(friends);
+        alert(`✅ ${nickname} добавлен в друзья!`);
+        document.getElementById('searchResult').innerHTML = '';
+        document.getElementById('searchInput').value = '';
+    }
+    
+    function removeFriend(nickname) {
+        let friends = JSON.parse(localStorage.getItem('friends')) || [];
+        friends = friends.filter(f => f.nickname !== nickname);
+        localStorage.setItem('friends', JSON.stringify(friends));
+        document.getElementById('friendsCount').textContent = friends.length;
+        renderFriendsList(friends);
+        alert(`❌ ${nickname} удалён из друзей`);
+    }
+    
+    function editField(field) {
+        const currentValue = document.getElementById(field).textContent;
+        const newValue = prompt(`Введите новое значение для поля "${field}":`, currentValue);
+        if (newValue && newValue !== currentValue) {
+            const userData = JSON.parse(localStorage.getItem('asl_user')) || {};
+            userData[field] = newValue;
+            localStorage.setItem('asl_user', JSON.stringify(userData));
+            document.getElementById(field).textContent = newValue;
+            alert(`✅ Поле "${field}" обновлено!`);
+        }
+    }
+    
+    function toggleAccordion(id) {
+        const item = document.getElementById(id);
+        item.classList.toggle('open');
+    }
+    
+    // Выход
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem('asl_user');
+        alert('Вы вышли из аккаунта');
+        window.location.href = 'index.html';
+    });
+    
+    // Загрузка профиля
+    loadProfile();
+</script>
+</body>
+  </html>
