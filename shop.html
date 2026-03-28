@@ -632,6 +632,9 @@
 
     <div class="conveyor-vertical"><div id="cube-stream"></div></div>
 
+    <!-- Скрытый элемент для кнопки профиля (чтобы избежать ошибки) -->
+    <div id="profileButton" style="display: none;"></div>
+
     <script>
         let cubeCount = 100;
         let currentUser = null;
@@ -644,7 +647,8 @@
         const savedUser = localStorage.getItem('asl_user');
         if (savedUser) {
             currentUser = JSON.parse(savedUser);
-            document.getElementById('profileButton').style.display = 'block';
+            const profileBtn = document.getElementById('profileButton');
+            if (profileBtn) profileBtn.style.display = 'block';
         }
 
         const savedCart = localStorage.getItem('asl_cart');
@@ -679,6 +683,10 @@
 
         function renderShop(filterText = '') {
             const grid = document.getElementById('shopItemsGrid');
+            if (!grid) {
+                console.error('Элемент shopItemsGrid не найден!');
+                return;
+            }
             grid.innerHTML = '';
             const filteredItems = shopItems.filter(item =>
                 item.name.toLowerCase().includes(filterText.toLowerCase())
@@ -843,7 +851,9 @@
         };
 
         const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', (e) => renderShop(e.target.value));
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => renderShop(e.target.value));
+        }
 
         function createCube() {
             const stream = document.getElementById('cube-stream');
