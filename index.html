@@ -14,13 +14,10 @@
         }
 
         body {
-            background: url('photo/i.png')  repeat;
-            background-size: 64px 64px;
-            font-family: 'Segoe UI', 'Courier New', monospace;
-            color: #1a1a1a;
-            line-height: 1.5;
-            padding: 40px 20px;
-            min-height: 100vh;
+            background-image: url('photo/light_gray_terrcotta.png'), url('photo/white_terracotta.png');
+            background-repeat: repeat, repeat;
+            background-size: 64px 64px, 64px 64px;
+            background-position: 0 0, 64px 64px;
         }
 
         .overlay {
@@ -98,12 +95,11 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            border: 3px solid #4A90E2;
-            background-image: url('cub.png');
+            border: 3px solid #e0e0e0;
+            background-image: url('photo/cub.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #1A3B5D;
             background-blend-mode: overlay;
             box-shadow: 0 0 30px rgba(74, 144, 226, 0.8);
             display: flex;
@@ -114,22 +110,6 @@
             font-weight: bold;
             text-transform: uppercase;
             backdrop-filter: blur(2px);
-            animation: pulse-blue 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-blue {
-            0% { 
-                box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
-                background-color: #1A3B5D;
-            }
-            50% { 
-                box-shadow: 0 0 40px rgba(74, 144, 226, 1), 0 0 60px rgba(74, 144, 226, 0.6);
-                background-color: #2A4B7D;
-            }
-            100% { 
-                box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
-                background-color: #1A3B5D;
-            }
         }
 
         .front { transform: translateZ(50px); }
@@ -350,11 +330,13 @@
         .btn-blue {
             border-color: #4A90E2;
             font-size: 50px;
+            border-radius: 0px;
         }
 
         .btn-light {
             border-color: #FF8C00;
             font-size: 50px;
+            border-radius: 0px;
         }
 
         .btn-light:hover {
@@ -362,7 +344,7 @@
             color: #000;
         }
 
-        /* Модальные окна (обратная связь) */
+        /* Модальные окна */
         .feedback-modal {
             position: fixed;
             top: 0;
@@ -617,9 +599,9 @@
         }
 
         .profile-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            position: fixed;
+            top: 16px;
+            right: 30px;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -640,6 +622,83 @@
         .profile-button:hover {
             transform: scale(1.1);
             border-color: #FF8C00;
+        }
+
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 3500;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-content {
+            background: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 3px solid #FF8C00;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .profile-content h2 {
+            color: #FF8C00;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .profile-form-group {
+            margin-bottom: 20px;
+        }
+
+        .profile-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .profile-form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #4A90E2;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+        .profile-save-btn {
+            width: 100%;
+            padding: 15px;
+            background: #4A90E2;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+
+        .profile-save-btn:hover {
+            background: #FF8C00;
+        }
+
+        .close-profile {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #FF8C00;
+            font-size: 35px;
+            cursor: pointer;
         }
 
         .site-footer {
@@ -700,8 +759,8 @@
 
         /* ЧЕРДАК */
         .attic {
-            position: relative;
-            width: 100%;
+            position: fixed;
+            width: 2000px;
             height: 120px;
             background: linear-gradient(120deg, #1e2a3a, #4a5b6e);
             transition: background 2s ease-in-out;
@@ -714,6 +773,8 @@
             align-items: center;
             padding-left: 30px;
             padding-right: 30px;
+            top: 0px;
+            left: -10px;
         }
 
         @keyframes gradientFlow {
@@ -723,7 +784,7 @@
         }
 
         .attic-content {
-            position: relative;
+            position: fixed;
             z-index: 2;
             color: #FF8C00;
             font-size: 86px;
@@ -739,15 +800,15 @@
             background: transparent;
             border: none;
             color: #ccc;
-            font-size: 8px;
+            font-size: 10px;
             font-weight: bold;
             padding: 8px 20px;
             cursor: pointer;
             transition: color 0.3s;
             display: none;
-            position: relative;
-            top: 30px;
-            left: 21px;
+            position: fixed;
+            top: 80px;
+            right: 15px;
         }
 
         .attic-logout-btn:hover {
@@ -778,38 +839,50 @@
             margin-top: 20px;
         }
 
-        .dash-btn {
+        /* ===== ОБЪЁМНЫЕ КНОПКИ ЛИЧНОГО КАБИНЕТА ===== */
+        .dash-btn,
+        .dash-btn:link,
+        .dash-btn:visited {
+            display: inline-block;
             padding: 35px 40px !important;
             font-size: 22px !important;
-            min-width: 250px !important;
-            background: rgba(0, 0, 0, 0.5) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 2px solid #4A90E2 !important;
-            border-radius: 30px !important;
-            color: #fff !important;
-            cursor: pointer !important;
-            transition: 0.3s !important;
-            text-align: center !important;
-            text-decoration: none !important;
-            display: inline-block !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            text-align: center;
+            background: linear-gradient(145deg, #4A90E2, #2c5a8c);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            box-shadow: 0 10px 0 #1a3a5a, 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.1s ease;
+            cursor: pointer;
+            min-width: 250px;
+            font-family: 'Segoe UI', monospace;
+            letter-spacing: 2px;
         }
 
         .dash-btn:hover {
-            background: #4A90E2 !important;
-            color: #000 !important;
-            transform: scale(1.05) !important;
-            border-color: #FF8C00 !important;
+            background: linear-gradient(145deg, #5aa0f2, #3a6a9c);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 0 #1a3a5a, 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .dash-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #1a3a5a;
         }
 
         .carousel-container {
             width: 350px;
             height: 120px;
             overflow: hidden;
-            position: relative;
+            position: fixed;
             cursor: pointer;
             border-radius: 12px;
             background-color: #222;
             transition: transform 0.3s;
+            right: 800px;
         }
         .carousel-container:hover {
             transform: scale(1.05);
@@ -825,15 +898,6 @@
             height: 100%;
             object-fit: contain;
             flex-shrink: 0;
-        }
-        .carousel-indicators {
-            position: absolute;
-            bottom: 5px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 8px;
         }
         .carousel-indicators span {
             width: 8px;
@@ -885,8 +949,9 @@
             transform: translateY(-50%);
             width: 280px;
             z-index: 1000;
-            pointer-events: auto;
+            pointer-events: auto; /* разрешаем взаимодействие */
         }
+        /* Ручка (почти незаметная) */
         .drawer-handle {
             position: absolute;
             left: 0;
@@ -905,6 +970,7 @@
         .drawer-handle:hover {
             background: rgba(100, 100, 120, 0.5);
         }
+        /* Выдвижная часть */
         .drawer-content {
             position: absolute;
             left: 0;
@@ -926,6 +992,7 @@
             text-align: center;
             z-index: 1001;
         }
+        /* Бумажка внутри */
         .drawer-paper {
             background: #fef7e0;
             padding: 20px;
@@ -937,6 +1004,7 @@
             box-shadow: inset 0 0 5px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.2);
             transform: rotate(-2deg);
         }
+        /* Открытое состояние */
         .drawer.open .drawer-content {
             transform: translateY(-50%) translateX(0);
         }
@@ -944,6 +1012,7 @@
             left: 260px;
             background: rgba(255, 140, 0, 0.6);
         }
+        /* когда ящик закрыт – контент не перехватывает клики */
         .drawer:not(.open) .drawer-content {
             pointer-events: none;
         }
@@ -1037,15 +1106,41 @@
         </div>
     </div>
 
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-content">
+            <span class="close-profile" onclick="closeProfileModal()">&times;</span>
+            <h2>РЕДАКТИРОВАНИЕ ПРОФИЛЯ</h2>
+            <form id="profileForm" onsubmit="event.preventDefault(); saveProfileChanges();">
+                <div class="profile-form-group">
+                    <label>Фамилия</label>
+                    <input type="text" id="profileSurname" required>
+                </div>
+                <div class="profile-form-group">
+                    <label>Имя</label>
+                    <input type="text" id="profileName" required>
+                </div>
+                <div class="profile-form-group">
+                    <label>Никнейм</label>
+                    <input type="text" id="profileNickname" required>
+                </div>
+                <div class="profile-form-group">
+                    <label>Пароль (оставьте пустым, если не меняете)</label>
+                    <input type="password" id="profilePassword" placeholder="Новый пароль">
+                </div>
+                <button type="submit" class="profile-save-btn">СОХРАНИТЬ</button>
+            </form>
+        </div>
+    </div>
+
     <footer class="site-footer">
         <div class="footer-content">
             <span class="footer-info">ASL • отдел TToS • версия 2.0</span>
-            <span class="footer-stamp">✻ СИНТЕЗ ПОДТВЕРЖДЁН ✻</span>
+            <span class="footer-stamp">Лицензия CC BY-NC-ND 4.0</span>
             <a href="about.html" class="footer-link"># Извещение</a>
         </div>
     </footer>
 
-    <div class="profile-button" id="profileButton" onclick="window.location.href='profile.html'" style="display: none;">
+    <div class="profile-button" id="profileButton" onclick="openProfileModal()" style="display: none;">
         <img src="https://i.pinimg.com/originals/58/05/34/580534a241f377ea13478ef988376294.jpg" alt="Profile">
     </div>
 
@@ -1238,6 +1333,8 @@
             if (event.target == details) details.style.display = 'none';
             const lightbox = document.getElementById('shopLightbox');
             if (event.target == lightbox) lightbox.style.display = 'none';
+            const profile = document.getElementById('profileModal');
+            if (event.target == profile) profile.style.display = 'none';
         };
 
         const savedUser = localStorage.getItem('asl_user');
@@ -1256,6 +1353,38 @@
             document.getElementById('decorativeCounter').style.display = 'none';
         }
 
+        function openProfileModal() {
+            if (currentUser) {
+                document.getElementById('profileSurname').value = currentUser.surname || '';
+                document.getElementById('profileName').value = currentUser.name || '';
+                document.getElementById('profileNickname').value = currentUser.nickname || '';
+                document.getElementById('profilePassword').value = '';
+            }
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        function saveProfileChanges() {
+            const newSurname = document.getElementById('profileSurname').value.trim();
+            const newName = document.getElementById('profileName').value.trim();
+            const newNickname = document.getElementById('profileNickname').value.trim();
+            const newPassword = document.getElementById('profilePassword').value.trim();
+            if (!newSurname || !newName || !newNickname) {
+                alert('Фамилия, имя и никнейм обязательны!');
+                return;
+            }
+            currentUser.surname = newSurname;
+            currentUser.name = newName;
+            currentUser.nickname = newNickname;
+            if (newPassword) currentUser.password = newPassword;
+            localStorage.setItem('asl_user', JSON.stringify(currentUser));
+            alert('Данные успешно обновлены!');
+            closeProfileModal();
+        }
+
         // Карусель
         const carouselSlide = document.getElementById('carouselSlide');
         const carouselContainer = document.getElementById('carouselContainer');
@@ -1264,17 +1393,6 @@
         let currentIndex = 0;
         const slideCount = slides.length;
         let autoInterval;
-
-        for (let i = 0; i < slideCount; i++) {
-            const dot = document.createElement('span');
-            if (i === 0) dot.classList.add('active');
-            dot.addEventListener('click', (e) => {
-                e.stopPropagation();
-                goToSlide(i);
-                resetAutoSlide();
-            });
-            indicatorsContainer.appendChild(dot);
-        }
 
         const dots = document.querySelectorAll('.carousel-indicators span');
         function goToSlide(index) {
