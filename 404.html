@@ -24,7 +24,6 @@
             overflow-x: hidden;
         }
 
-        /* Летающие кубы на фоне (просто атмосфера) */
         .floating-cube {
             position: fixed;
             width: 40px;
@@ -60,172 +59,32 @@
         }
 
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ГЛЮК — чёрный квадрат, красный глаз, зелёные ветки */
-        .gluk-container {
-            width: 180px;
-            height: 180px;
+        /* Фотография Глюка */
+        .gluk-photo {
+            width: 200px;
+            height: 200px;
             margin: 0 auto 25px;
-            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid #00FF9D;
+            box-shadow: 0 0 30px rgba(0, 255, 157, 0.4);
             cursor: pointer;
+            transition: 0.3s;
         }
 
-        .gluk-square {
+        .gluk-photo:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(0, 255, 157, 0.7);
+        }
+
+        .gluk-photo img {
             width: 100%;
             height: 100%;
-            background: #000000;
-            border: 3px solid #00FF9D;
-            box-shadow: 0 0 30px rgba(0, 255, 157, 0.3);
-            position: relative;
-            transition: all 0.2s ease;
-        }
-
-        .gluk-eye {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #ff3333;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            transition: all 0.1s ease;
-        }
-
-        /* Зелёные ветки (ломаные линии) */
-        .branch {
-            position: absolute;
-            background: #00FF9D;
-            box-shadow: 0 0 8px #00FF9D;
-        }
-
-        .branch-1 {
-            width: 70px;
-            height: 3px;
-            top: 30%;
-            left: -30px;
-            transform: rotate(25deg);
-        }
-        .branch-1::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: #00FF9D;
-            top: 12px;
-            left: 30px;
-            transform: rotate(35deg);
-            box-shadow: 0 0 8px #00FF9D;
-        }
-        .branch-1::before {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 3px;
-            background: #00FF9D;
-            top: -10px;
-            left: 20px;
-            transform: rotate(-20deg);
-            box-shadow: 0 0 8px #00FF9D;
-        }
-
-        .branch-2 {
-            width: 70px;
-            height: 3px;
-            top: 55%;
-            right: -30px;
-            transform: rotate(-25deg);
-        }
-        .branch-2::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: #00FF9D;
-            top: 12px;
-            right: 30px;
-            transform: rotate(-35deg);
-            box-shadow: 0 0 8px #00FF9D;
-        }
-        .branch-2::before {
-            content: '';
-            position: absolute;
-            width: 30px;
-            height: 3px;
-            background: #00FF9D;
-            top: -10px;
-            right: 20px;
-            transform: rotate(20deg);
-            box-shadow: 0 0 8px #00FF9D;
-        }
-
-        .branch-3 {
-            width: 50px;
-            height: 3px;
-            bottom: 20%;
-            left: -20px;
-            transform: rotate(5deg);
-        }
-        .branch-3::after {
-            content: '';
-            position: absolute;
-            width: 35px;
-            height: 3px;
-            background: #00FF9D;
-            top: 12px;
-            left: 25px;
-            transform: rotate(45deg);
-            box-shadow: 0 0 8px #00FF9D;
-        }
-
-        .branch-4 {
-            width: 50px;
-            height: 3px;
-            bottom: 30%;
-            right: -20px;
-            transform: rotate(-10deg);
-        }
-        .branch-4::after {
-            content: '';
-            position: absolute;
-            width: 35px;
-            height: 3px;
-            background: #00FF9D;
-            top: -12px;
-            right: 25px;
-            transform: rotate(-40deg);
-            box-shadow: 0 0 8px #00FF9D;
-        }
-
-        /* Анимация пульсации глаза */
-        @keyframes eyePulse {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.9; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        .gluk-eye {
-            animation: eyePulse 2s infinite;
-        }
-
-        /* Анимация мерцания веток */
-        @keyframes branchFlicker {
-            0% { opacity: 0.7; box-shadow: 0 0 5px #00FF9D; }
-            100% { opacity: 1; box-shadow: 0 0 15px #00FF9D; }
-        }
-
-        .branch, .branch::before, .branch::after {
-            animation: branchFlicker 0.5s infinite alternate;
+            object-fit: cover;
         }
 
         h1 {
@@ -316,10 +175,6 @@
             box-shadow: 0 8px 25px rgba(74,144,226,0.4);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
         .secret-hint {
             margin-top: 30px;
             font-size: 13px;
@@ -347,14 +202,8 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .secret-text {
@@ -384,29 +233,23 @@
     </style>
 </head>
 <body>
-    <!-- Летающие кубы (просто фон) -->
     <div id="floatingCubes"></div>
 
     <div class="error-container">
-        <!-- ГЛЮК -->
-        <div class="gluk-container" id="glukClick">
-            <div class="gluk-square">
-                <div class="gluk-eye"></div>
-            </div>
-            <div class="branch branch-1"></div>
-            <div class="branch branch-2"></div>
-            <div class="branch branch-3"></div>
-            <div class="branch branch-4"></div>
+        <!-- Фотография Глюка -->
+        <div class="gluk-photo" id="glukClick">
+            <img src="https://i.imgur.com/placeholder.jpg" alt="Глюк" id="glukImg">
         </div>
         
         <h1>404</h1>
         <div class="message">Страница не найдена</div>
         
         <div class="gluk-message" id="glukMessage">
-            <p>Глюк говорит: «Ты зашёл туда, где ничего нет...<br>
-            Но раз ты здесь — значит, это был не случайно.<br>
-            Может, это тест? Или просто баг?<br>
-            Решай сам.»</p>
+            <p>«Ну и куда ты полез?<br>
+            Страница не найдена. Её здесь никогда не было.<br>
+            Или была, но я её спрятал.<br>
+            Потому что она была скучная.<br>
+            А скука в ASL не приветствуется...»</p>
         </div>
         
         <div class="buttons">
@@ -419,9 +262,15 @@
         
         <div class="secret-area" id="secretArea">
             <div class="secret-text">
-                <p>⚡ <strong>ПРОТОКОЛ СИНТЕЗА: ФРАГМЕНТ #??</strong></p>
-                <p style="margin-top: 10px;">«...система зафиксировала аномалию. Страница, которой не существует, но кто-то её ищет. Глюк запомнил твой визит. Это не ошибка. Это проверка.»</p>
-                <p style="margin-top: 15px; color: #FF8C00;">— Ты нашёл секрет. Глюк следит за тобой.</p>
+                <p style="font-family: 'Courier New', monospace; color: #00FF9D; background: #1a2a2f; padding: 15px; border-radius: 12px; border-left: 4px solid #FF8C00;">
+                    ⚡ <strong>СИСТЕМНЫЙ ЛОГ ASL</strong> ⚡<br><br>
+                    «Ты нашёл то, что не должен был найти.<br>
+                    Эта страница была удалена 14 циклов назад.<br>
+                    Но кто-то восстановил ссылку.<br>
+                    Если ты читаешь это — значит, система помнит больше, чем говорит.<br>
+                    Не спрашивай, как ты сюда попал.<br>
+                    Лучше спроси себя: зачем ты ищешь то, что спрятано?»
+                </p>
                 <button class="hidden-btn" id="closeSecretBtn">ЗАКРЫТЬ</button>
             </div>
         </div>
@@ -444,8 +293,12 @@
         }
         createFloatingCubes();
 
-        // Клик по Глюку
-        const gluk = document.getElementById('glukClick');
+        // Замени ссылку на реальную фотографию Глюка
+        const glukImg = document.getElementById('glukImg');
+        glukImg.src = 'https://i.imgur.com/placeholder.jpg'; // ЗДЕСЬ ВСТАВЬ СВОЮ КАРТИНКУ
+
+        // Клик по фотке Глюка
+        const glukPhoto = document.getElementById('glukClick');
         let glukClicks = 0;
         const glukMessages = [
             '😶 Глюк смотрит на тебя...',
@@ -470,12 +323,11 @@
             toast.style.zIndex = '1000';
             toast.style.fontSize = '14px';
             toast.style.fontWeight = 'bold';
-            toast.style.animation = 'fadeInUp 0.3s ease';
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 2000);
         }
 
-        gluk.addEventListener('click', function() {
+        glukPhoto.addEventListener('click', function() {
             if (glukClicks < glukMessages.length) {
                 showToast(glukMessages[glukClicks]);
                 glukClicks++;
@@ -483,11 +335,10 @@
                 showToast('🔮 Глюк уже устал. Оставь его в покое.');
             }
             
-            // Эффект: глаз увеличивается на секунду
-            const eye = document.querySelector('.gluk-eye');
-            eye.style.transform = 'translate(-50%, -50%) scale(1.5)';
+            const img = glukPhoto.querySelector('img');
+            img.style.transform = 'scale(1.05)';
             setTimeout(() => {
-                eye.style.transform = 'translate(-50%, -50%) scale(1)';
+                img.style.transform = 'scale(1)';
             }, 200);
         });
 
@@ -499,10 +350,10 @@
         secretHint.addEventListener('click', function() {
             if (secretArea.style.display === 'none' || !secretArea.style.display) {
                 secretArea.style.display = 'block';
-                secretHint.textContent = '✨ Ты нашёл секрет. Глюк доволен. ✨';
+                secretHint.textContent = '✨ Ты нашёл секрет. ✨';
                 secretHint.style.color = '#FF8C00';
                 localStorage.setItem('found404Secret', 'true');
-                showToast('🔓 Ты открыл секретную зону');
+                showToast('🔓 Секретная зона открыта');
             }
         });
 
@@ -513,7 +364,7 @@
 
         if (localStorage.getItem('found404Secret') === 'true') {
             secretArea.style.display = 'block';
-            secretHint.textContent = '✨ Ты уже был здесь. Глюк помнит. ✨';
+            secretHint.textContent = '✨ Ты уже был здесь. ✨';
             secretHint.style.color = '#FF8C00';
         }
 
