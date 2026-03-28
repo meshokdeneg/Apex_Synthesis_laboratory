@@ -1478,45 +1478,6 @@
                 }
             });
         })();
-        <!-- Контейнер для фонового узора -->
-<div id="patternBackground" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); grid-auto-rows: 200px;"></div>
-
-    // Размер ячейки (можно изменить под размер ваших картинок)
-    const cellWidth = 64;
-    const cellHeight = 64;
-
-    // Пути к вашим картинкам
-    const img1 = 'photo/light_gray_terrcotta.png';   // замените на свой путь
-    const img2 = 'photo/white_terracotta.png';   // замените на свой путь
-
-    const container = document.getElementById('patternBackground');
-    
-    function updatePattern() {
-        const cols = Math.ceil(window.innerWidth / cellWidth);
-        const rows = Math.ceil(window.innerHeight / cellHeight);
-        const total = cols * rows;
-        
-        container.style.gridTemplateColumns = `repeat(${cols}, minmax(${cellWidth}px, 1fr))`;
-        container.style.gridAutoRows = `${cellHeight}px`;
-        
-        // Очищаем контейнер
-        container.innerHTML = '';
-        
-        for (let i = 0; i < total; i++) {
-            const cell = document.createElement('div');
-            // Чередуем картинки по чётности строки и столбца (шахматный порядок)
-            const row = Math.floor(i / cols);
-            const col = i % cols;
-            const useImg1 = (row + col) % 2 === 0;
-            cell.style.backgroundImage = `url('${useImg1 ? img1 : img2}')`;
-            cell.style.backgroundSize = 'cover';
-            cell.style.backgroundPosition = 'center';
-            container.appendChild(cell);
-        }
-    }
-    
-    updatePattern();
-    window.addEventListener('resize', updatePattern);
     </script>
 </body>
 </html>
