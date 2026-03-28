@@ -905,15 +905,6 @@
             object-fit: contain;
             flex-shrink: 0;
         }
-        .carousel-indicators {
-            position: fixed;
-            bottom: 5px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-        }
         .carousel-indicators span {
             width: 8px;
             height: 8px;
@@ -1412,17 +1403,6 @@
         let currentIndex = 0;
         const slideCount = slides.length;
         let autoInterval;
-
-        for (let i = 0; i < slideCount; i++) {
-            const dot = document.createElement('span');
-            if (i === 0) dot.classList.add('active');
-            dot.addEventListener('click', (e) => {
-                e.stopPropagation();
-                goToSlide(i);
-                resetAutoSlide();
-            });
-            indicatorsContainer.appendChild(dot);
-        }
 
         const dots = document.querySelectorAll('.carousel-indicators span');
         function goToSlide(index) {
