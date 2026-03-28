@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL | Ошибка 404 — Глюк запутался</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg') repeat;
+            background-size: 64px 64px;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(2px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 2px #FF8C00, 0 0 0 6px #1a2a2f;
+            overflow: hidden;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .gluk {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: glitch 0.5s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: skew(0deg, 0deg); opacity: 1; }
+            95% { transform: skew(0deg, 0deg); opacity: 1; }
+            96% { transform: skew(5deg, 2deg); opacity: 0.8; }
+            97% { transform: skew(-3deg, -1deg); opacity: 0.9; }
+            98% { transform: skew(2deg, 1deg); opacity: 0.85; }
+            100% { transform: skew(0deg, 0deg); opacity: 1; }
+        }
+
+        h1 {
+            font-size: 72px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 5px;
+        }
+
+        .message {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .gluk-message {
+            background: #1a2a2f;
+            color: #00FF9D;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 25px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            border-left: 4px solid #FF8C00;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4A90E2, #357abd);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74,144,226,0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #4A90E2;
+            border: 2px solid #4A90E2;
+        }
+
+        .btn-secondary:hover {
+            background: #4A90E2;
+            color: white;
+        }
+
+        .secret-hint {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .secret-hint:hover {
+            color: #FF8C00;
+        }
+
+        /* Анимация для секретной кнопки */
+        .secret-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .cube-counter {
+            font-size: 24px;
+            color: #FF8C00;
+            margin: 10px 0;
+        }
+
+        .hidden-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <div class="gluk">🟦</div>
+    <h1>404</h1>
+    <div class="message">Страница не найдена</div>
+    <div class="gluk-message" id="glukMessage">
+        «Глюк говорит: ты зашёл туда, где ничего нет. 
+        <br>Может, это тест? Или просто баг? 
+        <br>Решай сам.»
+    </div>
+    
+    <div class="buttons">
+        <a href="index.html" class="btn btn-primary">🏠 НА ГЛАВНУЮ</a>
+        <a href="about.html" class="btn btn-secondary">📖 О ASL</a>
+    </div>
+    
+    <div class="secret-hint" id="secretHint">
+        🔍 Ты чувствуешь, что здесь что-то не так?
+    </div>
+    
+    <div class="secret-area" id="secretArea">
+        <div class="cube-counter" id="cubeCounter">
+            🧊 КУБОВ НАЙДЕНО: <span id="cubeCount">0</span>
+        </div>
+        <p style="margin-bottom: 10px;">Глюк спрятал здесь кубы. Найди их все!</p>
+        <button class="hidden-btn" id="findCubeBtn">🔍 НАЙТИ КУБ</button>
+        <p style="margin-top: 15px; font-size: 12px; color: #888;" id="finalMessage"></p>
+    </div>
+</div>
+
+<script>
+    // Пасхалка: клик по подсказке открывает секретную игру
+    const secretHint = document.getElementById('secretHint');
+    const secretArea = document.getElementById('secretArea');
+    const findCubeBtn = document.getElementById('findCubeBtn');
+    const cubeCountSpan = document.getElementById('cubeCount');
+    const finalMessage = document.getElementById('finalMessage');
+    
+    let cubesFound = 0;
+    const totalCubes = 5;
+    
+    // Открываем секретную зону
+    secretHint.addEventListener('click', function() {
+        if (secretArea.style.display === 'none' || !secretArea.style.display) {
+            secretArea.style.display = 'block';
+            secretHint.textContent = '✨ Ты нашёл секрет. Глюк доволен. ✨';
+            secretHint.style.color = '#FF8C00';
+            
+            // Сохраняем факт нахождения секрета в localStorage
+            localStorage.setItem('found404Secret', 'true');
+        }
+    });
+    
+    // Ищем кубы
+    findCubeBtn.addEventListener('click', function() {
+        if (cubesFound < totalCubes) {
+            cubesFound++;
+            cubeCountSpan.textContent = cubesFound;
+            
+            // Разные фразы для каждого куба
+            const phrases = [
+                '🔴 Ты нашёл куб! Он был за трубой.',
+                '🟠 Ещё один! Глюк не ожидал.',
+                '🟡 Третий куб. Ты становишься профессионалом.',
+                '🟢 Почти все! Остался последний...',
+                '🔵 ПОСЛЕДНИЙ КУБ! Глюк впечатлён!'
+            ];
+            
+            // Показываем всплывающее сообщение
+            const notification = document.createElement('div');
+            notification.textContent = phrases[cubesFound - 1];
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.background = '#1a2a2f';
+            notification.style.color = '#00FF9D';
+            notification.style.padding = '12px 24px';
+            notification.style.borderRadius = '40px';
+            notification.style.border = '1px solid #FF8C00';
+            notification.style.zIndex = '1000';
+            notification.style.fontSize = '14px';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+            
+            // Если нашли все кубы
+            if (cubesFound === totalCubes) {
+                finalMessage.innerHTML = '🎉 ПОЗДРАВЛЯЮ! 🎉<br>Ты собрал все кубы. Глюк дарит тебе 100 кубов на аккаунт!';
+                findCubeBtn.disabled = true;
+                findCubeBtn.style.opacity = '0.5';
+                findCubeBtn.style.cursor = 'not-allowed';
+                
+                // Добавляем кубы в аккаунт
+                let currentCubes = parseInt(localStorage.getItem('cubeCount') || 100);
+                currentCubes += 100;
+                localStorage.setItem('cubeCount', currentCubes);
+                
+                // Сохраняем достижение
+                let achievements = JSON.parse(localStorage.getItem('achievements')) || [];
+                if (!achievements.includes('404_COLLECTOR')) {
+                    achievements.push('404_COLLECTOR');
+                    localStorage.setItem('achievements', JSON.stringify(achievements));
+                }
+            }
+        }
+    });
+    
+    // Если пользователь уже находил секрет раньше — показываем сразу
+    if (localStorage.getItem('found404Secret') === 'true') {
+        secretArea.style.display = 'block';
+        secretHint.textContent = '✨ Ты уже был здесь. Глюк помнит. ✨';
+        secretHint.style.color = '#FF8C00';
+        
+        // Восстанавливаем прогресс кубов
+        const savedProgress = localStorage.getItem('cubesFound404');
+        if (savedProgress) {
+            cubesFound = parseInt(savedProgress);
+            cubeCountSpan.textContent = cubesFound;
+            if (cubesFound === totalCubes) {
+                finalMessage.innerHTML = '🎉 Ты уже собрал все кубы! 🎉';
+                findCubeBtn.disabled = true;
+                findCubeBtn.style.opacity = '0.5';
+            }
+        }
+    }
+    
+    // Сохраняем прогресс кубов
+    window.addEventListener('beforeunload', function() {
+        if (cubesFound > 0 && cubesFound < totalCubes) {
+            localStorage.setItem('cubesFound404', cubesFound);
+        }
+    });
+    
+    // Дополнительная пасхалка: Konami-код на 404 странице
+    let konamiSequence = [];
+    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyA', 'KeyS', 'KeyL'];
+    
+    document.addEventListener('keydown', function(e) {
+        konamiSequence.push(e.code);
+        if (konamiSequence.length > konamiCode.length) {
+            konamiSequence.shift();
+        }
+        
+        if (JSON.stringify(konamiSequence) === JSON.stringify(konamiCode)) {
+            alert('🔓 Секретный режим активирован! Глюк приветствует тебя, избранный.');
+            document.body.style.transform = 'rotate(0.5deg)';
+            document.body.style.transition = '0.3s';
+            
+            // Добавляем достижение
+            let achievements = JSON.parse(localStorage.getItem('achievements')) || [];
+            if (!achievements.includes('KONAMI_MASTER')) {
+                achievements.push('KONAMI_MASTER');
+                localStorage.setItem('achievements', JSON.stringify(achievements));
+                alert('🏆 Получено достижение: "Хранитель кода"!');
+            }
+        }
+    });
+</script>
+</body>
+</html>
