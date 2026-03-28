@@ -21,7 +21,6 @@
             min-height: 100vh;
         }
 
-        /* Главный контейнер */
         .asl-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -33,7 +32,6 @@
             overflow: hidden;
         }
 
-        /* Шапка */
         .header {
             background: #1a2a2f;
             padding: 30px 40px;
@@ -54,7 +52,6 @@
             font-style: italic;
         }
 
-        /* Навигация */
         .nav {
             background: #2c3e2f;
             padding: 12px 40px;
@@ -76,12 +73,10 @@
             color: #FF8C00;
         }
 
-        /* Контент */
         .content {
             padding: 40px;
         }
 
-        /* Секции */
         .section {
             margin-bottom: 50px;
         }
@@ -100,7 +95,6 @@
             color: #4A90E2;
         }
 
-        /* Таблицы */
         .project-table, .directions-table, .staff-table {
             width: 100%;
             border-collapse: collapse;
@@ -150,7 +144,6 @@
             color: white;
         }
 
-        /* Карточки для отделов */
         .cards {
             display: flex;
             flex-wrap: wrap;
@@ -172,7 +165,6 @@
             color: #1a2a2f;
         }
 
-        /* Правила */
         .rules {
             display: flex;
             gap: 30px;
@@ -203,7 +195,6 @@
             font-weight: bold;
         }
 
-        /* Кнопки в футере */
         .footer {
             background: #1a2a2f;
             color: #aaa;
@@ -248,7 +239,7 @@
             border-color: #fff;
         }
 
-        /* Стили для галереи (модальные окна) */
+        /* Галерея */
         .gallery-modal {
             position: fixed;
             top: 0;
@@ -268,9 +259,9 @@
             border: 3px solid #FF8C00;
             border-radius: 20px;
             padding: 30px;
-            max-width: 800px;
-            width: 90%;
-            max-height: 80vh;
+            max-width: 1000px;
+            width: 95%;
+            max-height: 85vh;
             overflow-y: auto;
             position: relative;
         }
@@ -283,25 +274,72 @@
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
             justify-items: center;
         }
 
-        .gallery-grid img {
+        .gallery-item {
             width: 100%;
-            height: 150px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 180px;
             object-fit: cover;
             border: 2px solid #4A90E2;
-            border-radius: 10px;
+            border-radius: 15px;
             transition: 0.3s;
             cursor: pointer;
         }
 
-        .gallery-grid img:hover {
-            transform: scale(1.05);
+        .gallery-item img:hover {
+            transform: scale(1.02);
             border-color: #FF8C00;
             box-shadow: 0 0 20px #FF8C00;
+        }
+
+        .gallery-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 12px 0 5px;
+            color: #FF8C00;
+        }
+
+        .gallery-desc {
+            font-size: 13px;
+            color: #ccc;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .gallery-download-btn {
+            display: inline-block;
+            background: #2c3e2f;
+            border: 1px solid #FF8C00;
+            border-radius: 30px;
+            padding: 6px 15px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #FF8C00;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .gallery-download-btn:hover {
+            background: #FF8C00;
+            color: #1a2a2f;
         }
 
         .close-gallery {
@@ -377,6 +415,70 @@
             .cards { flex-direction: column; }
             .rules { flex-direction: column; }
         }
+
+        /* секретные элементы */
+        .secret-quartz-bg {
+            position: relative;
+            bottom: -2px;
+            left: -20px;
+            width: 65px;
+            height: 65px;
+            background-image: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg');
+            background-size: 64px 64px;
+            background-repeat: repeat;
+            background-color: rgba(0, 0, 0, 0.01);
+            background-blend-mode: multiply;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .secret-quartz-bg:hover {
+            filter: brightness(0.95);
+            transform: scale(1.02);
+        }
+        @keyframes fallOffBlock {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(150px) rotate(30deg); opacity: 0; }
+        }
+        .secret-quartz-bg.falling {
+            animation: fallOffBlock 0.5s forwards;
+            pointer-events: none;
+        }
+        .hidden-red-secret {
+            position: relative;
+            bottom: -8px;
+            left: -14px;
+            width: 50px;
+            height: 50px;
+            background: #e74c3c;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 1001;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
+            transition: transform 0.2s;
+        }
+        .hidden-red-secret:hover {
+            transform: scale(1.1);
+            background: #c0392b;
+        }
+        .secret-black-square {
+            position: relative;
+            bottom: -65px;
+            left: -20px;
+            width: 63px;
+            height: 63px;
+            background-color: #000000;
+            border: 0px solid #FF8C00;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -396,24 +498,20 @@
     </div>
 
     <div class="content">
-        <!-- ГОТОВЫЕ ПРОЕКТЫ -->
         <div id="projects" class="section">
             <h2>🎮 ГОТОВЫЕ ПРОЕКТЫ</h2>
             <p><em>«Ты думал, это просто карта? Ошибка. Это экзамен.»</em></p>
             <p>Все проекты созданы по <strong>Принципу Чайника</strong> — здесь нет случайных предметов, есть только то, что вы ещё не поняли.</p>
             <table class="project-table">
-                <thead>
-                    <tr><th>Проект</th><th>Формат</th><th>Суть</th><th>Ссылка</th></tr>
-                </thead>
+                <thead><tr><th>Проект</th><th>Формат</th><th>Суть</th><th>Ссылка</th> </thead>
                 <tbody>
-                    <tr><td><strong>Побег из лаборатории TToS</strong></td><td>Одиночная</td><td>Проснись в секретной лаборатории. Забудь, что знал о кнопках и рычагах. Используй всё против системы.</td><td><a href="#">⬇️ Скачать</a></td></tr>
-                    <tr><td><strong>Роботы-напарники</strong></td><td>Кооператив (2 игрока)</td><td>Вы — два робота, подключённых к одному «ГЛюКу». Ошибётся один — вырубит обоих. Синхронизация или смерть.</td><td><a href="#">⬇️ Скачать</a></td></tr>
-                    <tr><td><strong>Панельки (эксперимент №6)</strong></td><td>Социальный симулятор</td><td>Экономика, где контракты пишут игроки. Вы — часть системы. В разработке.</td><td><a href="#">Подробнее</a></td></tr>
+                    <tr><td><strong>Побег из лаборатории TToS</strong></td><td>Одиночная</td><td>Проснись в секретной лаборатории. Забудь, что знал о кнопках и рычагах. Используй всё против системы.</td><td><a href="#">⬇️ Скачать</a></td> </tr>
+                    <tr><td><strong>Роботы-напарники</strong></td><td>Кооператив (2 игрока)</td><td>Вы — два робота, подключённых к одному «ГЛюКу». Ошибётся один — вырубит обоих. Синхронизация или смерть.</td><td><a href="#">⬇️ Скачать</a></td> </tr>
+                    <tr><td><strong>Панельки (эксперимент №6)</strong></td><td>Социальный симулятор</td><td>Экономика, где контракты пишут игроки. Вы — часть системы. В разработке.</td><td><a href="#">Подробнее</a></td> </tr>
                 </tbody>
-            </table>
+             </table>
         </div>
 
-        <!-- ПРИНЦИП ЧАЙНИКА -->
         <div id="principle" class="section">
             <h2>⚙️ ПРИНЦИП ЧАЙНИКА (ASL‑Инверсия)</h2>
             <p><strong>Не ищи правильный путь. Ищи неправильный, который работает.</strong></p>
@@ -425,22 +523,19 @@
             <p style="margin-top: 15px;">Если задача не решается — ты не нашёл нужный «чайник». Ищи дальше.</p>
         </div>
 
-        <!-- ЛОР И ПЕРСОНАЖИ -->
         <div id="lore" class="section">
             <h2>🧬 ЛОР И ПЕРСОНАЖИ</h2>
             <p><strong>Apex Synthesis Laboratory</strong> — не компания в привычном смысле.<br>
             ASL — побочный продукт <strong>Синтеза</strong>, события, переписавшего правила реальности. Мы — среда, в которой идеи обретают форму.</p>
-
             <h3>Ключевые фигуры</h3>
             <table class="staff-table">
-                <thead><tr><th></th><th></th></tr></thead>
+                <thead> <tr><th></th><th></th></tr> </thead>
                 <tbody>
-                    <tr><td><strong>Meshokdeneg</strong></td><td>Сингулярный админ. Тот, кто запустил Синтез и теперь следит, чтобы система не заскучала. Говорят, он может пересобрать реальность одной правкой конфига.</td></tr>
-                    <tr><td><strong>Strika_Jarvis</strong></td><td>Правая рука. Операционный центр в человеческом обличье. Следит, чтобы админ не улетел в сингулярность без обеда.</td></tr>
-                    <tr><td><strong>Глюк (GLUK)</strong></td><td>Операционный узел. Чёрный куб с нервной системой <code>#00FF9D</code>. Если вы его встретили — вы в тесте. Если вы его сломали — вы прошли тест.</td></tr>
+                    <tr><td><strong>Meshokdeneg</strong></td><td>Сингулярный админ. Тот, кто запустил Синтез и теперь следит, чтобы система не заскучала. Говорят, он может пересобрать реальность одной правкой конфига.</td> </tr>
+                    <tr><td><strong>Strika_Jarvis</strong></td><td>Правая рука. Операционный центр в человеческом обличье. Следит, чтобы админ не улетел в сингулярность без обеда.</td> </tr>
+                    <tr><td><strong>Глюк (GLUK)</strong></td><td>Операционный узел. Чёрный куб с нервной системой <code>#00FF9D</code>. Если вы его встретили — вы в тесте. Если вы его сломали — вы прошли тест.</td> </tr>
                 </tbody>
-            </table>
-
+             </table>
             <h3>Отделы</h3>
             <div class="cards">
                 <div class="card"><h4>TToS</h4><p>The Time of Science — отдел, который строит тесты. Самый опасный отдел.</p></div>
@@ -448,12 +543,10 @@
                 <div class="card"><h4>AETHERA</h4><p>Энергия и информация как игровые валюты.</p></div>
                 <div class="card"><h4>PRIMORDIA</h4><p>Процедурное рождение миров из решений игрока.</p></div>
             </div>
-
             <p style="margin-top: 15px;">📖 <a href="#">Полный глоссарий ASL</a> — все термины, протоколы и канон.<br>
             ⚙️ <a href="#">Протокол Синтеза</a> — подробное описание события, с которого всё началось.</p>
         </div>
 
-        <!-- НАПРАВЛЕНИЯ РАЗВИТИЯ -->
         <div id="directions" class="section">
             <h2>🌐 НАПРАВЛЕНИЯ РАЗВИТИЯ</h2>
             <p>ASL движется во всех направлениях, где можно применить Принцип Чайника. Сейчас материализовалось одно направление — остальные в работе.</p>
@@ -469,26 +562,16 @@
             </table>
         </div>
 
-        <!-- ПРАВИЛА -->
         <div id="rules" class="section">
             <h2>⚖️ ПРАВИЛА ИСПОЛЬЗОВАНИЯ</h2>
             <div class="rules">
                 <div class="rules-allowed">
                     <strong>✅ МОЖНО:</strong>
-                    <ul>
-                        <li>играть</li>
-                        <li>проходить на стримах и видео</li>
-                        <li>делиться с друзьями</li>
-                        <li>указывать автора</li>
-                    </ul>
+                    <ul><li>играть</li><li>проходить на стримах и видео</li><li>делиться с друзьями</li><li>указывать автора</li></ul>
                 </div>
                 <div class="rules-forbidden">
                     <strong>❌ НЕЛЬЗЯ:</strong>
-                    <ul>
-                        <li>продавать</li>
-                        <li>выдавать за свои</li>
-                        <li>изменять и распространять изменённые версии без разрешения</li>
-                    </ul>
+                    <ul><li>продавать</li><li>выдавать за свои</li><li>изменять и распространять изменённые версии без разрешения</li></ul>
                 </div>
             </div>
             <p style="margin-top: 15px;">© 2026 Meshokdeneg / Apex Synthesis Laboratory. Все права защищены.</p>
@@ -514,28 +597,101 @@
     </div>
 </div>
 
-<!-- LIGHTBOX ДЛЯ ПОЛНОЭКРАННОГО ПРОСМОТРА -->
+<!-- LIGHTBOX -->
 <div class="lightbox-modal" id="lightboxModal">
     <div class="lightbox-content">
         <span class="close-lightbox" onclick="closeLightbox()">&times;</span>
         <img id="lightboxImage" src="" alt="">
     </div>
 </div>
-    <div class="secret-black-square" id="secretBlackSquare" onclick="window.location.href='code.html'"></div>
+
+<div class="secret-black-square" id="secretBlackSquare" onclick="window.location.href='code.html'"></div>
+
+<div class="secret-quartz-bg" id="secretQuartzBlock"></div>
+<div class="hidden-red-secret" id="secretRedBtnBlock">🔴</div>
 
 <script>
-    // Функции галереи
+    // Данные для экспериментов (название + описание)
+    const experiments = [
+        { title: "Радио-тостерная тарелка", desc: "Не только разогревает еду, но и ловит сигналы из других измерений." },
+        { title: "Машина на ядерном реакторе", desc: "Компактный автомобиль, работающий на урановых стержнях." },
+        { title: "Микроволновка с реактивным двигателем", desc: "Разогревает пищу за 0.5 секунды. Также может служить ранцевым ускорителем." },
+        { title: "Холодильник ГЛУКа", desc: "Хранит продукты вечно. Иногда разговаривает. Любит тёмные углы." },
+        { title: "Квантовый чайник", desc: "Находится во всех комнатах одновременно. Наливает чай, даже если вы его не включали." },
+        { title: "Портал в другой мир", desc: "Создаёт временной портал в случайную реальность. Вход бесплатный, выход не гарантирован." },
+        { title: "Гравитационные ботинки", desc: "Позволяют ходить по потолку и стенам. Батарейки не входят в комплект." },
+        { title: "Фонарик, который светит в прошлое", desc: "Освещает события, которые уже произошли. Может вызвать временной парадокс." },
+        { title: "Телепортационная кружка", desc: "Перемещает напиток прямо в рот. Иногда оставляет кружку в другой вселенной." },
+        { title: "Шляпа-невидимка", desc: "Делает невидимым только то, что под ней. Остальное видно." },
+        { title: "Робот-пылесос с ИИ", desc: "Не только пылесосит, но и философствует. Иногда пытается сбежать." },
+        { title: "Будильник, который читает мысли", desc: "Будит ровно за 5 минут до того, как вы захотите встать." },
+        { title: "Сублиматор реальности", desc: "Переводит абстрактные идеи в физические объекты." },
+        { title: "Очки дополненной лжи", desc: "Показывают, когда вам врут. Часто показывают, что врут все." },
+        { title: "Наушники с эффектом эха", desc: "Воспроизводят звук с задержкой в 2 секунды." },
+        { title: "Ковёр-самолёт эконом-класса", desc: "Летает, но только на высоте 10 см. Максимальная скорость – 5 км/ч." },
+        { title: "Калькулятор судьбы", desc: "Вычисляет вероятность событий. Часто выдаёт ошибку деления на ноль." },
+        { title: "Зонт-антидождь", desc: "Отталкивает капли дождя обратно в небо. Может вызвать локальный потоп." },
+        { title: "Перчатки для сенсорного экрана", desc: "Позволяют пользоваться телефоном в перчатках. Работают только на правой руке." },
+        { title: "Коробка сюрпризов ASL", desc: "Внутри может быть всё что угодно – от квантового мусора до новой вселенной." }
+    ];
+
+    function downloadImage(url, filename) {
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+            })
+            .catch(err => {
+                console.error('Ошибка скачивания:', err);
+                alert('Не удалось скачать файл. Возможно, изображение недоступно.');
+            });
+    }
+
     function openGallery() {
         const modal = document.getElementById('galleryModal');
         const grid = document.getElementById('galleryGrid');
         grid.innerHTML = '';
         for (let i = 1; i <= 20; i++) {
+            const imgSrc = 'photo/' + i + '.png';
+            const exp = experiments[i-1]; // индекс 0..19
+
+            const container = document.createElement('div');
+            container.className = 'gallery-item';
+
             const img = document.createElement('img');
-            img.src = 'photo/' + i + '.png';
-            img.alt = 'Эксперимент ' + i;
+            img.src = imgSrc;
+            img.alt = `Эксперимент ${i}`;
             img.onclick = function() { openLightbox(this.src); };
             img.onerror = function() { this.src = 'photo/placeholder.png'; };
-            grid.appendChild(img);
+
+            const title = document.createElement('div');
+            title.className = 'gallery-title';
+            title.textContent = exp.title;
+
+            const desc = document.createElement('div');
+            desc.className = 'gallery-desc';
+            desc.textContent = exp.desc;
+
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = '⬇️ Скачать';
+            downloadBtn.className = 'gallery-download-btn';
+            downloadBtn.onclick = function(e) {
+                e.stopPropagation();
+                downloadImage(imgSrc, `experiment_${i}.png`);
+            };
+
+            container.appendChild(img);
+            container.appendChild(title);
+            container.appendChild(desc);
+            container.appendChild(downloadBtn);
+            grid.appendChild(container);
         }
         modal.style.display = 'flex';
     }
@@ -553,119 +709,43 @@
         document.getElementById('lightboxModal').style.display = 'none';
     }
 
-    // Закрытие модалок при клике на фон
     window.onclick = function(event) {
         const gallery = document.getElementById('galleryModal');
         if (event.target == gallery) gallery.style.display = 'none';
         const lightbox = document.getElementById('lightboxModal');
         if (event.target == lightbox) lightbox.style.display = 'none';
     };
-</script>
-<!-- СЕКРЕТНЫЙ КВАРЦЕВЫЙ БЛОК (встроен в фон, чуть темнее) -->
-<style>
-    .secret-quartz-bg {
-        position: relative;
-        bottom: -2px;
-        left: -20px;
-        width: 65px;
-        height: 65px;
-        background-image: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg');
-        background-size: 64px 64px;
-        background-repeat: repeat;
-        background-color: rgba(0, 0, 0, 0.01);
-        background-blend-mode: multiply;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        z-index: 1000;
-        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.3), 0 2px 5px rgba(0,0,0,0.2);
-    }
 
-    .secret-quartz-bg:hover {
-        filter: brightness(0.95);
-        transform: scale(1.02);
-    }
-
-    /* Анимация отваливания */
-    @keyframes fallOffBlock {
-        0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-        100% { transform: translateY(150px) rotate(30deg); opacity: 0; }
-    }
-
-    .secret-quartz-bg.falling {
-        animation: fallOffBlock 0.5s forwards;
-        pointer-events: none;
-    }
-
-    /* Скрытая красная кнопка (появляется на том же месте) */
-    .hidden-red-secret {
-        position: relative;
-        bottom: -8px;
-        left: -14px;
-        width: 50px;
-        height: 50px;
-        background: #e74c3c;
-        border: 3px solid #fff;
-        border-radius: 50%;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        font-size: 40px;
-        cursor: pointer;
-        z-index: 1001;
-        box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
-        transition: transform 0.2s;
-    }
-
-    .hidden-red-secret:hover {
-        transform: scale(1.1);
-        background: #c0392b;
-    }
-    .secret-black-square {
-        position: relative;
-         bottom: -65px;
-        left: -20px;
-        width: 63px;
-        height: 63px;
-        background-color: #000000;
-        border: 0px solid #FF8C00;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        z-index: 1000;
-    }
-</style>
-
-<div class="secret-quartz-bg" id="secretQuartzBlock"></div>
-<div class="hidden-red-secret" id="secretRedBtnBlock">🔴</div>
-
-<script>
+    // Секретный кварцевый блок (двойной клик)
     const quartzBlock = document.getElementById('secretQuartzBlock');
     const redBtnBlock = document.getElementById('secretRedBtnBlock');
     let clickTimer = null;
     let clickCount = 0;
 
-    quartzBlock.addEventListener('click', function(e) {
-        clickCount++;
-
-        if (clickCount === 1) {
-            clickTimer = setTimeout(() => {
+    if (quartzBlock) {
+        quartzBlock.addEventListener('click', function(e) {
+            clickCount++;
+            if (clickCount === 1) {
+                clickTimer = setTimeout(() => {
+                    clickCount = 0;
+                }, 300);
+            } else if (clickCount === 2) {
+                clearTimeout(clickTimer);
                 clickCount = 0;
-            }, 300);
-        } else if (clickCount === 2) {
-            clearTimeout(clickTimer);
-            clickCount = 0;
+                quartzBlock.classList.add('falling');
+                setTimeout(() => {
+                    quartzBlock.style.display = 'none';
+                    if (redBtnBlock) redBtnBlock.style.display = 'flex';
+                }, 500);
+            }
+        });
+    }
 
-            quartzBlock.classList.add('falling');
-
-            setTimeout(() => {
-                quartzBlock.style.display = 'none';
-                redBtnBlock.style.display = 'flex';
-            }, 500);
-        }
-    });
-
-    redBtnBlock.addEventListener('click', function() {
-        window.location.href = 'code.html';
-    });
+    if (redBtnBlock) {
+        redBtnBlock.addEventListener('click', function() {
+            window.location.href = 'code.html';
+        });
+    }
 </script>
 </body>
 </html>
