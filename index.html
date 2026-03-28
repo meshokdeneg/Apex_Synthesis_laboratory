@@ -15,9 +15,9 @@
 
         body {
             background-image: url('photo/light_gray_terrcotta.png'), url('photo/white_terracotta.png');
-    background-repeat: repeat, repeat;
-                background-size: 64px 64px, 64px 64px;
-     background-position: 0 0, 64px 64px;
+            background-repeat: repeat, repeat;
+            background-size: 64px 64px, 64px 64px;
+            background-position: 0 0, 64px 64px;
         }
 
         .overlay {
@@ -110,21 +110,6 @@
             font-weight: bold;
             text-transform: uppercase;
             backdrop-filter: blur(2px);
-        }
-
-        @keyframes pulse-blue {
-            0% { 
-                box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
-                background-color: #1A3B5D;
-            }
-            50% { 
-                box-shadow: 0 0 40px rgba(74, 144, 226, 1), 0 0 60px rgba(74, 144, 226, 0.6);
-                background-color: #2A4B7D;
-            }
-            100% { 
-                box-shadow: 0 0 20px rgba(74, 144, 226, 0.6);
-                background-color: #1A3B5D;
-            }
         }
 
         .front { transform: translateZ(50px); }
@@ -854,27 +839,38 @@
             margin-top: 20px;
         }
 
-        .dash-btn {
+        /* ===== ОБЪЁМНЫЕ КНОПКИ ЛИЧНОГО КАБИНЕТА ===== */
+        .dash-btn,
+        .dash-btn:link,
+        .dash-btn:visited {
+            display: inline-block;
             padding: 35px 40px !important;
             font-size: 22px !important;
-            min-width: 250px !important;
-            background: rgba(0, 0, 0, 0.5) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 2px solid #4A90E2 !important;
-            border-radius: 30px !important;
-            color: #fff !important;
-            cursor: pointer !important;
-            transition: 0.3s !important;
-            text-align: center !important;
-            text-decoration: none !important;
-            display: inline-block !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-decoration: none;
+            text-align: center;
+            background: linear-gradient(145deg, #4A90E2, #2c5a8c);
+            border: none;
+            border-radius: 20px;
+            color: #fff;
+            box-shadow: 0 10px 0 #1a3a5a, 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.1s ease;
+            cursor: pointer;
+            min-width: 250px;
+            font-family: 'Segoe UI', monospace;
+            letter-spacing: 2px;
         }
 
         .dash-btn:hover {
-            background: #4A90E2 !important;
-            color: #000 !important;
-            transform: scale(1.05) !important;
-            border-color: #FF8C00 !important;
+            background: linear-gradient(145deg, #5aa0f2, #3a6a9c);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 0 #1a3a5a, 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .dash-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #1a3a5a;
         }
 
         .carousel-container {
@@ -1187,11 +1183,9 @@
             cube.style.transform = `rotateX(${Date.now() / 50 % 360}deg) rotateY(${Date.now() / 100 % 360}deg)`;
         }, 50);
 
-        // Функция клика по кубу – сообщения с вероятностью 10% (можно изменить)
+        // Функция клика по кубу – сообщения с вероятностью 10%
         function cubeClick() {
-            // 10% шанс показать сообщение (измените 0.1 на нужное)
             if (Math.random() > 0.1) {
-                // всё равно выполняем анимацию куба
                 const cube = document.getElementById('test-cube');
                 cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
                 setTimeout(() => { cube.style.transform = ''; }, 200);
@@ -1240,13 +1234,11 @@
             const msg = document.createElement('div');
             msg.textContent = randomPhrase;
             msg.className = 'float-message';
-            // Небольшой разброс по высоте, чтобы сообщения не накладывались
             const randomBottom = 80 + Math.random() * 40;
             msg.style.bottom = randomBottom + 'px';
             document.body.appendChild(msg);
-            setTimeout(() => msg.remove(), 4000); // удаляем после анимации
+            setTimeout(() => msg.remove(), 4000);
 
-            // Эффект нажатия на куб
             const cube = document.getElementById('test-cube');
             cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
             setTimeout(() => {
