@@ -491,13 +491,21 @@
             position: absolute;
             width: 100px;
             height: 100px;
-            border: 3px solid #4A90E2;
-            background-image: url('cub.png');
+            border: 3px solid #e0e0e0;
+            background-image: url('photo/cub.png');
             background-size: cover;
-            background-color: #1A3B5D;
+            background-position: center;
+            background-repeat: no-repeat;
             background-blend-mode: overlay;
-            box-shadow: 0 0 30px rgba(74,144,226,0.8);
-            animation: pulse-blue 2s infinite;
+            box-shadow: 0 0 30px rgba(74, 144, 226, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            backdrop-filter: blur(2px);
         }
         @keyframes pulse-blue {
             0% { box-shadow: 0 0 20px rgba(74,144,226,0.6); background-color: #1A3B5D; }
