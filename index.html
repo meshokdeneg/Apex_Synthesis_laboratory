@@ -624,83 +624,6 @@
             border-color: #FF8C00;
         }
 
-        .profile-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            z-index: 3500;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .profile-content {
-            background: rgba(30, 30, 30, 0.95);
-            backdrop-filter: blur(20px);
-            border: 3px solid #FF8C00;
-            border-radius: 30px;
-            padding: 40px;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
-        }
-
-        .profile-content h2 {
-            color: #FF8C00;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .profile-form-group {
-            margin-bottom: 20px;
-        }
-
-        .profile-form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .profile-form-group input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid #4A90E2;
-            border-radius: 10px;
-            color: #fff;
-        }
-
-        .profile-save-btn {
-            width: 100%;
-            padding: 15px;
-            background: #4A90E2;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 20px;
-        }
-
-        .profile-save-btn:hover {
-            background: #FF8C00;
-        }
-
-        .close-profile {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: #FF8C00;
-            font-size: 35px;
-            cursor: pointer;
-        }
-
         .site-footer {
             width: 100%;
             margin-top: 60px;
@@ -1106,32 +1029,6 @@
         </div>
     </div>
 
-    <div class="profile-modal" id="profileModal">
-        <div class="profile-content">
-            <span class="close-profile" onclick="closeProfileModal()">&times;</span>
-            <h2>РЕДАКТИРОВАНИЕ ПРОФИЛЯ</h2>
-            <form id="profileForm" onsubmit="event.preventDefault(); saveProfileChanges();">
-                <div class="profile-form-group">
-                    <label>Фамилия</label>
-                    <input type="text" id="profileSurname" required>
-                </div>
-                <div class="profile-form-group">
-                    <label>Имя</label>
-                    <input type="text" id="profileName" required>
-                </div>
-                <div class="profile-form-group">
-                    <label>Никнейм</label>
-                    <input type="text" id="profileNickname" required>
-                </div>
-                <div class="profile-form-group">
-                    <label>Пароль (оставьте пустым, если не меняете)</label>
-                    <input type="password" id="profilePassword" placeholder="Новый пароль">
-                </div>
-                <button type="submit" class="profile-save-btn">СОХРАНИТЬ</button>
-            </form>
-        </div>
-    </div>
-
     <footer class="site-footer">
         <div class="footer-content">
             <span class="footer-info">ASL • отдел TToS • версия 2.0</span>
@@ -1140,7 +1037,7 @@
         </div>
     </footer>
 
-    <div class="profile-button" id="profileButton" onclick="openProfileModal()" style="display: none;">
+    <div class="profile-button" id="profileButton" onclick="window.location.href='profile.html'" style="display: none;">
         <img src="https://i.pinimg.com/originals/58/05/34/580534a241f377ea13478ef988376294.jpg" alt="Profile">
     </div>
 
@@ -1333,8 +1230,6 @@
             if (event.target == details) details.style.display = 'none';
             const lightbox = document.getElementById('shopLightbox');
             if (event.target == lightbox) lightbox.style.display = 'none';
-            const profile = document.getElementById('profileModal');
-            if (event.target == profile) profile.style.display = 'none';
         };
 
         const savedUser = localStorage.getItem('asl_user');
@@ -1351,38 +1246,6 @@
             document.getElementById('profileButton').style.display = 'none';
             document.getElementById('atticLogoutBtn').style.display = 'none';
             document.getElementById('decorativeCounter').style.display = 'none';
-        }
-
-        function openProfileModal() {
-            if (currentUser) {
-                document.getElementById('profileSurname').value = currentUser.surname || '';
-                document.getElementById('profileName').value = currentUser.name || '';
-                document.getElementById('profileNickname').value = currentUser.nickname || '';
-                document.getElementById('profilePassword').value = '';
-            }
-            document.getElementById('profileModal').style.display = 'flex';
-        }
-
-        function closeProfileModal() {
-            document.getElementById('profileModal').style.display = 'none';
-        }
-
-        function saveProfileChanges() {
-            const newSurname = document.getElementById('profileSurname').value.trim();
-            const newName = document.getElementById('profileName').value.trim();
-            const newNickname = document.getElementById('profileNickname').value.trim();
-            const newPassword = document.getElementById('profilePassword').value.trim();
-            if (!newSurname || !newName || !newNickname) {
-                alert('Фамилия, имя и никнейм обязательны!');
-                return;
-            }
-            currentUser.surname = newSurname;
-            currentUser.name = newName;
-            currentUser.nickname = newNickname;
-            if (newPassword) currentUser.password = newPassword;
-            localStorage.setItem('asl_user', JSON.stringify(currentUser));
-            alert('Данные успешно обновлены!');
-            closeProfileModal();
         }
 
         // Карусель
