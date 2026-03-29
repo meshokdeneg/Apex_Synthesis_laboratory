@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ASL | Тетрис</title>
+    <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0a0f1a 0%, #0c111c 100%);
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .game-container {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 3px #FF8C00, 0 0 0 8px #1a2a2f;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #FF8C00;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .game-layout {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        canvas {
+            border: 3px solid #1a2a2f;
+            border-radius: 8px;
+            background: #0a0f1a;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .info-panel {
+            background: #f5f5f5;
+            border-radius: 20px;
+            padding: 20px;
+            min-width: 150px;
+        }
+
+        .info-item {
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FF8C00;
+        }
+
+        .level-badge {
+            background: #1a2a2f;
+            color: #FF8C00;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #4A90E2, #357abd);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 15px;
+            width: 100%;
+            box-shadow: 0 4px 0 #1a3a5a;
+        }
+
+        .reset-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1a3a5a;
+        }
+
+        .home-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 25px;
+            background: #ccc;
+            color: #333;
+            text-decoration: none;
+            border-radius: 40px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .home-btn:hover {
+            background: #bbb;
+        }
+
+        @media (max-width: 650px) {
+            .game-container { padding: 15px; }
+            h1 { font-size: 24px; }
+            .info-value { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <h1>🧩 ТЕТРИС — ASL EDITION</h1>
+    <div class="subtitle">← → двигать | ↑ вращать | ↓ ускорить</div>
+
+    <div class="game-layout">
+        <canvas id="gameCanvas" width="300" height="600"></canvas>
+        
+        <div class="info-panel">
+            <div class="info-item">
+                <div class="info-label">🎯 СЧЁТ</div>
+                <div class="info-value" id="scoreValue">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">🔰 УРОВЕНЬ</div>
+                <div class="info-value" id="levelValue">1</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">📊 ЛИНИИ</div>
+                <div class="info-value" id="linesValue">0</div>
+            </div>
+            <div class="level-badge" id="nextPieceLabel">СЛЕДУЮЩАЯ</div>
+            <canvas id="nextCanvas" width="120" height="120" style="margin: 10px auto; display: block; background: #0a0f1a; border-radius: 12px;"></canvas>
+            <button class="reset-btn" id="resetBtn">🔄 НОВАЯ ИГРА</button>
+        </div>
+    </div>
+    <a href="index.html" class="home-btn">🏠 НА ГЛАВНУЮ</a>
+</div>
+
+<script>
+    (function(){
+        // ---------- НАСТРОЙКИ ----------
+        const COLS = 10;
+        const ROWS = 20;
+        const CELL_SIZE = 30; // пикселей
+        let currentLevel = 1;
+        let totalLines = 0;
+        let score = 0;
+        
+        // Скорость падения в зависимости от уровня (чем выше уровень, тем быстрее)
+        function getFallDelay() {
+            return Math.max(80, 500 - (currentLevel - 1) * 30);
+        }
+        
+        let fallDelay = getFallDelay();
+        let lastTimestamp = 0;
+        let gameActive = true;
+        
+        // ---------- ТЕТРОМИНО ----------
+        const TETROMINOS = {
+            'I': { shape: [[1,1,1,1]], color: '#00FFFF' },
+            'O': { shape: [[1,1],[1,1]], color: '#FFFF00' },
+            'T': { shape: [[0,1,0],[1,1,1]], color: '#AA00FF' },
+            'S': { shape: [[0,1,1],[1,1,0]], color: '#00FF00' },
+            'Z': { shape: [[1,1,0],[0,1,1]], color: '#FF0000' },
+            'J': { shape: [[1,0,0],[1,1,1]], color: '#0000FF' },
+            'L': { shape: [[0,0,1],[1,1,1]], color: '#FFA500' }
+        };
+        const TETRO_NAMES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
+        
+        let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+        let currentPiece = null;
+        let nextPiece = null;
+        let fallInterval = null;
+        
+        // DOM элементы
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const nextCanvas = document.getElementById('nextCanvas');
+        const nextCtx = nextCanvas.getContext('2d');
+        const scoreSpan = document.getElementById('scoreValue');
+        const levelSpan = document.getElementById('levelValue');
+        const linesSpan = document.getElementById('linesValue');
+        
+        // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
+        function getRandomTetro() {
+            const name = TETRO_NAMES[Math.floor(Math.random() * TETRO_NAMES.length)];
+            const data = TETROMINOS[name];
+            return {
+                name: name,
+                shape: data.shape.map(row => [...row]),
+                color: data.color,
+                row: 0,
+                col: Math.floor((COLS - data.shape[0].length) / 2)
+            };
+        }
+        
+        function rotateShape(shape) {
+            const rows = shape.length, cols = shape[0].length;
+            const rotated = Array(cols).fill().map(() => Array(rows).fill(0));
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    rotated[j][rows - 1 - i] = shape[i][j];
+                }
+            }
+            return rotated;
+        }
+        
+        function isValidMove(piece, newRow, newCol, newShape = null) {
+            const shape = newShape || piece.shape;
+            for (let i = 0; i < shape.length; i++) {
+                for (let j = 0; j < shape[0].length; j++) {
+                    if (shape[i][j]) {
+                        const boardRow = newRow + i;
+                        const boardCol = newCol + j;
+                        if (boardRow >= ROWS || boardCol < 0 || boardCol >= COLS || boardRow < 0) return false;
+                        if (boardRow >= 0 && board[boardRow][boardCol] !== 0) return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        // Закрепление фигуры
+        function mergePiece() {
+            for (let i = 0; i < currentPiece.shape.length; i++) {
+                for (let j = 0; j < currentPiece.shape[0].length; j++) {
+                    if (currentPiece.shape[i][j]) {
+                        const row = currentPiece.row + i;
+                        const col = currentPiece.col + j;
+                        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+                            board[row][col] = currentPiece.color;
+                        }
+                    }
+                }
+            }
+            
+            // Проверка линий
+            let linesCleared = 0;
+            for (let row = ROWS - 1; row >= 0; ) {
+                let full = true;
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col] === 0) {
+                        full = false;
+                        break;
+                    }
+                }
+                if (full) {
+                    // Удаляем строку
+                    for (let r = row; r > 0; r--) {
+                        board[r] = [...board[r-1]];
+                    }
+                    board[0] = Array(COLS).fill(0);
+                    linesCleared++;
+                    // Проверяем ту же строку снова
+                } else {
+                    row--;
+                }
+            }
+            
+            // Обновляем счёт и уровень
+            if (linesCleared > 0) {
+                totalLines += linesCleared;
+                // Очки: 100 за линию, множитель от уровня
+                score += linesCleared * 100 * currentLevel;
+                // Каждые 5 линий — уровень +1
+                const newLevel = Math.floor(totalLines / 5) + 1;
+                if (newLevel > currentLevel) {
+                    currentLevel = newLevel;
+                    fallDelay = getFallDelay();
+                    if (fallInterval) {
+                        clearInterval(fallInterval);
+                        startFallInterval();
+                    }
+                }
+                updateUI();
+            }
+            
+            // Спавн новой фигуры
+            currentPiece = nextPiece;
+            nextPiece = getRandomTetro();
+            currentPiece.row = 0;
+            currentPiece.col = Math.floor((COLS - currentPiece.shape[0].length) / 2);
+            
+            if (!isValidMove(currentPiece, currentPiece.row, currentPiece.col)) {
+                gameActive = false;
+                if (fallInterval) clearInterval(fallInterval);
+                draw();
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, canvas.height/2 - 30, canvas.width, 60);
+                ctx.fillStyle = '#FF8C00';
+                ctx.font = 'bold 24px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+                return;
+            }
+            draw();
+        }
+        
+        // Движение вниз
+        function moveDown() {
+            if (!gameActive || !currentPiece) return;
+            if (isValidMove(currentPiece, currentPiece.row + 1, currentPiece.col)) {
+                currentPiece.row++;
+                draw();
+            } else {
+                mergePiece();
+                draw();
+                checkGameOver();
+            }
+        }
+        
+        function instantDrop() {
+            if (!gameActive || !currentPiece) return;
+            while (isValidMove(currentPiece, currentPiece.row + 1, currentPiece.col)) {
+                currentPiece.row++;
+            }
+            mergePiece();
+            draw();
+        }
+        
+        function moveHorizontal(dx) {
+            if (!gameActive || !currentPiece) return;
+            if (isValidMove(currentPiece, currentPiece.row, currentPiece.col + dx)) {
+                currentPiece.col += dx;
+                draw();
+            }
+        }
+        
+        function rotatePiece() {
+            if (!gameActive || !currentPiece) return;
+            const rotated = rotateShape(currentPiece.shape);
+            if (isValidMove(currentPiece, currentPiece.row, currentPiece.col, rotated)) {
+                currentPiece.shape = rotated;
+                draw();
+            }
+        }
+        
+        function checkGameOver() {
+            if (!gameActive) return;
+            for (let col = 0; col < COLS; col++) {
+                if (board[0][col] !== 0) {
+                    gameActive = false;
+                    if (fallInterval) clearInterval(fallInterval);
+                    draw();
+                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                    ctx.fillRect(0, canvas.height/2 - 30, canvas.width, 60);
+                    ctx.fillStyle = '#FF8C00';
+                    ctx.font = 'bold 24px monospace';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+                    break;
+                }
+            }
+        }
+        
+        function draw() {
+            // Очистка
+            ctx.fillStyle = '#0a0f1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Рисуем сетку и закреплённые блоки
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col] !== 0) {
+                        ctx.fillStyle = board[row][col];
+                        ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                        ctx.strokeStyle = '#333';
+                        ctx.strokeRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                    } else {
+                        ctx.strokeStyle = '#1a2a2f';
+                        ctx.strokeRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                    }
+                }
+            }
+            
+            // Рисуем текущую фигуру
+            if (currentPiece && gameActive) {
+                for (let i = 0; i < currentPiece.shape.length; i++) {
+                    for (let j = 0; j < currentPiece.shape[0].length; j++) {
+                        if (currentPiece.shape[i][j]) {
+                            const x = (currentPiece.col + j) * CELL_SIZE;
+                            const y = (currentPiece.row + i) * CELL_SIZE;
+                            ctx.fillStyle = currentPiece.color;
+                            ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                            ctx.strokeStyle = '#fff';
+                            ctx.strokeRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                        }
+                    }
+                }
+            }
+            
+            // Рисуем следующую фигуру
+            nextCtx.fillStyle = '#0a0f1a';
+            nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+            if (nextPiece) {
+                const shape = nextPiece.shape;
+                const color = nextPiece.color;
+                const blockW = nextCanvas.width / 4;
+                const offsetX = (nextCanvas.width - (shape[0].length * blockW)) / 2;
+                const offsetY = (nextCanvas.height - (shape.length * blockW)) / 2;
+                for (let i = 0; i < shape.length; i++) {
+                    for (let j = 0; j < shape[0].length; j++) {
+                        if (shape[i][j]) {
+                            nextCtx.fillStyle = color;
+                            nextCtx.fillRect(offsetX + j * blockW, offsetY + i * blockW, blockW - 2, blockW - 2);
+                        }
+                    }
+                }
+            }
+        }
+        
+        function updateUI() {
+            scoreSpan.innerText = score;
+            levelSpan.innerText = currentLevel;
+            linesSpan.innerText = totalLines;
+        }
+        
+        function startFallInterval() {
+            if (fallInterval) clearInterval(fallInterval);
+            fallInterval = setInterval(() => {
+                if (gameActive) moveDown();
+            }, fallDelay);
+        }
+        
+        function resetGame() {
+            board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+            currentLevel = 1;
+            totalLines = 0;
+            score = 0;
+            fallDelay = getFallDelay();
+            gameActive = true;
+            currentPiece = getRandomTetro();
+            nextPiece = getRandomTetro();
+            currentPiece.row = 0;
+            currentPiece.col = Math.floor((COLS - currentPiece.shape[0].length) / 2);
+            updateUI();
+            if (fallInterval) clearInterval(fallInterval);
+            startFallInterval();
+            draw();
+        }
+        
+        // ---------- УПРАВЛЕНИЕ ----------
+        document.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            switch(e.key) {
+                case 'ArrowLeft': moveHorizontal(-1); break;
+                case 'ArrowRight': moveHorizontal(1); break;
+                case 'ArrowDown': moveDown(); break;
+                case 'ArrowUp': rotatePiece(); break;
+                case ' ': case 'Space': instantDrop(); break;
+                default: return;
+            }
+            e.preventDefault();
+        });
+        
+        // Кнопка сброса
+        document.getElementById('resetBtn').addEventListener('click', () => resetGame());
+        
+        // Запуск игры
+        resetGame();
+    })();
+</script>
+</body>
+</html>
