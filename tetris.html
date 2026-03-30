@@ -27,6 +27,30 @@
             box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 3px #FF8C00, 0 0 0 8px #1a2a2f;
             padding: 30px;
             text-align: center;
+            transition: 0.05s;
+            position: relative;
+        }
+
+        .game-container.red-flash {
+            background: #ffcccc;
+        }
+
+        .game-container.dark-overlay {
+            position: relative;
+        }
+
+        .game-container.dark-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            pointer-events: none;
+            z-index: 20;
+            border-radius: 32px;
+            transition: 0.1s;
         }
 
         h1 {
@@ -49,11 +73,28 @@
             flex-wrap: wrap;
         }
 
+        .canvas-wrapper {
+            position: relative;
+        }
+
         canvas {
             border: 3px solid #1a2a2f;
             border-radius: 8px;
             background: #0a0f1a;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .danger-line {
+            position: absolute;
+            top: 90px;
+            left: 3px;
+            width: calc(100% - 6px);
+            height: 3px;
+            background: #ff0000;
+            box-shadow: 0 0 10px #ff0000;
+            pointer-events: none;
+            z-index: 10;
+            border-radius: 2px;
         }
 
         .info-panel {
@@ -89,13 +130,7 @@
             margin-top: 20px;
         }
 
-        .controls {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #888;
-        }
-
-        .reset-btn {
+        .reset-btn, .start-btn {
             background: linear-gradient(135deg, #4A90E2, #357abd);
             color: white;
             border: none;
@@ -105,12 +140,17 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
-            margin-top: 15px;
+            margin-top: 10px;
             width: 100%;
             box-shadow: 0 4px 0 #1a3a5a;
         }
 
-        .reset-btn:active {
+        .start-btn {
+            background: linear-gradient(135deg, #27ae60, #219a52);
+            box-shadow: 0 4px 0 #1a5a3a;
+        }
+
+        .reset-btn:active, .start-btn:active {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #1a3a5a;
         }
@@ -131,6 +171,29 @@
             background: #bbb;
         }
 
+        /* Сообщение Глюка */
+        #glukFloatMessage {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-left: 4px solid #FF8C00;
+            border-radius: 12px;
+            padding: 12px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #FF8C00;
+            max-width: 280px;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
         @media (max-width: 650px) {
             .game-container { padding: 15px; }
             h1 { font-size: 24px; }
@@ -139,12 +202,15 @@
     </style>
 </head>
 <body>
-<div class="game-container">
+<div class="game-container" id="gameContainer">
     <h1>🧩 ТЕТРИС — ASL EDITION</h1>
-    <div class="subtitle">← → двигать | ↑ вращать | ↓ ускорить</div>
+    <div class="subtitle">← → двигать | ↑ вращать | ↓ ускорить | ␣ мгновенный сброс</div>
 
     <div class="game-layout">
-        <canvas id="gameCanvas" width="300" height="600"></canvas>
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="420" height="660"></canvas>
+            <div class="danger-line" id="dangerLine"></div>
+        </div>
         
         <div class="info-panel">
             <div class="info-item">
@@ -161,49 +227,39 @@
             </div>
             <div class="level-badge" id="nextPieceLabel">СЛЕДУЮЩАЯ</div>
             <canvas id="nextCanvas" width="120" height="120" style="margin: 10px auto; display: block; background: #0a0f1a; border-radius: 12px;"></canvas>
+            <button class="start-btn" id="startBtn">🚀 НАЧАТЬ ИГРУ</button>
             <button class="reset-btn" id="resetBtn">🔄 НОВАЯ ИГРА</button>
         </div>
     </div>
     <a href="index.html" class="home-btn">🏠 НА ГЛАВНУЮ</a>
 </div>
 
+<div id="glukFloatMessage"></div>
+
 <script>
     (function(){
         // ---------- НАСТРОЙКИ ----------
-        const COLS = 10;
-        const ROWS = 20;
-        const CELL_SIZE = 30; // пикселей
+        const COLS = 14;
+        const ROWS = 22;
+        const CELL_SIZE = 30;
+        const DANGER_ZONE_ROW = 3;
+        
         let currentLevel = 1;
         let totalLines = 0;
         let score = 0;
+        let gameActive = false;
+        let gameStarted = false;
+        let darkenInterval = null;
+        let isDarkened = false;
         
-        // Скорость падения в зависимости от уровня (чем выше уровень, тем быстрее)
         function getFallDelay() {
             return Math.max(80, 500 - (currentLevel - 1) * 30);
         }
         
         let fallDelay = getFallDelay();
-        let lastTimestamp = 0;
-        let gameActive = true;
-        
-        // ---------- ТЕТРОМИНО ----------
-        const TETROMINOS = {
-            'I': { shape: [[1,1,1,1]], color: '#00FFFF' },
-            'O': { shape: [[1,1],[1,1]], color: '#FFFF00' },
-            'T': { shape: [[0,1,0],[1,1,1]], color: '#AA00FF' },
-            'S': { shape: [[0,1,1],[1,1,0]], color: '#00FF00' },
-            'Z': { shape: [[1,1,0],[0,1,1]], color: '#FF0000' },
-            'J': { shape: [[1,0,0],[1,1,1]], color: '#0000FF' },
-            'L': { shape: [[0,0,1],[1,1,1]], color: '#FFA500' }
-        };
-        const TETRO_NAMES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'];
-        
-        let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
-        let currentPiece = null;
-        let nextPiece = null;
         let fallInterval = null;
         
-        // DOM элементы
+        const gameContainer = document.getElementById('gameContainer');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const nextCanvas = document.getElementById('nextCanvas');
@@ -212,14 +268,78 @@
         const levelSpan = document.getElementById('levelValue');
         const linesSpan = document.getElementById('linesValue');
         
-        // ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
+        // Тетромино
+        const TETROMINOS = {
+            'I': { shape: [[1,1,1,1]], color: '#00FFFF', isBomb: false },
+            'O': { shape: [[1,1],[1,1]], color: '#FFFF00', isBomb: false },
+            'T': { shape: [[0,1,0],[1,1,1]], color: '#AA00FF', isBomb: false },
+            'S': { shape: [[0,1,1],[1,1,0]], color: '#00FF00', isBomb: false },
+            'Z': { shape: [[1,1,0],[0,1,1]], color: '#FF0000', isBomb: false },
+            'J': { shape: [[1,0,0],[1,1,1]], color: '#0000FF', isBomb: false },
+            'L': { shape: [[0,0,1],[1,1,1]], color: '#FFA500', isBomb: false },
+            'BOMB': { shape: [[1]], color: '#FFFFFF', isBomb: true, borderColor: '#888', centerColor: '#FF0000' }
+        };
+        const TETRO_NAMES = ['I', 'O', 'T', 'S', 'Z', 'J', 'L', 'BOMB'];
+        
+        let board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+        let currentPiece = null;
+        let nextPiece = null;
+        
+        // Фразы Глюка
+        const glukMessages = [
+            "Ну вот, даже падающие блоки умнее тебя, а у них вообще нет мозгов, только гравитация…",
+            "Ты проиграл игре, где главный враг — геометрия, и она тебя победила, поздравляю, это редкость…",
+            "Стоило ли так долго смотреть на экран, если линия всё равно не сложилась? Нет. Но ты смотрел…",
+            "В ASL тебя ждут бездна, прессы и мои комментарии, а ты застрял на падающих квадратах, смешно, правда?",
+            "Скорость падения была выше твоей скорости мысли, это диагноз, но не смертельный, перезапускай…",
+            "Ты мог построить идеальный ряд, но выбрал хаос, я это запомню, у меня память долгая…",
+            "Даже мусорщики в старых цехах собирают детали быстрее, чем ты собираешь линии, а они ржавые и без глаз…",
+            "Очередная попытка, и очередной провал, я сбился со счёта, но это неважно, главное — ты сбился с ритма…",
+            "Тетрис — это тест на скорость и терпение, ты не прошёл ни то, ни другое, но у меня есть тесты и сложнее, готов?",
+            "Блоки падают, ты проигрываешь, я говорю, всё идёт по плану, перезапускай, пока я не начал скучать, а я скучаю быстро…"
+        ];
+        
+        // Система сообщений
+        let glukMessageElement = document.getElementById('glukFloatMessage');
+        let glukMessageTimeout = null;
+        
+        function showGlukMessage(text, duration = 4000) {
+            if (!glukMessageElement) return;
+            if (glukMessageTimeout) clearTimeout(glukMessageTimeout);
+            glukMessageElement.textContent = `🤖 Глюк: ${text}`;
+            glukMessageElement.style.opacity = '1';
+            glukMessageElement.style.transform = 'translateX(0)';
+            glukMessageTimeout = setTimeout(() => {
+                glukMessageElement.style.opacity = '0';
+                glukMessageElement.style.transform = 'translateX(50px)';
+            }, duration);
+        }
+        
+        function randomGlukMessage() {
+            return glukMessages[Math.floor(Math.random() * glukMessages.length)];
+        }
+        
         function getRandomTetro() {
-            const name = TETRO_NAMES[Math.floor(Math.random() * TETRO_NAMES.length)];
+            const isBomb = Math.random() < 0.12;
+            if (isBomb && score > 500) {
+                return {
+                    name: 'BOMB',
+                    shape: [[1]],
+                    color: '#FFFFFF',
+                    isBomb: true,
+                    borderColor: '#888',
+                    centerColor: '#FF0000',
+                    row: 0,
+                    col: Math.floor((COLS - 1) / 2)
+                };
+            }
+            const name = TETRO_NAMES[Math.floor(Math.random() * (TETRO_NAMES.length - 1))];
             const data = TETROMINOS[name];
             return {
                 name: name,
                 shape: data.shape.map(row => [...row]),
                 color: data.color,
+                isBomb: false,
                 row: 0,
                 col: Math.floor((COLS - data.shape[0].length) / 2)
             };
@@ -243,7 +363,7 @@
                     if (shape[i][j]) {
                         const boardRow = newRow + i;
                         const boardCol = newCol + j;
-                        if (boardRow >= ROWS || boardCol < 0 || boardCol >= COLS || boardRow < 0) return false;
+                        if (boardRow >= ROWS || boardCol < 0 || boardCol >= COLS) return false;
                         if (boardRow >= 0 && board[boardRow][boardCol] !== 0) return false;
                     }
                 }
@@ -251,21 +371,49 @@
             return true;
         }
         
-        // Закрепление фигуры
+        function explodeBomb(row, col) {
+            for (let dr = -2; dr <= 2; dr++) {
+                for (let dc = -2; dc <= 2; dc++) {
+                    const nr = row + dr, nc = col + dc;
+                    if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
+                        if (Math.abs(dr) + Math.abs(dc) <= 2) {
+                            board[nr][nc] = 0;
+                        }
+                    }
+                }
+            }
+            showGlukMessage("💥 БАХ! Бомба взорвалась! 4 блока уничтожено.", 2000);
+        }
+        
         function mergePiece() {
-            for (let i = 0; i < currentPiece.shape.length; i++) {
-                for (let j = 0; j < currentPiece.shape[0].length; j++) {
-                    if (currentPiece.shape[i][j]) {
-                        const row = currentPiece.row + i;
-                        const col = currentPiece.col + j;
-                        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
-                            board[row][col] = currentPiece.color;
+            if (!currentPiece) return;
+            
+            if (currentPiece.isBomb) {
+                for (let i = 0; i < currentPiece.shape.length; i++) {
+                    for (let j = 0; j < currentPiece.shape[0].length; j++) {
+                        if (currentPiece.shape[i][j]) {
+                            const row = currentPiece.row + i;
+                            const col = currentPiece.col + j;
+                            if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+                                explodeBomb(row, col);
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (let i = 0; i < currentPiece.shape.length; i++) {
+                    for (let j = 0; j < currentPiece.shape[0].length; j++) {
+                        if (currentPiece.shape[i][j]) {
+                            const row = currentPiece.row + i;
+                            const col = currentPiece.col + j;
+                            if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+                                board[row][col] = currentPiece.color;
+                            }
                         }
                     }
                 }
             }
             
-            // Проверка линий
             let linesCleared = 0;
             for (let row = ROWS - 1; row >= 0; ) {
                 let full = true;
@@ -276,24 +424,19 @@
                     }
                 }
                 if (full) {
-                    // Удаляем строку
                     for (let r = row; r > 0; r--) {
                         board[r] = [...board[r-1]];
                     }
                     board[0] = Array(COLS).fill(0);
                     linesCleared++;
-                    // Проверяем ту же строку снова
                 } else {
                     row--;
                 }
             }
             
-            // Обновляем счёт и уровень
             if (linesCleared > 0) {
                 totalLines += linesCleared;
-                // Очки: 100 за линию, множитель от уровня
                 score += linesCleared * 100 * currentLevel;
-                // Каждые 5 линий — уровень +1
                 const newLevel = Math.floor(totalLines / 5) + 1;
                 if (newLevel > currentLevel) {
                     currentLevel = newLevel;
@@ -306,28 +449,69 @@
                 updateUI();
             }
             
-            // Спавн новой фигуры
-            currentPiece = nextPiece;
-            nextPiece = getRandomTetro();
-            currentPiece.row = 0;
-            currentPiece.col = Math.floor((COLS - currentPiece.shape[0].length) / 2);
-            
-            if (!isValidMove(currentPiece, currentPiece.row, currentPiece.col)) {
-                gameActive = false;
-                if (fallInterval) clearInterval(fallInterval);
-                draw();
-                ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                ctx.fillRect(0, canvas.height/2 - 30, canvas.width, 60);
-                ctx.fillStyle = '#FF8C00';
-                ctx.font = 'bold 24px monospace';
-                ctx.textAlign = 'center';
-                ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
-                return;
-            }
+            spawnNewPiece();
             draw();
+            
+            if (checkDangerZone()) {
+                gameOver();
+            }
         }
         
-        // Движение вниз
+        function spawnNewPiece() {
+            currentPiece = nextPiece;
+            nextPiece = getRandomTetro();
+            if (currentPiece) {
+                currentPiece.row = 0;
+                currentPiece.col = Math.floor((COLS - currentPiece.shape[0].length) / 2);
+                if (!isValidMove(currentPiece, currentPiece.row, currentPiece.col)) {
+                    gameOver();
+                }
+            }
+        }
+        
+        function checkDangerZone() {
+            for (let row = 0; row < DANGER_ZONE_ROW; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col] !== 0) return true;
+                }
+            }
+            return false;
+        }
+        
+        function redFlash() {
+            gameContainer.classList.add('red-flash');
+            setTimeout(() => {
+                gameContainer.classList.remove('red-flash');
+            }, 200);
+        }
+        
+        function startDarkenEffect() {
+            if (darkenInterval) clearInterval(darkenInterval);
+            let opacity = 0;
+            showGlukMessage("🔧 Щас свет починю, погоди...", 2500);
+            darkenInterval = setInterval(() => {
+                if (!gameActive || score < 1000) {
+                    clearInterval(darkenInterval);
+                    gameContainer.classList.remove('dark-overlay');
+                    isDarkened = false;
+                    return;
+                }
+                opacity += 0.03;
+                if (opacity >= 0.92) {
+                    clearInterval(darkenInterval);
+                    gameContainer.classList.add('dark-overlay');
+                    isDarkened = true;
+                    setTimeout(() => {
+                        if (gameActive && isDarkened) {
+                            gameContainer.classList.remove('dark-overlay');
+                            isDarkened = false;
+                            showGlukMessage("✅ Всё починил! Свет вернулся. Развлекайся дальше)", 4000);
+                        }
+                    }, 60000);
+                }
+            }, 80);
+        }
+        
         function moveDown() {
             if (!gameActive || !currentPiece) return;
             if (isValidMove(currentPiece, currentPiece.row + 1, currentPiece.col)) {
@@ -336,7 +520,6 @@
             } else {
                 mergePiece();
                 draw();
-                checkGameOver();
             }
         }
         
@@ -366,30 +549,17 @@
             }
         }
         
-        function checkGameOver() {
-            if (!gameActive) return;
-            for (let col = 0; col < COLS; col++) {
-                if (board[0][col] !== 0) {
-                    gameActive = false;
-                    if (fallInterval) clearInterval(fallInterval);
-                    draw();
-                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-                    ctx.fillRect(0, canvas.height/2 - 30, canvas.width, 60);
-                    ctx.fillStyle = '#FF8C00';
-                    ctx.font = 'bold 24px monospace';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
-                    break;
-                }
-            }
-        }
-        
         function draw() {
-            // Очистка
             ctx.fillStyle = '#0a0f1a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Рисуем сетку и закреплённые блоки
+            for (let row = 0; row < DANGER_ZONE_ROW; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    ctx.fillStyle = 'rgba(255,0,0,0.1)';
+                    ctx.fillRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+                }
+            }
+            
             for (let row = 0; row < ROWS; row++) {
                 for (let col = 0; col < COLS; col++) {
                     if (board[row][col] !== 0) {
@@ -404,8 +574,7 @@
                 }
             }
             
-            // Рисуем текущую фигуру
-            if (currentPiece && gameActive) {
+            if (currentPiece && gameActive && !currentPiece.isBomb) {
                 for (let i = 0; i < currentPiece.shape.length; i++) {
                     for (let j = 0; j < currentPiece.shape[0].length; j++) {
                         if (currentPiece.shape[i][j]) {
@@ -418,12 +587,22 @@
                         }
                     }
                 }
+            } else if (currentPiece && gameActive && currentPiece.isBomb) {
+                const x = currentPiece.col * CELL_SIZE;
+                const y = currentPiece.row * CELL_SIZE;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                ctx.strokeStyle = '#888';
+                ctx.strokeRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                ctx.fillStyle = '#FF0000';
+                ctx.beginPath();
+                ctx.arc(x + CELL_SIZE/2, y + CELL_SIZE/2, CELL_SIZE/4, 0, 2 * Math.PI);
+                ctx.fill();
             }
             
-            // Рисуем следующую фигуру
             nextCtx.fillStyle = '#0a0f1a';
             nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
-            if (nextPiece) {
+            if (nextPiece && !nextPiece.isBomb) {
                 const shape = nextPiece.shape;
                 const color = nextPiece.color;
                 const blockW = nextCanvas.width / 4;
@@ -437,6 +616,16 @@
                         }
                     }
                 }
+            } else if (nextPiece && nextPiece.isBomb) {
+                const blockW = nextCanvas.width / 4;
+                const offsetX = (nextCanvas.width - blockW) / 2;
+                const offsetY = (nextCanvas.height - blockW) / 2;
+                nextCtx.fillStyle = '#FFFFFF';
+                nextCtx.fillRect(offsetX, offsetY, blockW - 2, blockW - 2);
+                nextCtx.fillStyle = '#FF0000';
+                nextCtx.beginPath();
+                nextCtx.arc(offsetX + blockW/2, offsetY + blockW/2, blockW/4, 0, 2 * Math.PI);
+                nextCtx.fill();
             }
         }
         
@@ -444,6 +633,9 @@
             scoreSpan.innerText = score;
             levelSpan.innerText = currentLevel;
             linesSpan.innerText = totalLines;
+            if (score >= 1000 && gameActive && !isDarkened && !gameContainer.classList.contains('dark-overlay')) {
+                startDarkenEffect();
+            }
         }
         
         function startFallInterval() {
@@ -453,41 +645,76 @@
             }, fallDelay);
         }
         
-        function resetGame() {
+        function gameOver() {
+            if (!gameActive) return;
+            gameActive = false;
+            if (fallInterval) clearInterval(fallInterval);
+            if (darkenInterval) clearInterval(darkenInterval);
+            redFlash();
+            showGlukMessage(randomGlukMessage(), 5000);
+            draw();
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
+            ctx.fillRect(0, canvas.height/2 - 40, canvas.width, 80);
+            ctx.fillStyle = '#FF8C00';
+            ctx.font = 'bold 28px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2);
+        }
+        
+        function startGame() {
+            if (fallInterval) clearInterval(fallInterval);
+            if (darkenInterval) clearInterval(darkenInterval);
             board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
             currentLevel = 1;
             totalLines = 0;
             score = 0;
             fallDelay = getFallDelay();
             gameActive = true;
-            currentPiece = getRandomTetro();
+            gameStarted = true;
+            isDarkened = false;
+            gameContainer.classList.remove('dark-overlay', 'red-flash');
             nextPiece = getRandomTetro();
-            currentPiece.row = 0;
-            currentPiece.col = Math.floor((COLS - currentPiece.shape[0].length) / 2);
+            spawnNewPiece();
             updateUI();
-            if (fallInterval) clearInterval(fallInterval);
             startFallInterval();
+            draw();
+            showGlukMessage("Игра началась! Удачи, тебе она понадобится...", 3000);
+        }
+        
+        function resetGame() {
+            if (fallInterval) clearInterval(fallInterval);
+            if (darkenInterval) clearInterval(darkenInterval);
+            board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
+            currentLevel = 1;
+            totalLines = 0;
+            score = 0;
+            fallDelay = getFallDelay();
+            gameActive = false;
+            gameStarted = false;
+            isDarkened = false;
+            gameContainer.classList.remove('dark-overlay', 'red-flash');
+            currentPiece = null;
+            nextPiece = null;
+            updateUI();
             draw();
         }
         
-        // ---------- УПРАВЛЕНИЕ ----------
         document.addEventListener('keydown', (e) => {
-            if (!gameActive) return;
+            if (!gameActive || !gameStarted) return;
             switch(e.key) {
                 case 'ArrowLeft': moveHorizontal(-1); break;
                 case 'ArrowRight': moveHorizontal(1); break;
                 case 'ArrowDown': moveDown(); break;
                 case 'ArrowUp': rotatePiece(); break;
-                case ' ': case 'Space': instantDrop(); break;
+                case ' ': case 'Space': instantDrop(); e.preventDefault(); break;
                 default: return;
             }
             e.preventDefault();
         });
         
-        // Кнопка сброса
+        document.getElementById('startBtn').addEventListener('click', () => startGame());
         document.getElementById('resetBtn').addEventListener('click', () => resetGame());
         
-        // Запуск игры
         resetGame();
     })();
 </script>
