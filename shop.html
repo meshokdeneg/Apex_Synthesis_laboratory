@@ -657,7 +657,13 @@
 
     <!-- Скрытый элемент для кнопки профиля (чтобы избежать ошибок, если используется) -->
     <div id="profileButton" style="display: none;"></div>
-
+<div id="disclaimerModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 5000;">
+    <div style="background: #1a1a1a; border: 3px solid #FF8C00; border-radius: 30px; padding: 30px; max-width: 500px; text-align: center; color: #fff;">
+        <h2 style="color:#FF8C00;">⚠️ Дисклеймер</h2>
+        <p style="margin: 20px 0;">Все товары в этом магазине — <strong>вымышленные</strong>. Они созданы для шутки и не являются реальными. Не пытайтесь их купить или продать.</p>
+        <button id="closeDisclaimer" style="background:#4A90E2; border:none; padding:10px 25px; border-radius:30px; color:#fff; cursor:pointer;">Принять</button>
+    </div>
+</div>
     <script>
         let cubeCount = 100;
         let currentUser = null;
@@ -907,6 +913,13 @@
 
         document.getElementById('cartIcon').addEventListener('click', openCartModal);
         renderShop();
+        if (!localStorage.getItem('disclaimerShown')) {
+    document.getElementById('disclaimerModal').style.display = 'flex';
+    localStorage.setItem('disclaimerShown', 'true');
+}
+document.getElementById('closeDisclaimer').addEventListener('click', function() {
+    document.getElementById('disclaimerModal').style.display = 'none';
+});
     </script>
 </body>
 </html>
