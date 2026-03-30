@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL | Мини-игры</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('photo/i.png') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            color: #fff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            border: 2px solid #4A90E2;
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 48px;
+            color: #FF8C00;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 0 #4A90E2;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .game-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #4A90E2;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #FF8C00;
+        }
+
+        .game-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 2px solid #4A90E2;
+        }
+
+        .game-info {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #FF8C00;
+        }
+
+        .game-desc {
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .play-btn {
+            display: inline-block;
+            background: #4A90E2;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .play-btn:hover {
+            background: #FF8C00;
+            transform: scale(1.05);
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            background: #2c3e2f;
+            border: 2px solid #FF8C00;
+            border-radius: 30px;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #FF8C00;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #FF8C00;
+            color: #000;
+        }
+
+        @media (max-width: 700px) {
+            .container { padding: 20px; }
+            h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎮 МИНИ-ИГРЫ ASL</h1>
+    <div class="games-grid">
+        <!-- Тетрис -->
+        <div class="game-card">
+            <img src="photo/minigames/tetris.jpg" alt="Тетрис" onerror="this.src='photo/placeholder.png'">
+            <div class="game-info">
+                <div class="game-title">ТЕТРИС</div>
+                <div class="game-desc">Классическая головоломка. Собирайте линии из падающих блоков. Чем быстрее, тем сложнее!</div>
+                <a href="tetris.html" class="play-btn">▶ ИГРАТЬ</a>
+            </div>
+        </div>
+        <!-- Сапёр -->
+        <div class="game-card">
+            <img src="photo/minigames/minesweeper.jpg" alt="Сапёр" onerror="this.src='photo/placeholder.png'">
+            <div class="game-info">
+                <div class="game-title">САПЁР</div>
+                <div class="game-desc">Открывайте клетки, не наступите на мину. Цифры подскажут, где опасность.</div>
+                <a href="minesweeper.html" class="play-btn">▶ ИГРАТЬ</a>
+            </div>
+        </div>
+        <!-- Змейка -->
+        <div class="game-card">
+            <img src="photo/minigames/snake.jpg" alt="Змейка" onerror="this.src='photo/placeholder.png'">
+            <div class="game-info">
+                <div class="game-title">ЗМЕЙКА</div>
+                <div class="game-desc">Управляйте змейкой, собирайте еду и не врезайтесь в стены или в свой хвост.</div>
+                <a href="snake.html" class="play-btn">▶ ИГРАТЬ</a>
+            </div>
+        </div>
+    </div>
+    <div style="text-align: center;">
+        <a href="index.html" class="back-btn">← НА ГЛАВНУЮ</a>
+    </div>
+</div>
+</body>
+</html>
