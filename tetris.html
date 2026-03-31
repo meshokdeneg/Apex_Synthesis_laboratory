@@ -182,7 +182,7 @@
             background: #bbb;
         }
 
-        /* Сообщение Глюка (без эмодзи) */
+        /* Сообщение Глюка */
         #glukFloatMessage {
             position: fixed;
             bottom: 20px;
@@ -500,7 +500,7 @@
             }, 200);
         }
         
-        // ОТРИСОВКА (без свечения)
+        // ОТРИСОВКА С НЕЙТРАЛЬНЫМ СВЕЧЕНИЕМ (как факел в Minecraft)
         function draw() {
             // Очистка канваса
             ctx.fillStyle = '#0a0f1a';
@@ -529,11 +529,13 @@
                 }
             }
             
-            // Рисуем текущую фигуру (без свечения)
+            // Рисуем текущую фигуру с нейтральным свечением (только при затемнении)
             if (currentPiece && gameActive) {
                 if (currentPiece.isBomb) {
                     const x = currentPiece.col * CELL_SIZE;
                     const y = currentPiece.row * CELL_SIZE;
+                    
+                    // Основной блок
                     ctx.fillStyle = '#FFFFFF';
                     ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
                     ctx.strokeStyle = '#888';
@@ -542,16 +544,36 @@
                     ctx.beginPath();
                     ctx.arc(x + CELL_SIZE/2, y + CELL_SIZE/2, CELL_SIZE/4, 0, 2 * Math.PI);
                     ctx.fill();
+                    
+                    // Нейтральное свечение (только в темноте)
+                    if (isDarkened) {
+                        ctx.shadowBlur = 12;
+                        ctx.shadowColor = '#ffaa44';
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                        ctx.shadowBlur = 0;
+                    }
                 } else {
                     for (let i = 0; i < currentPiece.shape.length; i++) {
                         for (let j = 0; j < currentPiece.shape[0].length; j++) {
                             if (currentPiece.shape[i][j]) {
                                 const x = (currentPiece.col + j) * CELL_SIZE;
                                 const y = (currentPiece.row + i) * CELL_SIZE;
+                                
+                                // Основной блок
                                 ctx.fillStyle = currentPiece.color;
                                 ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
                                 ctx.strokeStyle = '#fff';
                                 ctx.strokeRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                                
+                                // Нейтральное свечение (только в темноте)
+                                if (isDarkened) {
+                                    ctx.shadowBlur = 10;
+                                    ctx.shadowColor = '#ffaa66';
+                                    ctx.fillStyle = currentPiece.color;
+                                    ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
+                                    ctx.shadowBlur = 0;
+                                }
                             }
                         }
                     }
