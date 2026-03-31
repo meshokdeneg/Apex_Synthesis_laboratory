@@ -2,12 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, touch-action: manipulation">
     <title>ASL | Тетрис</title>
     <style>
         * {
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         body {
@@ -17,47 +18,36 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 16px;
             margin: 0;
         }
 
         .game-container {
             background: #ffffff;
-            border-radius: 32px;
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 3px #FF8C00, 0 0 0 8px #1a2a2f;
-            padding: 30px;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 3px #FF8C00, 0 0 0 6px #1a2a2f;
+            padding: 20px;
             text-align: center;
             transition: 0.05s;
             position: relative;
+            max-width: 100%;
         }
 
         .game-container.red-flash {
             background: #ffcccc;
         }
 
-        /* Затемнение с эффектом свечения по краям */
-        .game-container.dark-overlay {
-            position: relative;
-            background: #0a0f1a;
+        /* ПОЛНОЕ ЗАТЕМНЕНИЕ ПОЛЯ — ТОЛЬКО ИНФОПАНЕЛЬ ВИДНА */
+        .game-container.dark-overlay .canvas-wrapper canvas {
+            filter: brightness(0);
+            transition: filter 0.2s;
         }
 
-        .game-container.dark-overlay::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, rgba(0,0,0,0.95) 30%, rgba(0,0,0,0.6) 70%, rgba(0,0,0,0.2) 100%);
-            pointer-events: none;
-            z-index: 20;
-            border-radius: 32px;
-        }
-
+        /* Инфо-панель светится */
         .game-container.dark-overlay .info-panel {
             position: relative;
             z-index: 25;
-            box-shadow: 0 0 30px rgba(255,140,0,0.5), inset 0 0 10px rgba(255,140,0,0.3);
+            box-shadow: 0 0 30px rgba(255,140,0,0.6), inset 0 0 10px rgba(255,140,0,0.3);
             background: rgba(30,30,30,0.95);
             border: 1px solid #FF8C00;
         }
@@ -69,20 +59,20 @@
         }
 
         h1 {
-            font-size: 36px;
+            font-size: 28px;
             color: #FF8C00;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .subtitle {
             color: #666;
-            margin-bottom: 20px;
-            font-size: 14px;
+            margin-bottom: 16px;
+            font-size: 12px;
         }
 
         .game-layout {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             justify-content: center;
             align-items: flex-start;
             flex-wrap: wrap;
@@ -97,7 +87,9 @@
             border-radius: 8px;
             background: #0a0f1a;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: all 0.2s;
+            display: block;
+            max-width: 100%;
+            height: auto;
         }
 
         .danger-line {
@@ -116,24 +108,24 @@
         .info-panel {
             background: #f5f5f5;
             border-radius: 20px;
-            padding: 20px;
-            min-width: 150px;
+            padding: 16px;
+            min-width: 130px;
             transition: all 0.3s ease;
         }
 
         .info-item {
-            margin: 15px 0;
+            margin: 12px 0;
             text-align: center;
         }
 
         .info-label {
-            font-size: 14px;
+            font-size: 12px;
             color: #666;
             text-transform: uppercase;
         }
 
         .info-value {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: #FF8C00;
         }
@@ -141,46 +133,48 @@
         .level-badge {
             background: #1a2a2f;
             color: #FF8C00;
-            padding: 10px;
+            padding: 8px;
             border-radius: 40px;
             font-weight: bold;
-            margin-top: 20px;
+            margin-top: 16px;
+            font-size: 14px;
         }
 
         .reset-btn, .start-btn {
             background: linear-gradient(135deg, #4A90E2, #357abd);
             color: white;
             border: none;
-            padding: 10px 30px;
+            padding: 10px 20px;
             border-radius: 40px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.2s;
-            margin-top: 10px;
+            margin-top: 8px;
             width: 100%;
-            box-shadow: 0 4px 0 #1a3a5a;
+            box-shadow: 0 3px 0 #1a3a5a;
+            touch-action: manipulation;
         }
 
         .start-btn {
             background: linear-gradient(135deg, #27ae60, #219a52);
-            box-shadow: 0 4px 0 #1a5a3a;
+            box-shadow: 0 3px 0 #1a5a3a;
         }
 
         .reset-btn:active, .start-btn:active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 #1a3a5a;
+            box-shadow: 0 1px 0 #1a3a5a;
         }
 
         .home-btn {
             display: inline-block;
-            margin-top: 15px;
-            padding: 8px 25px;
+            margin-top: 12px;
+            padding: 6px 20px;
             background: #ccc;
             color: #333;
             text-decoration: none;
             border-radius: 40px;
-            font-size: 14px;
+            font-size: 12px;
             transition: 0.2s;
         }
 
@@ -188,39 +182,43 @@
             background: #bbb;
         }
 
+        /* Сообщение Глюка (без эмодзи) */
         #glukFloatMessage {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 20px;
+            right: 20px;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(10px);
             border-left: 4px solid #FF8C00;
             border-radius: 12px;
-            padding: 12px 20px;
+            padding: 10px 16px;
             font-family: 'Courier New', monospace;
-            font-size: 14px;
+            font-size: 13px;
             color: #FF8C00;
-            max-width: 280px;
+            max-width: 240px;
             z-index: 10000;
             opacity: 0;
             transform: translateX(50px);
             transition: all 0.3s ease;
             pointer-events: none;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         @media (max-width: 650px) {
-            .game-container { padding: 15px; }
-            h1 { font-size: 24px; }
-            .info-value { font-size: 24px; }
+            .game-container { padding: 12px; }
+            h1 { font-size: 20px; }
+            .info-value { font-size: 22px; }
+            .info-panel { padding: 10px; min-width: 110px; }
+            .reset-btn, .start-btn { padding: 8px 12px; font-size: 12px; }
+            canvas { width: 100%; height: auto; }
+            .danger-line { top: 15%; }
         }
     </style>
 </head>
 <body>
 <div class="game-container" id="gameContainer">
     <h1>🧩 ТЕТРИС — ASL EDITION</h1>
-    <div class="subtitle">← → двигать | ↑ вращать | ↓ ускорить | ␣ мгновенный сброс</div>
+    <div class="subtitle">← → двигать | ↑ вращать | ↓ ускорить | ␣ сброс</div>
 
     <div class="game-layout">
         <div class="canvas-wrapper">
@@ -242,7 +240,7 @@
                 <div class="info-value" id="linesValue">0</div>
             </div>
             <div class="level-badge" id="nextPieceLabel">СЛЕДУЮЩАЯ</div>
-            <canvas id="nextCanvas" width="120" height="120" style="margin: 10px auto; display: block; background: #0a0f1a; border-radius: 12px;"></canvas>
+            <canvas id="nextCanvas" width="120" height="120" style="margin: 8px auto; display: block; background: #0a0f1a; border-radius: 12px;"></canvas>
             <button class="start-btn" id="startBtn">🚀 НАЧАТЬ ИГРУ</button>
             <button class="reset-btn" id="resetBtn">🔄 НОВАЯ ИГРА</button>
         </div>
@@ -323,7 +321,7 @@
         function showGlukMessage(text, duration = 4000) {
             if (!glukMessageElement) return;
             if (glukMessageTimeout) clearTimeout(glukMessageTimeout);
-            glukMessageElement.textContent = `🤖 Глюк: ${text}`;
+            glukMessageElement.textContent = text;
             glukMessageElement.style.opacity = '1';
             glukMessageElement.style.transform = 'translateX(0)';
             glukMessageTimeout = setTimeout(() => {
@@ -502,8 +500,9 @@
             }, 200);
         }
         
-        // НОВАЯ ФУНКЦИЯ ОТРИСОВКИ С ЭФФЕКТОМ СВЕЧЕНИЯ ПРИ ЗАТЕМНЕНИИ
+        // ОТРИСОВКА (без свечения)
         function draw() {
+            // Очистка канваса
             ctx.fillStyle = '#0a0f1a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
@@ -515,7 +514,7 @@
                 }
             }
             
-            // Рисуем все блоки
+            // Рисуем все блоки на поле
             for (let row = 0; row < ROWS; row++) {
                 for (let col = 0; col < COLS; col++) {
                     if (board[row][col] !== 0) {
@@ -530,7 +529,7 @@
                 }
             }
             
-            // Рисуем текущую фигуру
+            // Рисуем текущую фигуру (без свечения)
             if (currentPiece && gameActive) {
                 if (currentPiece.isBomb) {
                     const x = currentPiece.col * CELL_SIZE;
@@ -543,15 +542,6 @@
                     ctx.beginPath();
                     ctx.arc(x + CELL_SIZE/2, y + CELL_SIZE/2, CELL_SIZE/4, 0, 2 * Math.PI);
                     ctx.fill();
-                    
-                    // Эффект свечения бомбы при затемнении
-                    if (isDarkened) {
-                        ctx.shadowBlur = 15;
-                        ctx.shadowColor = '#FF0000';
-                        ctx.fillStyle = '#FF4444';
-                        ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
-                        ctx.shadowBlur = 0;
-                    }
                 } else {
                     for (let i = 0; i < currentPiece.shape.length; i++) {
                         for (let j = 0; j < currentPiece.shape[0].length; j++) {
@@ -562,29 +552,6 @@
                                 ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
                                 ctx.strokeStyle = '#fff';
                                 ctx.strokeRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
-                                
-                                // Эффект свечения блока при затемнении (только сам блок + полклетки)
-                                if (isDarkened) {
-                                    ctx.shadowBlur = 12;
-                                    ctx.shadowColor = currentPiece.color;
-                                    ctx.fillStyle = currentPiece.color;
-                                    ctx.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
-                                    // Слабое свечение на соседние клетки
-                                    ctx.globalAlpha = 0.3;
-                                    ctx.fillStyle = currentPiece.color;
-                                    for (let dx = -1; dx <= 1; dx++) {
-                                        for (let dy = -1; dy <= 1; dy++) {
-                                            if (dx === 0 && dy === 0) continue;
-                                            const nx = x + dx * CELL_SIZE;
-                                            const ny = y + dy * CELL_SIZE;
-                                            if (nx >= 0 && nx < canvas.width && ny >= 0 && ny < canvas.height) {
-                                                ctx.fillRect(nx, ny, CELL_SIZE - 1, CELL_SIZE - 1);
-                                            }
-                                        }
-                                    }
-                                    ctx.globalAlpha = 1;
-                                    ctx.shadowBlur = 0;
-                                }
                             }
                         }
                     }
@@ -624,7 +591,7 @@
         function startDarkenEffect() {
             if (darkenInterval) clearInterval(darkenInterval);
             let opacity = 0;
-            showGlukMessage("🔧 Щас свет починю, погоди...", 2500);
+            showGlukMessage("Щас свет починю, погоди...", 2500);
             darkenInterval = setInterval(() => {
                 if (!gameActive || score < 1000) {
                     clearInterval(darkenInterval);
@@ -641,7 +608,7 @@
                         if (gameActive && isDarkened) {
                             gameContainer.classList.remove('dark-overlay');
                             isDarkened = false;
-                            showGlukMessage("✅ Всё починил! Свет вернулся. Развлекайся дальше)", 4000);
+                            showGlukMessage("Всё починил! Свет вернулся. Развлекайся дальше)", 4000);
                             lastThousandTrigger = Math.floor(score / 1000);
                         }
                     }, 60000);
@@ -760,6 +727,7 @@
             draw();
         }
         
+        // Управление с клавиатуры и для телефона (кнопки на экране)
         document.addEventListener('keydown', (e) => {
             if (!gameActive || !gameStarted) return;
             switch(e.key) {
@@ -773,10 +741,34 @@
             e.preventDefault();
         });
         
+        // Добавляем кнопки для телефона
+        function addTouchButtons() {
+            const container = document.querySelector('.game-layout');
+            if (!container) return;
+            
+            const btnPanel = document.createElement('div');
+            btnPanel.style.cssText = 'display: flex; gap: 12px; justify-content: center; margin-top: 16px; flex-wrap: wrap;';
+            btnPanel.innerHTML = `
+                <button class="reset-btn" id="touchLeft" style="width: auto; padding: 10px 18px;">←</button>
+                <button class="reset-btn" id="touchRight" style="width: auto; padding: 10px 18px;">→</button>
+                <button class="reset-btn" id="touchRotate" style="width: auto; padding: 10px 18px;">↻</button>
+                <button class="reset-btn" id="touchDown" style="width: auto; padding: 10px 18px;">↓</button>
+                <button class="reset-btn" id="touchDrop" style="width: auto; padding: 10px 18px;">␣</button>
+            `;
+            container.parentNode.insertBefore(btnPanel, container.nextSibling);
+            
+            document.getElementById('touchLeft').addEventListener('click', () => { if(gameActive && gameStarted) moveHorizontal(-1); });
+            document.getElementById('touchRight').addEventListener('click', () => { if(gameActive && gameStarted) moveHorizontal(1); });
+            document.getElementById('touchRotate').addEventListener('click', () => { if(gameActive && gameStarted) rotatePiece(); });
+            document.getElementById('touchDown').addEventListener('click', () => { if(gameActive && gameStarted) moveDown(); });
+            document.getElementById('touchDrop').addEventListener('click', () => { if(gameActive && gameStarted) instantDrop(); });
+        }
+        
         document.getElementById('startBtn').addEventListener('click', () => startGame());
         document.getElementById('resetBtn').addEventListener('click', () => resetGame());
         
         resetGame();
+        addTouchButtons();
     })();
 </script>
 </body>
