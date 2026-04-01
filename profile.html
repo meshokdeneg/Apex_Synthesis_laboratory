@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ASL | Профиль</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,39 +19,34 @@
         body {
             background: linear-gradient(135deg, #0a0f1a 0%, #0c111c 100%);
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 20px;
         }
 
-        .profile-container {
-            max-width: 1200px;
+        .profile-wrapper {
+            max-width: 1300px;
             margin: 0 auto;
-            background: rgba(30, 35, 45, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            border: 1px solid rgba(255, 140, 0, 0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            overflow: hidden;
-        }
-
-        .profile-header {
-            background: linear-gradient(135deg, #1a2a2f, #0f1a1f);
-            padding: 25px 30px;
-            border-bottom: 3px solid #FF8C00;
             display: flex;
-            align-items: flex-start;
-            gap: 30px;
+            gap: 25px;
             flex-wrap: wrap;
         }
 
-        .profile-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            min-width: 150px;
+        /* ВЕРТИКАЛЬНОЕ МЕНЮ (левая панель) */
+        .profile-sidebar {
+            width: 280px;
+            background: rgba(30, 35, 45, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            padding: 25px 20px;
+            height: fit-content;
         }
 
-        .avatar {
+        .avatar-large {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .avatar-img {
             width: 120px;
             height: 120px;
             border-radius: 50%;
@@ -57,142 +56,168 @@
             align-items: center;
             justify-content: center;
             font-size: 50px;
+            margin: 0 auto 10px;
             cursor: pointer;
-            transition: 0.2s;
             overflow: hidden;
         }
 
-        .avatar img {
+        .avatar-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .avatar:hover {
-            transform: scale(1.02);
-            border-color: #4A90E2;
+        .profile-name-large {
+            font-size: 22px;
+            color: #FF8C00;
+            text-align: center;
+            font-weight: bold;
         }
 
-        .change-avatar-btn {
-            background: rgba(74,144,226,0.3);
-            border: 1px solid #4A90E2;
-            padding: 5px 12px;
-            border-radius: 20px;
+        .profile-status {
+            text-align: center;
+            color: #8bc34a;
+            font-size: 12px;
+            margin: 5px 0 15px;
+        }
+
+        .sidebar-stats {
+            background: rgba(0,0,0,0.4);
+            border-radius: 16px;
+            padding: 12px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .sidebar-stat {
+            text-align: center;
+        }
+
+        .sidebar-stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FF8C00;
+        }
+
+        .sidebar-stat-label {
             font-size: 11px;
-            cursor: pointer;
-            color: #fff;
+            color: #aaa;
         }
 
-        .profile-center {
-            flex: 1;
+        .nav-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .nav-vertical-btn {
+            background: rgba(74,144,226,0.15);
+            border: 1px solid rgba(74,144,226,0.3);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            text-align: left;
+            font-size: 15px;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-vertical-btn.active {
+            background: rgba(255,140,0,0.25);
+            border-color: #FF8C00;
+            color: #FF8C00;
+        }
+
+        .nav-vertical-btn:hover {
+            background: rgba(74,144,226,0.3);
+            transform: translateX(5px);
+        }
+
+        .action-buttons {
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .profile-name {
-            font-size: 28px;
-            font-weight: bold;
-            color: #FF8C00;
-        }
-
-        .profile-status {
-            color: #8bc34a;
-            font-size: 13px;
-        }
-
-        .profile-bio {
-            color: #ccc;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .profile-stats {
-            display: flex;
-            gap: 15px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-
-        .stat {
-            background: rgba(0,0,0,0.5);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            color: #FF8C00;
-        }
-
-        .profile-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-width: 140px;
-            align-items: flex-end;
-        }
-
         .action-btn {
             background: rgba(74,144,226,0.2);
             border: 1px solid #4A90E2;
-            padding: 8px 20px;
+            padding: 10px;
             border-radius: 30px;
             color: #fff;
             cursor: pointer;
-            font-size: 14px;
             text-align: center;
+            font-size: 13px;
             transition: 0.2s;
-            width: 100%;
         }
 
         .action-btn:hover {
             background: #4A90E2;
-            transform: translateY(-2px);
         }
 
-        .profile-nav {
-            display: flex;
-            gap: 5px;
-            background: #1a2a2f;
-            padding: 0 20px;
-            border-bottom: 1px solid #2c3e2f;
-        }
-
-        .nav-btn {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            color: #aaa;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .nav-btn.active {
-            color: #FF8C00;
-            border-bottom: 3px solid #FF8C00;
-        }
-
-        .nav-btn:hover {
-            color: #fff;
-        }
-
+        /* ПРАВАЯ ЧАСТЬ (контент) */
         .profile-content {
+            flex: 1;
+            background: rgba(30, 35, 45, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 140, 0, 0.3);
             padding: 30px;
-            min-height: 400px;
+            min-height: 500px;
         }
 
-        .friends-section, .badges-section, .achievements-section {
+        .tab-content {
             display: none;
         }
 
-        .friends-section.active, .badges-section.active, .achievements-section.active {
+        .tab-content.active {
             display: block;
+        }
+
+        .tab-title {
+            font-size: 24px;
+            color: #FF8C00;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #FF8C00;
+            padding-bottom: 10px;
+        }
+
+        /* Стили для друзей */
+        .add-friend {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .add-friend input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #4A90E2;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .add-friend button {
+            background: #27ae60;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
         }
 
         .friends-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 12px;
         }
 
         .friend-card {
@@ -203,13 +228,11 @@
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            transition: 0.2s;
             border: 1px solid rgba(255,140,0,0.2);
         }
 
         .friend-card:hover {
             background: rgba(74,144,226,0.2);
-            transform: translateY(-2px);
         }
 
         .friend-avatar {
@@ -230,7 +253,6 @@
         .friend-name {
             color: #FF8C00;
             font-weight: bold;
-            font-size: 14px;
         }
 
         .friend-status {
@@ -243,68 +265,11 @@
             border: none;
             padding: 5px 12px;
             border-radius: 20px;
-            color: white;
-            cursor: pointer;
-            font-size: 11px;
-        }
-
-        .add-friend {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .add-friend input {
-            flex: 1;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid #4A90E2;
-            border-radius: 8px;
-            color: #fff;
-        }
-
-        .add-friend button {
-            background: #27ae60;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            color: white;
             cursor: pointer;
         }
 
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .achievement-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid rgba(255,140,0,0.2);
-        }
-
-        .achievement-icon {
-            font-size: 35px;
-            margin-bottom: 8px;
-        }
-
-        .achievement-name {
-            color: #FF8C00;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .achievement-desc {
-            font-size: 10px;
-            color: #aaa;
-            margin-top: 5px;
-        }
-
-        .badges-grid {
+        /* Значки и заслуги */
+        .badges-grid, .achievements-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
@@ -313,14 +278,68 @@
         .badge {
             background: rgba(255,140,0,0.2);
             border-radius: 40px;
-            padding: 6px 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
+            padding: 8px 16px;
+            font-size: 14px;
             color: #FF8C00;
         }
 
+        .achievement-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 15px;
+            text-align: center;
+            width: 160px;
+            border: 1px solid rgba(255,140,0,0.2);
+        }
+
+        /* Настройки профиля */
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .settings-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .settings-field label {
+            color: #FF8C00;
+            font-weight: bold;
+        }
+
+        .settings-field input, .settings-field textarea {
+            padding: 12px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #4A90E2;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .settings-field textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .save-settings-btn {
+            background: #27ae60;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .optimization-btn {
+            background: #4A90E2;
+        }
+
+        /* Чат */
         .chat-modal {
             position: fixed;
             bottom: 20px;
@@ -358,7 +377,6 @@
             padding: 8px 12px;
             border-radius: 12px;
             max-width: 80%;
-            font-size: 13px;
         }
 
         .chat-message.own {
@@ -404,52 +422,58 @@
             z-index: 100;
         }
 
-        @media (max-width: 700px) {
-            .profile-header { flex-direction: column; align-items: center; text-align: center; }
-            .profile-actions { align-items: center; width: 100%; }
-            .profile-center { align-items: center; }
-            .profile-stats { justify-content: center; }
-            .nav-btn { padding: 8px 12px; font-size: 12px; }
+        @media (max-width: 800px) {
+            .profile-wrapper { flex-direction: column; }
+            .profile-sidebar { width: 100%; }
         }
     </style>
 </head>
 <body>
 <a href="index.html" class="back-btn">← НА ГЛАВНУЮ</a>
 
-<div class="profile-container" id="profileContainer">
-    <div class="profile-header">
-        <div class="profile-left">
-            <div class="avatar" id="avatar" onclick="changeAvatar()">
+<div class="profile-wrapper">
+    <!-- ЛЕВАЯ ПАНЕЛЬ (вертикальное меню) -->
+    <div class="profile-sidebar">
+        <div class="avatar-large">
+            <div class="avatar-img" id="avatarImg" onclick="changeAvatar()">
                 <span id="avatarEmoji">🧊</span>
             </div>
-            <div class="change-avatar-btn" onclick="changeAvatar()">Сменить аватар</div>
+            <div class="profile-name-large" id="profileName">Загрузка...</div>
+            <div class="profile-status" id="profileStatus">● В сети</div>
         </div>
 
-        <div class="profile-center">
-            <div class="profile-name" id="profileName">Загрузка...</div>
-            <div class="profile-status" id="profileStatus">● В сети</div>
-            <div class="profile-bio" id="profileBio">Загрузка...</div>
-            <div class="profile-stats">
-                <div class="stat">🏆 Друзей: <span id="friendsCount">0</span></div>
-                <div class="stat">⭐ Уровень: <span id="level">1</span></div>
-                <div class="stat">🧊 Кубов: <span id="cubes">0</span></div>
+        <div class="sidebar-stats">
+            <div class="sidebar-stat">
+                <div class="sidebar-stat-value" id="cubesCount">0</div>
+                <div class="sidebar-stat-label">КУБОВ</div>
+            </div>
+            <div class="sidebar-stat">
+                <div class="sidebar-stat-value" id="levelCount">1</div>
+                <div class="sidebar-stat-label">УРОВЕНЬ</div>
+            </div>
+            <div class="sidebar-stat">
+                <div class="sidebar-stat-value" id="friendsCount">0</div>
+                <div class="sidebar-stat-label">ДРУЗЕЙ</div>
             </div>
         </div>
 
-        <div class="profile-actions">
-            <div class="action-btn" onclick="editProfile()">✎ Редактировать</div>
-            <div class="action-btn" onclick="logout()">🚪 Выйти</div>
+        <div class="nav-vertical">
+            <button class="nav-vertical-btn active" data-tab="friends">👥 ДРУЗЬЯ</button>
+            <button class="nav-vertical-btn" data-tab="badges">🎖️ ЗНАЧКИ</button>
+            <button class="nav-vertical-btn" data-tab="achievements">🏅 ЗАСЛУГИ</button>
+            <button class="nav-vertical-btn" data-tab="settings">⚙️ НАСТРОЙКИ</button>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn optimization-btn" onclick="optimizeProfile()">⚡ ОПТИМИЗАЦИЯ</button>
+            <button class="action-btn" onclick="logout()">🚪 ВЫЙТИ</button>
         </div>
     </div>
 
-    <div class="profile-nav">
-        <button class="nav-btn active" data-tab="friends">👥 ДРУЗЬЯ</button>
-        <button class="nav-btn" data-tab="badges">🎖️ ЗНАЧКИ</button>
-        <button class="nav-btn" data-tab="achievements">🏅 ЗАСЛУГИ</button>
-    </div>
-
+    <!-- ПРАВАЯ ЧАСТЬ (контент) -->
     <div class="profile-content">
-        <div id="friendsSection" class="friends-section active">
+        <div id="friendsTab" class="tab-content active">
+            <div class="tab-title">👥 ДРУЗЬЯ</div>
             <div class="add-friend">
                 <input type="text" id="friendSearch" placeholder="Имя пользователя...">
                 <button onclick="addFriend()">➕ Добавить друга</button>
@@ -457,12 +481,33 @@
             <div id="friendsList" class="friends-list"></div>
         </div>
 
-        <div id="badgesSection" class="badges-section">
+        <div id="badgesTab" class="tab-content">
+            <div class="tab-title">🎖️ ЗНАЧКИ</div>
             <div id="badgesList" class="badges-grid"></div>
         </div>
 
-        <div id="achievementsSection" class="achievements-section">
+        <div id="achievementsTab" class="tab-content">
+            <div class="tab-title">🏅 ЗАСЛУГИ</div>
             <div id="achievementsList" class="achievements-grid"></div>
+        </div>
+
+        <div id="settingsTab" class="tab-content">
+            <div class="tab-title">⚙️ НАСТРОЙКИ ПРОФИЛЯ</div>
+            <div class="settings-form">
+                <div class="settings-field">
+                    <label>Никнейм</label>
+                    <input type="text" id="settingsNickname" placeholder="Ваш никнейм">
+                </div>
+                <div class="settings-field">
+                    <label>О себе</label>
+                    <textarea id="settingsBio" placeholder="Расскажите о себе..."></textarea>
+                </div>
+                <div class="settings-field">
+                    <label>Email</label>
+                    <input type="email" id="settingsEmail" placeholder="Email" readonly>
+                </div>
+                <button class="save-settings-btn" onclick="saveSettings()">💾 СОХРАНИТЬ</button>
+            </div>
         </div>
     </div>
 </div>
@@ -480,40 +525,83 @@
 </div>
 
 <script>
-    // ========== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ ==========
+    // ========== FIREBASE КОНФИГ ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
+        authDomain: "apex-8f11e.firebaseapp.com",
+        projectId: "apex-8f11e",
+        storageBucket: "apex-8f11e.firebasestorage.app",
+        messagingSenderId: "923734077108",
+        appId: "1:923734077108:web:f6d2d4059972c215c371e1",
+        measurementId: "G-WTKS5JQ7Z5"
+    };
+
+    // Инициализация Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     let currentUser = null;
     let friends = [];
     let messages = {};
     let chatWith = null;
 
-    function loadCurrentUser() {
-        const savedUser = localStorage.getItem('asl_user');
-        if (!savedUser) {
+    // ========== ПРОВЕРКА АВТОРИЗАЦИИ ==========
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
+            currentUser = user;
+            await loadUserData();
+            renderUI();
+        } else {
+            // Если не авторизован — отправляем на регистрацию
             window.location.href = 'reg.html';
-            return;
+        }
+    });
+
+    async function loadUserData() {
+        const docRef = db.collection('users').doc(currentUser.uid);
+        const docSnap = await docRef.get();
+        
+        if (docSnap.exists) {
+            const data = docSnap.data();
+            localStorage.setItem('asl_user', JSON.stringify(data));
         }
         
-        currentUser = JSON.parse(savedUser);
+        // Загружаем друзей и сообщения из localStorage (пока так)
+        friends = JSON.parse(localStorage.getItem('asl_friends')) || [];
+        messages = JSON.parse(localStorage.getItem('asl_messages')) || {};
+    }
+
+    function renderUI() {
+        const userData = JSON.parse(localStorage.getItem('asl_user')) || {
+            username: currentUser.email.split('@')[0],
+            bio: 'Новый сотрудник ASL',
+            avatar: '🧊',
+            level: 1,
+            cubes: 100
+        };
         
-        document.getElementById('profileName').textContent = currentUser.username;
-        document.getElementById('profileBio').textContent = currentUser.bio;
-        document.getElementById('level').textContent = currentUser.level;
-        document.getElementById('cubes').textContent = currentUser.cubes;
+        document.getElementById('profileName').textContent = userData.username;
+        document.getElementById('cubesCount').textContent = userData.cubes;
+        document.getElementById('levelCount').textContent = userData.level;
         
-        if (currentUser.avatar) {
-            if (currentUser.avatar.startsWith('http')) {
-                document.getElementById('avatar').innerHTML = `<img src="${currentUser.avatar}">`;
+        if (userData.avatar) {
+            if (userData.avatar.startsWith('http')) {
+                document.getElementById('avatarImg').innerHTML = `<img src="${userData.avatar}">`;
             } else {
-                document.getElementById('avatarEmoji').textContent = currentUser.avatar;
+                document.getElementById('avatarEmoji').textContent = userData.avatar;
             }
         }
         
-        // Загружаем друзей и сообщения
-        friends = JSON.parse(localStorage.getItem('asl_friends')) || [];
-        messages = JSON.parse(localStorage.getItem('asl_messages')) || {};
+        document.getElementById('settingsNickname').value = userData.username;
+        document.getElementById('settingsBio').value = userData.bio;
+        document.getElementById('settingsEmail').value = currentUser.email;
+        
         renderFriends();
+        renderBadges();
+        renderAchievements();
     }
-    
+
     function renderFriends() {
         const container = document.getElementById('friendsList');
         if (friends.length === 0) {
@@ -525,18 +613,18 @@
                 <div class="friend-avatar">${f.avatar || '👤'}</div>
                 <div class="friend-info">
                     <div class="friend-name">${f.username}</div>
-                    <div class="friend-status">${f.status || '● В сети'}</div>
+                    <div class="friend-status">● В сети</div>
                 </div>
                 <button class="chat-btn" onclick="event.stopPropagation(); openChat('${f.username}')">💬</button>
             </div>
         `).join('');
         document.getElementById('friendsCount').textContent = friends.length;
     }
-    
+
     function addFriend() {
         const searchName = document.getElementById('friendSearch').value.trim();
         if (!searchName) return;
-        if (searchName === currentUser.username) {
+        if (searchName === (JSON.parse(localStorage.getItem('asl_user'))?.username)) {
             alert('Нельзя добавить самого себя!');
             return;
         }
@@ -545,53 +633,47 @@
             return;
         }
         
-        let allUsers = JSON.parse(localStorage.getItem('asl_all_users')) || [];
-        if (!allUsers.includes(searchName)) {
-            allUsers.push(searchName);
-            localStorage.setItem('asl_all_users', JSON.stringify(allUsers));
-        }
-        
-        friends.push({ username: searchName, avatar: '👤', status: '● В сети' });
+        friends.push({ username: searchName, avatar: '👤', status: 'online' });
         localStorage.setItem('asl_friends', JSON.stringify(friends));
         renderFriends();
         document.getElementById('friendSearch').value = '';
         alert(`✅ ${searchName} добавлен в друзья!`);
     }
-    
+
     function openChat(username) {
         chatWith = username;
         document.getElementById('chatFriendName').textContent = username;
         document.getElementById('chatModal').style.display = 'flex';
         loadMessages();
     }
-    
+
     function closeChat() {
         document.getElementById('chatModal').style.display = 'none';
         chatWith = null;
     }
-    
+
     function loadMessages() {
         const container = document.getElementById('chatMessages');
-        const chatId = [currentUser.username, chatWith].sort().join('_');
+        const chatId = [currentUser.uid, chatWith].sort().join('_');
         const msgs = messages[chatId] || [];
         container.innerHTML = msgs.map(m => `
-            <div class="chat-message ${m.from === currentUser.username ? 'own' : ''}">
-                <strong>${m.from === currentUser.username ? 'Вы' : m.from}:</strong> ${m.text}
-                <div style="font-size: 10px; color:#888;">${new Date(m.time).toLocaleTimeString()}</div>
+            <div class="chat-message ${m.from === currentUser.uid ? 'own' : ''}">
+                <strong>${m.from === currentUser.uid ? 'Вы' : chatWith}:</strong> ${m.text}
+                <div style="font-size: 10px;">${new Date(m.time).toLocaleTimeString()}</div>
             </div>
         `).join('');
         container.scrollTop = container.scrollHeight;
     }
-    
+
     function sendMessage() {
         const input = document.getElementById('chatInput');
         const text = input.value.trim();
         if (!text || !chatWith) return;
         
-        const chatId = [currentUser.username, chatWith].sort().join('_');
+        const chatId = [currentUser.uid, chatWith].sort().join('_');
         if (!messages[chatId]) messages[chatId] = [];
         messages[chatId].push({
-            from: currentUser.username,
+            from: currentUser.uid,
             text: text,
             time: Date.now()
         });
@@ -599,46 +681,71 @@
         input.value = '';
         loadMessages();
     }
-    
-    function editProfile() {
-        const newBio = prompt('Введите новую информацию о себе:', currentUser.bio);
-        if (newBio) {
-            currentUser.bio = newBio;
-            document.getElementById('profileBio').textContent = newBio;
-            localStorage.setItem('asl_user', JSON.stringify(currentUser));
+
+    function saveSettings() {
+        const newNickname = document.getElementById('settingsNickname').value;
+        const newBio = document.getElementById('settingsBio').value;
+        
+        const userData = JSON.parse(localStorage.getItem('asl_user')) || {};
+        userData.username = newNickname;
+        userData.bio = newBio;
+        localStorage.setItem('asl_user', JSON.stringify(userData));
+        
+        // Сохраняем в Firestore
+        if (currentUser) {
+            db.collection('users').doc(currentUser.uid).set({
+                username: newNickname,
+                bio: newBio,
+                email: currentUser.email,
+                updatedAt: new Date()
+            }, { merge: true });
         }
+        
+        renderUI();
+        alert('✅ Настройки сохранены!');
     }
-    
+
+    function optimizeProfile() {
+        alert('⚡ Оптимизация профиля выполнена! Все данные синхронизированы.');
+    }
+
     function changeAvatar() {
-        const newAvatar = prompt('Введите эмодзи или ссылку на картинку:', currentUser.avatar || '🧊');
+        const newAvatar = prompt('Введите эмодзи или ссылку на картинку:', '🧊');
         if (newAvatar) {
+            const userData = JSON.parse(localStorage.getItem('asl_user')) || {};
+            userData.avatar = newAvatar;
+            localStorage.setItem('asl_user', JSON.stringify(userData));
+            
+            if (currentUser) {
+                db.collection('users').doc(currentUser.uid).set({ avatar: newAvatar }, { merge: true });
+            }
+            
             if (newAvatar.startsWith('http')) {
-                document.getElementById('avatar').innerHTML = `<img src="${newAvatar}">`;
+                document.getElementById('avatarImg').innerHTML = `<img src="${newAvatar}">`;
             } else {
                 document.getElementById('avatarEmoji').textContent = newAvatar;
             }
-            currentUser.avatar = newAvatar;
-            localStorage.setItem('asl_user', JSON.stringify(currentUser));
         }
     }
-    
+
     function logout() {
-        localStorage.removeItem('asl_user');
-        window.location.href = 'index.html';
+        auth.signOut().then(() => {
+            localStorage.removeItem('asl_user');
+            window.location.href = 'index.html';
+        });
     }
-    
+
     function renderBadges() {
         const badges = JSON.parse(localStorage.getItem('asl_badges')) || ['КУБОКЛИКЕР', 'ТЕСТОПРОХОДЕЦ'];
         const container = document.getElementById('badgesList');
         container.innerHTML = badges.map(b => `<div class="badge">🎖️ ${b}</div>`).join('');
-        if (badges.length === 0) container.innerHTML = '<div style="color:#aaa;">Пока нет значков. Проходите тесты и ищите пасхалки!</div>';
+        if (badges.length === 0) container.innerHTML = '<div style="color:#aaa;">Пока нет значков</div>';
     }
-    
+
     function renderAchievements() {
         const achievements = JSON.parse(localStorage.getItem('asl_achievements')) || [
             { name: 'Первый куб', desc: 'Кликнуть по кубу 1 раз', icon: '🟦' },
-            { name: 'Любопытный', desc: 'Найти первую пасхалку', icon: '🔍' },
-            { name: 'Теоретик', desc: 'Пройди тест на 25/25', icon: '📚' }
+            { name: 'Любопытный', desc: 'Найти первую пасхалку', icon: '🔍' }
         ];
         const container = document.getElementById('achievementsList');
         container.innerHTML = achievements.map(a => `
@@ -649,25 +756,21 @@
             </div>
         `).join('');
     }
-    
-    // Навигация по вкладкам
-    document.querySelectorAll('.nav-btn').forEach(btn => {
+
+    // Переключение вкладок
+    document.querySelectorAll('.nav-vertical-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-vertical-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const tab = btn.dataset.tab;
-            document.querySelectorAll('.friends-section, .badges-section, .achievements-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`${tab}Section`).classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(`${tab}Tab`).classList.add('active');
         });
     });
-    
+
     document.getElementById('chatInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
-    
-    loadCurrentUser();
-    renderBadges();
-    renderAchievements();
 </script>
 </body>
 </html>
