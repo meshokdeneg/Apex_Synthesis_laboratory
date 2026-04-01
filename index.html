@@ -1,199 +1,5 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASL | Лаборатория Синтеза</title>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <style>
-        /* ===== ОСНОВНЫЕ СТИЛИ ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Courier New', monospace;
-        }
-
-        body {
-            background: linear-gradient(145deg, #0a0f1a 0%, #0c111c 100%);
-            color: #fff;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 120px 20px 40px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
-        }
-
-        .logo {
-            font-size: 80px;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 2px 2px 0 #4A90E2, 4px 4px 0 #2a5092;
-            letter-spacing: 10px;
-            margin-bottom: 20px;
-        }
-
-        .logo span {
-            color: #FF8C00;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 20px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #4A90E2;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #fff;
-            backdrop-filter: blur(10px);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn:hover {
-            background: #4A90E2;
-            color: #000;
-            transform: translateY(-3px);
-        }
-
-        .btn-light {
-            border-color: #FF8C00;
-        }
-
-        .btn-light:hover {
-            background: #FF8C00;
-        }
-
-        .user-info {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.6);
-            padding: 10px 20px;
-            border-radius: 40px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .user-name {
-            color: #FF8C00;
-            font-weight: bold;
-        }
-
-        .small-btn {
-            background: #4A90E2;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 20px;
-            color: white;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .small-btn:hover {
-            background: #FF8C00;
-        }
-
-        .test-cube-container {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 100px;
-            height: 100px;
-            perspective: 1000px;
-            z-index: 100;
-            cursor: pointer;
-        }
-
-        .test-cube {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.3s;
-        }
-
-        .cube-face {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            border: 3px solid #e0e0e0;
-            background-image: url('photo/cub.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            box-shadow: 0 0 30px rgba(74, 144, 226, 0.8);
-        }
-
-        .front { transform: translateZ(50px); }
-        .back { transform: rotateY(180deg) translateZ(50px); }
-        .right { transform: rotateY(90deg) translateZ(50px); }
-        .left { transform: rotateY(-90deg) translateZ(50px); }
-        .top { transform: rotateX(90deg) translateZ(50px); }
-        .bottom { transform: rotateX(-90deg) translateZ(50px); }
-    </style>
-</head>
-<body>
-    <!-- КУБ -->
-    <div class="test-cube-container" onclick="cubeClick()">
-        <div class="test-cube" id="test-cube">
-            <div class="cube-face front"></div>
-            <div class="cube-face back"></div>
-            <div class="cube-face right"></div>
-            <div class="cube-face left"></div>
-            <div class="cube-face top"></div>
-            <div class="cube-face bottom"></div>
-        </div>
-    </div>
-
-    <!-- КОНТЕЙНЕР ДЛЯ ИНФОРМАЦИИ О ПОЛЬЗОВАТЕЛЕ -->
-    <div id="userPanel" class="user-info" style="display: none;">
-        <span>👤 <span id="userName" class="user-name"></span></span>
-        <button class="small-btn" onclick="goToProfile()">Профиль</button>
-        <button class="small-btn" onclick="logout()">Выйти</button>
-    </div>
-
-    <div class="container">
-        <div class="logo">
-            A<span>S</span>L
-        </div>
-        <div class="buttons" id="authButtons">
-            <a href="reg.html" class="btn">РЕГИСТРАЦИЯ</a>
-            <a href="login.html" class="btn btn-light">ВОЙТИ</a>
-        </div>
-        <div class="buttons" id="userButtons" style="display: none;">
-            <a href="profile.html" class="btn">ПРОФИЛЬ</a>
-            <button class="btn btn-light" onclick="logout()">ВЫЙТИ</button>
-        </div>
-    </div>
-
     <script>
-        // ========== FIREBASE КОНФИГ ==========
+        // ========== FIREBASE ==========
         const firebaseConfig = {
             apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
             authDomain: "apex-8f11e.firebaseapp.com",
@@ -204,66 +10,306 @@
             measurementId: "G-WTKS5JQ7Z5"
         };
 
-        firebase.initializeApp(firebaseConfig);
+        // Инициализация Firebase (если ещё не инициализирован)
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
         const auth = firebase.auth();
 
-        // Анимация куба
+        let cubeCount; 
+        let currentUser = null;
+        let decorativeCount = 0;
+
+        const shopItems = [
+            { id: 'radio', name: 'Радио-тостерная тарелка', description: 'Эта тарелка не только разогревает еду, но и ловит сигналы из других измерений.', price: 1337, image: 'photo/1.png' },
+            { id: 'car', name: 'Машина на ядерном реакторе', description: 'Компактный автомобиль, работающий на урановых стержнях.', price: 5000, image: 'photo/2.png' },
+            { id: 'microwave', name: 'Микроволновка с реактивным двигателем', description: 'Разогревает пищу за 0.5 секунды.', price: 9999, image: 'photo/3.png' },
+            { id: 'fridge', name: 'Холодильник ГЛУКа', description: 'Хранит продукты вечно. Иногда разговаривает.', price: 2500, image: 'photo/4.png' },
+            { id: 'kettle', name: 'Квантовый чайник', description: 'Находится во всех комнатах одновременно.', price: 777, image: 'photo/5.png' },
+            { id: 'portal', name: 'Портал в другой мир', description: 'Создаёт временной портал в случайную реальность.', price: 1000000, image: 'photo/6.png' }
+        ];
+
+        function openShopLightbox(src) {
+            document.getElementById('shopLightboxImg').src = src;
+            document.getElementById('shopLightbox').style.display = 'flex';
+        }
+
+        function closeShopLightbox() {
+            document.getElementById('shopLightbox').style.display = 'none';
+        }
+
         setInterval(() => {
             const cube = document.getElementById('test-cube');
-            if (cube) {
-                cube.style.transform = `rotateX(${Date.now() / 50 % 360}deg) rotateY(${Date.now() / 100 % 360}deg)`;
-            }
+            cube.style.transform = `rotateX(${Date.now() / 50 % 360}deg) rotateY(${Date.now() / 100 % 360}deg)`;
         }, 50);
 
         function cubeClick() {
-            const phrases = ["Глюк: Осторожнее!", "Куб не игрушка!", "Продолжай...", "Куб: Больно!", "Глюк: Тебе делать нечего?"];
+            if (Math.random() > 0.1) {
+                const cube = document.getElementById('test-cube');
+                cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
+                setTimeout(() => { cube.style.transform = ''; }, 200);
+                return;
+            }
+
+            const phrases = [
+                "😊", "😂", "😎", "🤔", "😱", "🤯", "🥳", "😈", "👾", "🤖",
+                "глюк: Эй, полегче с кубом!",
+                "глюк: Ты чего такой агрессивный?",
+                "глюк: Куб не игрушка!",
+                "глюк: Осторожно, куб может обидеться!",
+                "глюк: Кубу нужен перерыв...",
+                "глюк: Ломай куб, у нас их сотни тысяч!",
+                "куб: Ты пытаешься вызвать глюка?",
+                "куб: ...",
+                "глюк: Зачем ты это делаешь?",
+                "глюк: Кубу плевать!",
+                "глюк: Осторожно! Вам может надоесть!",
+                "глюк: Пока ты жал на куб, я сделал 25 полезных дел...",
+                "глюк: Поздровляю! Ты нажал куб!",
+                "глюк: Ты получил достижение 'Кликер'!",
+                "куб:  О, да! ПРОДОЛЖАЙ!!! ",
+                "куб:  Тебе делать нечего?",
+                "глюк: Займись делом!",
+                "куб: ... ЭТОГО КАЗИНО!",
+                "куб: Чё дерёшся!?",
+                "глюк: Да, жми на куб... Ему это нравиться)",
+                "куб: И сколько это будет продолжаться?",
+                "куб: ПРЕКРАТИ!",
+                "куб: ХВАТИТ!",
+                "куб: ПЕРЕСТАНЬ!!!",
+                "глюк: Ты пытаешься побить рекорд",
+                "куб: Ну-да, я же просто игрушка.",
+                "куб: Шёлб, ты нахрен отсюда!!!",
+                "куб: да за что мне это?",
+                "куб: И сколько мне это терпеть?",
+                "куб: Ну тебя!",
+                "куб: Злюка!",
+                "куб: Только и делаешь что бъёшь меня?",
+                "глюк: Кубы может что-то чувствуют?",
+                "куб: ыапрьтим5нб",
+            ];
             const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-            alert(randomPhrase);
+
+            const msg = document.createElement('div');
+            msg.textContent = randomPhrase;
+            msg.className = 'float-message';
+            const randomBottom = 80 + Math.random() * 40;
+            msg.style.bottom = randomBottom + 'px';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 4000);
+
             const cube = document.getElementById('test-cube');
             cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
-            setTimeout(() => cube.style.transform = '', 200);
+            setTimeout(() => {
+                cube.style.transform = '';
+            }, 200);
+        }
+
+        function redButtonClick() {
+            decorativeCount++;
+            document.getElementById('decorativeCount').textContent = decorativeCount;
+        }
+
+        function showShop() {
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('shop').style.display = 'block';
+            renderShop();
+        }
+
+        function backToDashboard() {
+            document.getElementById('shop').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+        }
+
+        function renderShop() {
+            const grid = document.getElementById('shopItemsGrid');
+            grid.innerHTML = '';
+            shopItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'shop-item';
+                div.innerHTML = `<div class="item-name">${item.name}</div><div class="item-price">${item.price} кубов</div>`;
+                div.onclick = () => openItemDetails(item.id);
+                grid.appendChild(div);
+            });
+        }
+
+        function openItemDetails(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if (!item) return;
+            document.getElementById('detailsTitle').innerText = item.name;
+            document.getElementById('detailsDescription').innerText = item.description;
+            document.getElementById('detailsPrice').innerText = item.price + ' кубов';
+            const imgContainer = document.getElementById('detailsImage');
+            const img = document.createElement('img');
+            img.src = item.image;
+            img.onclick = () => openShopLightbox(item.image);
+            imgContainer.innerHTML = '';
+            imgContainer.appendChild(img);
+            const btn = document.getElementById('detailsBuyBtn');
+            btn.onclick = () => buyItemFromDetails(item.id);
+            document.getElementById('itemDetailsModal').style.display = 'flex';
+        }
+
+        function closeItemDetails() {
+            document.getElementById('itemDetailsModal').style.display = 'none';
+        }
+
+        function buyItemFromDetails(itemId) {
+            const item = shopItems.find(i => i.id === itemId);
+            if (!item) return;
+            if (cubeCount < item.price) {
+                alert(`Недостаточно кубов! Нужно ${item.price}, а у вас ${cubeCount}`);
+                return;
+            }
+            cubeCount -= item.price;
+            document.getElementById('cube-count').textContent = cubeCount;
+            alert(`✅ Поздравляем! Вы купили ${item.name} за ${item.price} кубов! Ожидайте доставку через 3-5 рабочих дней.`);
+            closeItemDetails();
+        }
+
+        function openFeedbackModal() {
+            document.getElementById('feedbackModal').style.display = 'flex';
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+
+        // ========== ИСПРАВЛЕННАЯ ФУНКЦИЯ ВЫХОДА ==========
+        async function logout() {
+            try {
+                await auth.signOut();
+                localStorage.removeItem('asl_user');
+                // Обновляем интерфейс
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('main-buttons').style.display = 'flex';
+                document.getElementById('profileButton').style.display = 'none';
+                document.getElementById('atticLogoutBtn').style.display = 'none';
+                document.getElementById('decorativeCounter').style.display = 'none';
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Ошибка выхода:', error);
+            }
         }
 
         // ========== ПРОВЕРКА АВТОРИЗАЦИИ ==========
         auth.onAuthStateChanged((user) => {
-            const authButtons = document.getElementById('authButtons');
-            const userButtons = document.getElementById('userButtons');
-            const userPanel = document.getElementById('userPanel');
-            const userNameSpan = document.getElementById('userName');
-
             if (user) {
                 // Пользователь авторизован
-                authButtons.style.display = 'none';
-                userButtons.style.display = 'flex';
-                userPanel.style.display = 'flex';
+                document.getElementById('main-buttons').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                document.getElementById('profileButton').style.display = 'block';
+                document.getElementById('atticLogoutBtn').style.display = 'block';
+                document.getElementById('decorativeCounter').style.display = 'flex';
                 
-                // Получаем имя пользователя из localStorage или email
-                const userData = JSON.parse(localStorage.getItem('asl_user'));
-                if (userData && userData.username) {
-                    userNameSpan.textContent = userData.username;
+                // Загружаем данные пользователя
+                const savedUser = localStorage.getItem('asl_user');
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
                 } else {
-                    userNameSpan.textContent = user.email.split('@')[0];
+                    currentUser = { username: user.email.split('@')[0] };
                 }
             } else {
                 // Пользователь не авторизован
-                authButtons.style.display = 'flex';
-                userButtons.style.display = 'none';
-                userPanel.style.display = 'none';
+                document.getElementById('main-buttons').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('profileButton').style.display = 'none';
+                document.getElementById('atticLogoutBtn').style.display = 'none';
+                document.getElementById('decorativeCounter').style.display = 'none';
+                currentUser = null;
             }
         });
 
-        function goToProfile() {
-            window.location.href = 'profile.html';
-        }
+        window.onclick = function(event) {
+            const feedback = document.getElementById('feedbackModal');
+            if (event.target == feedback) feedback.style.display = 'none';
+            const details = document.getElementById('itemDetailsModal');
+            if (event.target == details) details.style.display = 'none';
+            const lightbox = document.getElementById('shopLightbox');
+            if (event.target == lightbox) lightbox.style.display = 'none';
+        };
 
-        function logout() {
-            auth.signOut().then(() => {
-                localStorage.removeItem('asl_user');
-                window.location.href = 'index.html';
-            }).catch((error) => {
-                console.error('Ошибка выхода:', error);
+        // Карусель
+        const carouselSlide = document.getElementById('carouselSlide');
+        const carouselContainer = document.getElementById('carouselContainer');
+        const slides = document.querySelectorAll('.carousel-slide img');
+        const indicatorsContainer = document.getElementById('carouselIndicators');
+        let currentIndex = 0;
+        const slideCount = slides.length;
+        let autoInterval;
+
+        const dots = document.querySelectorAll('.carousel-indicators span');
+        function goToSlide(index) {
+            if (index < 0) index = slideCount - 1;
+            if (index >= slideCount) index = 0;
+            currentIndex = index;
+            carouselSlide.style.transform = `translateX(${-currentIndex * 100}%)`;
+            dots.forEach((dot, i) => {
+                if (i === currentIndex) dot.classList.add('active');
+                else dot.classList.remove('active');
             });
         }
+
+        function nextSlide() { goToSlide(currentIndex + 1); }
+        function startAutoSlide() { autoInterval = setInterval(nextSlide, 3000); }
+        function stopAutoSlide() { if (autoInterval) clearInterval(autoInterval); }
+        function resetAutoSlide() { stopAutoSlide(); startAutoSlide(); }
+
+        carouselContainer.addEventListener('click', () => alert('Недостаточно средств'));
+        startAutoSlide();
+        carouselContainer.addEventListener('mouseenter', stopAutoSlide);
+        carouselContainer.addEventListener('mouseleave', startAutoSlide);
+
+        let angle = 0;
+        function animateGradient() {
+            angle = (angle + 0.1) % 360;
+            const attic = document.querySelector('.attic');
+            if (attic) attic.style.background = `linear-gradient(${angle}deg, #2c3e50, #4a5b6e, #2c3e50)`;
+            requestAnimationFrame(animateGradient);
+        }
+        animateGradient();
+
+        (function() {
+            const drawer = document.getElementById('drawer');
+            const handle = document.getElementById('drawerHandle');
+            let isDragging = false;
+            let startX = 0;
+            let currentTranslate = 0;
+            const maxTranslate = 260;
+
+            function onMouseMove(e) {
+                if (!isDragging) return;
+                let delta = e.clientX - startX;
+                let newTranslate = currentTranslate + delta;
+                newTranslate = Math.max(0, Math.min(maxTranslate, newTranslate));
+                drawer.classList.toggle('open', newTranslate >= maxTranslate / 2);
+            }
+
+            function onMouseUp() {
+                if (!isDragging) return;
+                isDragging = false;
+                if (!drawer.classList.contains('open')) {
+                    drawer.classList.remove('open');
+                }
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+
+            function onMouseDown(e) {
+                e.preventDefault();
+                isDragging = true;
+                startX = e.clientX;
+                currentTranslate = drawer.classList.contains('open') ? maxTranslate : 0;
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
+
+            handle.addEventListener('mousedown', onMouseDown);
+
+            document.addEventListener('click', function(e) {
+                if (drawer.classList.contains('open') && !drawer.contains(e.target)) {
+                    drawer.classList.remove('open');
+                }
+            });
+        })();
     </script>
-</body>
-</html>
