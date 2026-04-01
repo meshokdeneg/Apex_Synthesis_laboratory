@@ -655,5 +655,136 @@
         if (e.key === 'Enter') sendMessage();
     });
 </script>
+    <!-- Подключение Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  // 🔴 ЗАМЕНИ НА СВОИ ДАННЫЕ ИЗ FIREBASE 🔴
+  const firebaseConfig = {
+  apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
+  authDomain: "apex-8f11e.firebaseapp.com",
+  projectId: "apex-8f11e",
+  storageBucket: "apex-8f11e.firebasestorage.app",
+  messagingSenderId: "923734077108",
+  appId: "1:923734077108:web:f6d2d4059972c215c371e1",
+  measurementId: "G-WTKS5JQ7Z5"
+  };
+
+  // Инициализация
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Анонимный вход (для теста)
+  signInAnonymously(auth).catch(error => console.error("Ошибка входа:", error));
+
+  // Следим за пользователем
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      console.log("Вошел как:", user.uid);
+      localStorage.setItem('asl_uid', user.uid);
+      
+      // Загружаем или создаём профиль
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        // Создаём новый профиль
+        await setDoc(userRef, {
+          username: localStorage.getItem('asl_username') || "Игрок_" + user.uid.slice(0, 6),
+          avatar: "🧊",
+          bio: "Люблю эксперименты ASL",
+          friends: [],
+          level: 1,
+          cubes: 100,
+          badges: ["КУБОКЛИКЕР"],
+          achievements: []
+        });
+      }
+      
+      // Загружаем данные в интерфейс
+      const userData = (await getDoc(userRef)).data();
+      document.getElementById('profileName').textContent = userData.username;
+      document.getElementById('profileBio').textContent = userData.bio;
+      document.getElementById('level').textContent = userData.level;
+      document.getElementById('cubes').textContent = userData.cubes;
+      document.getElementById('avatarEmoji').textContent = userData.avatar;
+      
+      // Загружаем друзей
+      renderFriendsFromFirebase(userData.friends, db);
+      
+    } else {
+      console.log("Не вошёл");
+    }
+  });
+  
+  async function renderFriendsFromFirebase(friendIds, db) {
+    const container = document.getElementById('friendsList');
+    if (!friendIds || friendIds.length === 0) {
+      container.innerHTML = '<div style="color:#aaa;">У вас пока нет друзей. Добавьте кого-нибудь!</div>';
+      return;
+    }
+    
+    let friendsHtml = '';
+    for (const friendId of friendIds) {
+      const friendRef = doc(db, "users", friendId);
+      const friendSnap = await getDoc(friendRef);
+      if (friendSnap.exists()) {
+        const friendData = friendSnap.data();
+        friendsHtml += `
+          <div class="friend-card" onclick="openChat('${friendId}')">
+            <div class="friend-avatar">${friendData.avatar || '👤'}</div>
+            <div class="friend-info">
+              <div class="friend-name">${friendData.username}</div>
+              <div class="friend-status">● В сети</div>
+            </div>
+            <button class="chat-btn" onclick="event.stopPropagation(); openChat('${friendId}')">💬</button>
+          </div>
+        `;
+      }
+    }
+    container.innerHTML = friendsHtml;
+    document.getElementById('friendsCount').textContent = friendIds.length;
+  }
+  
+  // Функция добавления друга по имени (нужно будет доработать)
+  window.addFriend = async function() {
+    const searchName = document.getElementById('friendSearch').value.trim();
+    if (!searchName) return;
+    
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("username", "==", searchName));
+    const querySnapshot = await getDocs(q);
+    
+    if (querySnapshot.empty) {
+      alert("Пользователь не найден!");
+      return;
+    }
+    
+    const friendDoc = querySnapshot.docs[0];
+    const friendId = friendDoc.id;
+    const myId = localStorage.getItem('asl_uid');
+    
+    if (friendId === myId) {
+      alert("Нельзя добавить самого себя!");
+      return;
+    }
+    
+    const myRef = doc(db, "users", myId);
+    await updateDoc(myRef, {
+      friends: arrayUnion(friendId)
+    });
+    
+    alert(`✅ ${searchName} добавлен в друзья!`);
+    location.reload(); // Обновляем страницу
+  };
+  
+  // Функция открытия чата
+  window.openChat = function(friendId) {
+    alert("Чат в разработке! Скоро будет работать через Firebase.");
+  };
+</script>
 </body>
 </html>
