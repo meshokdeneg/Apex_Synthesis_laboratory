@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASL | Бланк трудоустройства</title>
     <style>
-        /* Стили для фонового изображения (Фон №1) */
-        body {
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             background: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg') repeat;
             background-size: 64px 64px;
             font-family: 'Times New Roman', serif;
@@ -16,13 +19,31 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
-        /* Контейнер бланка — белый лист (Фон №2) */
+        .document-wrapper {
+            width: 100%;
+            max-width: 700px;
+            transform: translateY(100%);
+            animation: slideUp 0.9s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+        }
+
+        @keyframes slideUp {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         .document-container {
             background: #fff;
             color: #000;
-            max-width: 700px;
             width: 100%;
             padding: 40px 50px;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
@@ -84,7 +105,6 @@
             border-bottom: 2px solid #000;
         }
 
-        /* Стили для текстового поля "О себе" */
         .form-textarea {
             flex: 1;
             border: 1px dashed #888;
@@ -94,7 +114,7 @@
             padding: 10px;
             outline: none;
             resize: vertical;
-            min-height: 120px;
+            min-height: 100px;
             line-height: 1.5;
         }
 
@@ -105,47 +125,6 @@
         input[type="date"].form-input {
             font-family: 'Times New Roman', serif;
             color: #333;
-        }
-
-        /* Стили для проверки пароля */
-        .password-container {
-            flex: 1;
-        }
-
-        .password-input-wrapper input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            font-size: 18px;
-            font-family: 'Times New Roman', serif;
-            padding: 5px 10px;
-            outline: none;
-            border-bottom: 1px dashed #888;
-        }
-
-        .password-input-wrapper input:focus {
-            border-bottom: 2px solid #000;
-        }
-
-        .password-requirements {
-            margin-top: 10px;
-            padding-left: 10px;
-        }
-
-        .requirement {
-            font-size: 14px;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .requirement.valid {
-            color: #27ae60;
-        }
-
-        .requirement.invalid {
-            color: #c0392b;
         }
 
         .signature-row {
@@ -186,17 +165,16 @@
             letter-spacing: 3px;
             margin-top: 20px;
             border-radius: 2px;
-            transition: background 0.2s, opacity 0.2s;
+            transition: background 0.2s;
         }
 
-        .submit-btn:hover:not(:disabled) {
+        .submit-btn:hover {
             background: #000;
         }
 
         .submit-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            background: #666;
         }
 
         .footer-note {
@@ -208,6 +186,31 @@
             padding-top: 15px;
         }
 
+        .password-container {
+            flex: 1;
+        }
+
+        .password-requirements {
+            margin-top: 8px;
+            padding-left: 10px;
+        }
+
+        .requirement {
+            font-size: 12px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .requirement.valid {
+            color: #27ae60;
+        }
+
+        .requirement.invalid {
+            color: #c0392b;
+        }
+
         @media (max-width: 500px) {
             body { padding: 10px; }
             .form-row { flex-direction: column; }
@@ -217,52 +220,43 @@
     </style>
 </head>
 <body>
+<div class="document-wrapper">
     <div class="document-container">
-        <!-- Шапка бланка -->
         <div class="document-header">
             <h1>APEX SYNTHESIS LABORATORY</h1>
             <h2>Отдел кадров TToS • Бланк трудоустройства № ASL‑2026</h2>
         </div>
 
-        <!-- Форма (убрали action, теперь обрабатываем локально) -->
         <form id="registrationForm">
-            <!-- Поле Фамилия -->
             <div class="form-row">
                 <span class="form-label">Фамилия</span>
-                <input type="text" id="surname" name="surname" class="form-input" placeholder="surname" required>
+                <input type="text" id="surname" name="surname" class="form-input" placeholder="Фамилия" required>
             </div>
 
-            <!-- Поле Имя -->
             <div class="form-row">
                 <span class="form-label">Имя</span>
-                <input type="text" id="name" name="name" class="form-input" placeholder="name" required>
+                <input type="text" id="name" name="name" class="form-input" placeholder="Имя" required>
             </div>
 
-            <!-- Поле Никнейм -->
             <div class="form-row">
                 <span class="form-label">Никнейм</span>
-                <input type="text" id="nickname" name="nickname" class="form-input" placeholder="nickname" required>
+                <input type="text" id="nickname" name="nickname" class="form-input" placeholder="Никнейм" required>
             </div>
 
-            <!-- Поле Электронная почта -->
             <div class="form-row">
                 <span class="form-label">Электронная почта</span>
-                <input type="email" id="email" name="email" class="form-input" placeholder="email" required>
+                <input type="email" id="email" name="email" class="form-input" placeholder="Email" required>
             </div>
 
-            <!-- Поле Дата рождения -->
             <div class="form-row">
                 <span class="form-label">Дата рождения</span>
                 <input type="date" id="birthdate" name="birthdate" class="form-input" required>
             </div>
 
-            <!-- Поле Пароль с проверкой -->
             <div class="form-row">
                 <span class="form-label">Пароль</span>
                 <div class="password-container">
-                    <div class="password-input-wrapper">
-                        <input type="password" id="password" name="password" placeholder="••••••••" required>
-                    </div>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Пароль" required>
                     <div class="password-requirements" id="passwordRequirements">
                         <div class="requirement invalid" id="reqLength">
                             <span class="req-icon">❌</span> Минимум 8 символов
@@ -277,13 +271,11 @@
                 </div>
             </div>
 
-            <!-- Поле О себе -->
             <div class="form-row" style="align-items: flex-start;">
                 <span class="form-label">О себе</span>
-                <textarea id="about" name="about" class="form-textarea" placeholder="Расскажите о себе: опыт, навыки, почему хотите работать в ASL..."></textarea>
+                <textarea id="about" name="about" class="form-textarea" placeholder="Расскажите о себе..."></textarea>
             </div>
 
-            <!-- Блок подписи и даты -->
             <div class="signature-row">
                 <div class="signature-item">
                     <div class="signature-label">Подпись сотрудника</div>
@@ -291,97 +283,115 @@
                 </div>
                 <div class="signature-item">
                     <div class="signature-label">Дата заполнения</div>
-                    <div class="signature-line"></div>
+                    <div class="signature-line" id="dateLine"></div>
                 </div>
             </div>
 
-            <!-- Кнопка отправки -->
             <button type="submit" class="submit-btn" id="submitBtn" disabled>ПОДАТЬ ЗАЯВЛЕНИЕ</button>
 
-            <!-- Примечание -->
             <div class="footer-note">
                 * Заполненные данные будут переданы в отдел кадров ASL. Ожидайте решения в течение 72 часов.
             </div>
         </form>
     </div>
+</div>
 
-    <script>
-        // Находим поля
-        const surnameInput = document.getElementById('surname');
-        const nameInput = document.getElementById('name');
-        const nicknameInput = document.getElementById('nickname');
-        const emailInput = document.getElementById('email');
-        const birthdateInput = document.getElementById('birthdate');
-        const passwordInput = document.getElementById('password');
-        const aboutInput = document.getElementById('about');
-        
-        // Находим требования
-        const reqLength = document.getElementById('reqLength');
-        const reqLetter = document.getElementById('reqLetter');
-        const reqNumber = document.getElementById('reqNumber');
-        
-        // Иконки
-        const lengthIcon = document.querySelector('#reqLength .req-icon');
-        const letterIcon = document.querySelector('#reqLetter .req-icon');
-        const numberIcon = document.querySelector('#reqNumber .req-icon');
-        const submitBtn = document.getElementById('submitBtn');
+<script>
+    // ========== УСТАНОВКА РЕАЛЬНОЙ ДАТЫ ==========
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('ru-RU', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    document.getElementById('dateLine').innerHTML = formattedDate;
 
-        // Функция проверки пароля
-        function checkPassword() {
-            const password = passwordInput.value;
-            
-            const isLengthValid = password.length >= 8;
-            const isLetterValid = /[a-zA-Z]/.test(password);
-            const isNumberValid = /[0-9]/.test(password);
-            
-            updateRequirement(reqLength, lengthIcon, isLengthValid);
-            updateRequirement(reqLetter, letterIcon, isLetterValid);
-            updateRequirement(reqNumber, numberIcon, isNumberValid);
-            
-            submitBtn.disabled = !(isLengthValid && isLetterValid && isNumberValid);
+    // ========== ПРОВЕРКА ПАРОЛЯ ==========
+    const passwordInput = document.getElementById('password');
+    const reqLength = document.getElementById('reqLength');
+    const reqLetter = document.getElementById('reqLetter');
+    const reqNumber = document.getElementById('reqNumber');
+    const submitBtn = document.getElementById('submitBtn');
+
+    const lengthIcon = reqLength.querySelector('.req-icon');
+    const letterIcon = reqLetter.querySelector('.req-icon');
+    const numberIcon = reqNumber.querySelector('.req-icon');
+
+    function updateRequirement(element, icon, isValid) {
+        if (isValid) {
+            element.classList.remove('invalid');
+            element.classList.add('valid');
+            icon.textContent = '✅';
+        } else {
+            element.classList.remove('valid');
+            element.classList.add('invalid');
+            icon.textContent = '❌';
+        }
+    }
+
+    function validatePassword() {
+        const password = passwordInput.value;
+        const isLengthValid = password.length >= 8;
+        const isLetterValid = /[a-zA-Z]/.test(password);
+        const isNumberValid = /[0-9]/.test(password);
+
+        updateRequirement(reqLength, lengthIcon, isLengthValid);
+        updateRequirement(reqLetter, letterIcon, isLetterValid);
+        updateRequirement(reqNumber, numberIcon, isNumberValid);
+
+        submitBtn.disabled = !(isLengthValid && isLetterValid && isNumberValid);
+    }
+
+    passwordInput.addEventListener('input', validatePassword);
+
+    // ========== РЕГИСТРАЦИЯ ==========
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const surname = document.getElementById('surname').value;
+        const name = document.getElementById('name').value;
+        const nickname = document.getElementById('nickname').value;
+        const email = document.getElementById('email').value;
+        const about = document.getElementById('about').value;
+        const birthdate = document.getElementById('birthdate').value;
+
+        if (!surname || !name || !nickname || !email) {
+            alert('Заполните все обязательные поля!');
+            return;
         }
 
-        function updateRequirement(element, icon, isValid) {
-            if (isValid) {
-                element.classList.remove('invalid');
-                element.classList.add('valid');
-                icon.textContent = '✅';
-            } else {
-                element.classList.remove('valid');
-                element.classList.add('invalid');
-                icon.textContent = '❌';
-            }
+        if (submitBtn.disabled) {
+            alert('Пожалуйста, выполните все требования к паролю');
+            return;
         }
 
-        passwordInput.addEventListener('input', checkPassword);
-        window.addEventListener('load', checkPassword);
+        // Сохраняем данные пользователя
+        const userData = {
+            username: nickname,
+            fullName: surname + ' ' + name,
+            email: email,
+            bio: about || 'Новый сотрудник ASL',
+            avatar: '🧊',
+            level: 1,
+            cubes: 100,
+            birthdate: birthdate,
+            registeredAt: new Date().toISOString()
+        };
 
-        // Обработка отправки формы
-        document.getElementById('registrationForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // не даём перезагрузить страницу
+        localStorage.setItem('asl_user', JSON.stringify(userData));
 
-            if (submitBtn.disabled) {
-                alert('Пожалуйста, выполните все требования к паролю');
-                return;
-            }
+        // Сохраняем в список всех пользователей
+        let allUsers = JSON.parse(localStorage.getItem('asl_all_users')) || [];
+        if (!allUsers.includes(nickname)) {
+            allUsers.push(nickname);
+            localStorage.setItem('asl_all_users', JSON.stringify(allUsers));
+        }
 
-            // Собираем данные пользователя
-            const userData = {
-                surname: surnameInput.value,
-                name: nameInput.value,
-                nickname: nicknameInput.value,
-                email: emailInput.value,
-                birthdate: birthdateInput.value,
-                password: passwordInput.value,
-                about: aboutInput.value
-            };
+        alert('✅ Регистрация успешна! Добро пожаловать в ASL.');
+        window.location.href = 'profile.html';
+    });
 
-            // Сохраняем в localStorage (ключ asl_user – именно его ждёт главная страница)
-            localStorage.setItem('asl_user', JSON.stringify(userData));
-
-            // Перенаправляем на главную
-            window.location.href = 'index.html';
-        });
-    </script>
+    validatePassword();
+</script>
 </body>
 </html>
