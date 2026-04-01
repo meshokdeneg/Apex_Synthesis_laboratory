@@ -18,7 +18,6 @@
             padding: 30px 20px;
         }
 
-        /* Контейнер профиля */
         .profile-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -30,30 +29,34 @@
             overflow: hidden;
         }
 
-        /* Шапка профиля */
         .profile-header {
             background: linear-gradient(135deg, #1a2a2f, #0f1a1f);
-            padding: 30px;
+            padding: 25px 30px;
+            border-bottom: 3px solid #FF8C00;
             display: flex;
+            align-items: flex-start;
             gap: 30px;
             flex-wrap: wrap;
-            border-bottom: 3px solid #FF8C00;
         }
 
-        .avatar-area {
-            text-align: center;
+        .profile-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 150px;
         }
 
         .avatar {
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             border: 4px solid #FF8C00;
             background: #2c3e2f;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
+            font-size: 50px;
             cursor: pointer;
             transition: 0.2s;
             overflow: hidden;
@@ -71,54 +74,80 @@
         }
 
         .change-avatar-btn {
-            margin-top: 10px;
             background: rgba(74,144,226,0.3);
             border: 1px solid #4A90E2;
-            padding: 5px 15px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             color: #fff;
         }
 
-        .profile-info {
+        .profile-center {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .profile-name {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: #FF8C00;
-            margin-bottom: 5px;
         }
 
         .profile-status {
             color: #8bc34a;
-            font-size: 14px;
-            margin-bottom: 10px;
+            font-size: 13px;
         }
 
         .profile-bio {
             color: #ccc;
-            margin: 15px 0;
-            line-height: 1.5;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
         .profile-stats {
             display: flex;
-            gap: 20px;
-            margin-top: 15px;
+            gap: 15px;
+            margin-top: 8px;
+            flex-wrap: wrap;
         }
 
         .stat {
             background: rgba(0,0,0,0.5);
-            padding: 8px 16px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 13px;
             color: #FF8C00;
         }
 
-        /* Навигация профиля */
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 140px;
+            align-items: flex-end;
+        }
+
+        .action-btn {
+            background: rgba(74,144,226,0.2);
+            border: 1px solid #4A90E2;
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background: #4A90E2;
+            transform: translateY(-2px);
+        }
+
         .profile-nav {
             display: flex;
             gap: 5px;
@@ -135,7 +164,6 @@
             font-size: 16px;
             cursor: pointer;
             transition: 0.2s;
-            position: relative;
         }
 
         .nav-btn.active {
@@ -147,18 +175,16 @@
             color: #fff;
         }
 
-        /* Контент */
         .profile-content {
             padding: 30px;
             min-height: 400px;
         }
 
-        /* Секция друзей */
-        .friends-section {
+        .friends-section, .badges-section, .achievements-section {
             display: none;
         }
 
-        .friends-section.active {
+        .friends-section.active, .badges-section.active, .achievements-section.active {
             display: block;
         }
 
@@ -172,10 +198,10 @@
         .friend-card {
             background: rgba(255,255,255,0.05);
             border-radius: 16px;
-            padding: 15px;
+            padding: 12px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             cursor: pointer;
             transition: 0.2s;
             border: 1px solid rgba(255,140,0,0.2);
@@ -187,21 +213,14 @@
         }
 
         .friend-avatar {
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             background: #2c3e2f;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            overflow: hidden;
-        }
-
-        .friend-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            font-size: 22px;
         }
 
         .friend-info {
@@ -211,28 +230,29 @@
         .friend-name {
             color: #FF8C00;
             font-weight: bold;
+            font-size: 14px;
         }
 
         .friend-status {
-            font-size: 12px;
+            font-size: 11px;
             color: #8bc34a;
         }
 
         .chat-btn {
             background: #4A90E2;
             border: none;
-            padding: 6px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
             color: white;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
         }
 
-        /* Добавление друга */
         .add-friend {
             margin-bottom: 20px;
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .add-friend input {
@@ -253,15 +273,6 @@
             cursor: pointer;
         }
 
-        /* Секция заслуг */
-        .achievements-section {
-            display: none;
-        }
-
-        .achievements-section.active {
-            display: block;
-        }
-
         .achievements-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -277,49 +288,39 @@
         }
 
         .achievement-icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: 35px;
+            margin-bottom: 8px;
         }
 
         .achievement-name {
             color: #FF8C00;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .achievement-desc {
-            font-size: 11px;
+            font-size: 10px;
             color: #aaa;
             margin-top: 5px;
-        }
-
-        /* Секция значков */
-        .badges-section {
-            display: none;
-        }
-
-        .badges-section.active {
-            display: block;
         }
 
         .badges-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 12px;
         }
 
         .badge {
             background: rgba(255,140,0,0.2);
             border-radius: 40px;
-            padding: 8px 16px;
+            padding: 6px 14px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 6px;
+            font-size: 13px;
             color: #FF8C00;
         }
 
-        /* Чат */
         .chat-modal {
             position: fixed;
             bottom: 20px;
@@ -328,7 +329,6 @@
             background: #1a2a2f;
             border-radius: 16px;
             border: 1px solid #FF8C00;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             display: none;
             flex-direction: column;
             z-index: 1000;
@@ -358,7 +358,7 @@
             padding: 8px 12px;
             border-radius: 12px;
             max-width: 80%;
-            word-wrap: break-word;
+            font-size: 13px;
         }
 
         .chat-message.own {
@@ -390,7 +390,6 @@
             cursor: pointer;
         }
 
-        /* Кнопка возврата */
         .back-btn {
             position: fixed;
             top: 20px;
@@ -405,8 +404,10 @@
             z-index: 100;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 700px) {
             .profile-header { flex-direction: column; align-items: center; text-align: center; }
+            .profile-actions { align-items: center; width: 100%; }
+            .profile-center { align-items: center; }
             .profile-stats { justify-content: center; }
             .nav-btn { padding: 8px 12px; font-size: 12px; }
         }
@@ -417,21 +418,27 @@
 
 <div class="profile-container" id="profileContainer">
     <div class="profile-header">
-        <div class="avatar-area">
+        <div class="profile-left">
             <div class="avatar" id="avatar" onclick="changeAvatar()">
                 <span id="avatarEmoji">🧊</span>
             </div>
             <div class="change-avatar-btn" onclick="changeAvatar()">Сменить аватар</div>
         </div>
-        <div class="profile-info">
+
+        <div class="profile-center">
             <div class="profile-name" id="profileName">Загрузка...</div>
             <div class="profile-status" id="profileStatus">● В сети</div>
-            <div class="profile-bio" id="profileBio">Люблю эксперименты и принцип чайника</div>
+            <div class="profile-bio" id="profileBio">Загрузка...</div>
             <div class="profile-stats">
                 <div class="stat">🏆 Друзей: <span id="friendsCount">0</span></div>
                 <div class="stat">⭐ Уровень: <span id="level">1</span></div>
                 <div class="stat">🧊 Кубов: <span id="cubes">0</span></div>
             </div>
+        </div>
+
+        <div class="profile-actions">
+            <div class="action-btn" onclick="editProfile()">✎ Редактировать</div>
+            <div class="action-btn" onclick="logout()">🚪 Выйти</div>
         </div>
     </div>
 
@@ -442,7 +449,6 @@
     </div>
 
     <div class="profile-content">
-        <!-- Друзья -->
         <div id="friendsSection" class="friends-section active">
             <div class="add-friend">
                 <input type="text" id="friendSearch" placeholder="Имя пользователя...">
@@ -451,19 +457,16 @@
             <div id="friendsList" class="friends-list"></div>
         </div>
 
-        <!-- Значки -->
         <div id="badgesSection" class="badges-section">
             <div id="badgesList" class="badges-grid"></div>
         </div>
 
-        <!-- Заслуги -->
         <div id="achievementsSection" class="achievements-section">
             <div id="achievementsList" class="achievements-grid"></div>
         </div>
     </div>
 </div>
 
-<!-- Чат -->
 <div id="chatModal" class="chat-modal">
     <div class="chat-header" onclick="closeChat()">
         <span id="chatFriendName">Чат</span>
@@ -477,35 +480,39 @@
 </div>
 
 <script>
-    // ========== ДАННЫЕ ПОЛЬЗОВАТЕЛЯ ==========
-    let currentUser = JSON.parse(localStorage.getItem('asl_user')) || {
-        username: 'Meshokdeneg',
-        bio: 'Люблю эксперименты и принцип чайника',
-        avatar: '🧊',
-        level: 1,
-        cubes: 100
-    };
-    
-    // Сохраняем имя пользователя
-    if (!currentUser.username) currentUser.username = 'Meshokdeneg';
-    document.getElementById('profileName').textContent = currentUser.username;
-    document.getElementById('profileBio').textContent = currentUser.bio;
-    document.getElementById('level').textContent = currentUser.level;
-    document.getElementById('cubes').textContent = currentUser.cubes;
-    document.getElementById('avatarEmoji').textContent = currentUser.avatar || '🧊';
-    
-    // Загружаем список друзей
-    let friends = JSON.parse(localStorage.getItem('asl_friends')) || [];
+    // ========== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ ==========
+    let currentUser = null;
+    let friends = [];
+    let messages = {};
     let chatWith = null;
-    let messages = JSON.parse(localStorage.getItem('asl_messages')) || {};
-    
-    // Загружаем значки и заслуги
-    let badges = JSON.parse(localStorage.getItem('asl_badges')) || ['КУБОКЛИКЕР', 'ТЕСТОПРОХОДЕЦ'];
-    let achievements = JSON.parse(localStorage.getItem('asl_achievements')) || [
-        { name: 'Первый куб', desc: 'Кликнуть по кубу 1 раз', icon: '🟦' },
-        { name: 'Любопытный', desc: 'Найти первую пасхалку', icon: '🔍' },
-        { name: 'Теоретик', desc: 'Пройди тест на 25/25', icon: '📚' }
-    ];
+
+    function loadCurrentUser() {
+        const savedUser = localStorage.getItem('asl_user');
+        if (!savedUser) {
+            window.location.href = 'reg.html';
+            return;
+        }
+        
+        currentUser = JSON.parse(savedUser);
+        
+        document.getElementById('profileName').textContent = currentUser.username;
+        document.getElementById('profileBio').textContent = currentUser.bio;
+        document.getElementById('level').textContent = currentUser.level;
+        document.getElementById('cubes').textContent = currentUser.cubes;
+        
+        if (currentUser.avatar) {
+            if (currentUser.avatar.startsWith('http')) {
+                document.getElementById('avatar').innerHTML = `<img src="${currentUser.avatar}">`;
+            } else {
+                document.getElementById('avatarEmoji').textContent = currentUser.avatar;
+            }
+        }
+        
+        // Загружаем друзей и сообщения
+        friends = JSON.parse(localStorage.getItem('asl_friends')) || [];
+        messages = JSON.parse(localStorage.getItem('asl_messages')) || {};
+        renderFriends();
+    }
     
     function renderFriends() {
         const container = document.getElementById('friendsList');
@@ -538,10 +545,8 @@
             return;
         }
         
-        // Проверяем существование пользователя
-        const allUsers = JSON.parse(localStorage.getItem('asl_all_users')) || ['Meshokdeneg', 'Strika_Jarvis', 'Глюк'];
-        if (!allUsers.includes(searchName) && searchName !== 'Meshokdeneg' && searchName !== 'Strika_Jarvis') {
-            // Создаём нового пользователя
+        let allUsers = JSON.parse(localStorage.getItem('asl_all_users')) || [];
+        if (!allUsers.includes(searchName)) {
             allUsers.push(searchName);
             localStorage.setItem('asl_all_users', JSON.stringify(allUsers));
         }
@@ -553,37 +558,6 @@
         alert(`✅ ${searchName} добавлен в друзья!`);
     }
     
-    function renderBadges() {
-        const container = document.getElementById('badgesList');
-        container.innerHTML = badges.map(b => `<div class="badge">🎖️ ${b}</div>`).join('');
-        if (badges.length === 0) container.innerHTML = '<div style="color:#aaa;">Пока нет значков. Проходите тесты и ищите пасхалки!</div>';
-    }
-    
-    function renderAchievements() {
-        const container = document.getElementById('achievementsList');
-        container.innerHTML = achievements.map(a => `
-            <div class="achievement-card">
-                <div class="achievement-icon">${a.icon}</div>
-                <div class="achievement-name">${a.name}</div>
-                <div class="achievement-desc">${a.desc}</div>
-            </div>
-        `).join('');
-    }
-    
-    function changeAvatar() {
-        const newAvatar = prompt('Введите эмодзи или ссылку на картинку (для эмодзи просто введите символ):', currentUser.avatar || '🧊');
-        if (newAvatar) {
-            if (newAvatar.startsWith('http')) {
-                document.getElementById('avatar').innerHTML = `<img src="${newAvatar}" alt="avatar">`;
-            } else {
-                document.getElementById('avatarEmoji').textContent = newAvatar;
-            }
-            currentUser.avatar = newAvatar;
-            localStorage.setItem('asl_user', JSON.stringify(currentUser));
-        }
-    }
-    
-    // Чат
     function openChat(username) {
         chatWith = username;
         document.getElementById('chatFriendName').textContent = username;
@@ -626,6 +600,56 @@
         loadMessages();
     }
     
+    function editProfile() {
+        const newBio = prompt('Введите новую информацию о себе:', currentUser.bio);
+        if (newBio) {
+            currentUser.bio = newBio;
+            document.getElementById('profileBio').textContent = newBio;
+            localStorage.setItem('asl_user', JSON.stringify(currentUser));
+        }
+    }
+    
+    function changeAvatar() {
+        const newAvatar = prompt('Введите эмодзи или ссылку на картинку:', currentUser.avatar || '🧊');
+        if (newAvatar) {
+            if (newAvatar.startsWith('http')) {
+                document.getElementById('avatar').innerHTML = `<img src="${newAvatar}">`;
+            } else {
+                document.getElementById('avatarEmoji').textContent = newAvatar;
+            }
+            currentUser.avatar = newAvatar;
+            localStorage.setItem('asl_user', JSON.stringify(currentUser));
+        }
+    }
+    
+    function logout() {
+        localStorage.removeItem('asl_user');
+        window.location.href = 'index.html';
+    }
+    
+    function renderBadges() {
+        const badges = JSON.parse(localStorage.getItem('asl_badges')) || ['КУБОКЛИКЕР', 'ТЕСТОПРОХОДЕЦ'];
+        const container = document.getElementById('badgesList');
+        container.innerHTML = badges.map(b => `<div class="badge">🎖️ ${b}</div>`).join('');
+        if (badges.length === 0) container.innerHTML = '<div style="color:#aaa;">Пока нет значков. Проходите тесты и ищите пасхалки!</div>';
+    }
+    
+    function renderAchievements() {
+        const achievements = JSON.parse(localStorage.getItem('asl_achievements')) || [
+            { name: 'Первый куб', desc: 'Кликнуть по кубу 1 раз', icon: '🟦' },
+            { name: 'Любопытный', desc: 'Найти первую пасхалку', icon: '🔍' },
+            { name: 'Теоретик', desc: 'Пройди тест на 25/25', icon: '📚' }
+        ];
+        const container = document.getElementById('achievementsList');
+        container.innerHTML = achievements.map(a => `
+            <div class="achievement-card">
+                <div class="achievement-icon">${a.icon}</div>
+                <div class="achievement-name">${a.name}</div>
+                <div class="achievement-desc">${a.desc}</div>
+            </div>
+        `).join('');
+    }
+    
     // Навигация по вкладкам
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -637,154 +661,13 @@
         });
     });
     
-    // Загрузка профиля другого пользователя по URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const viewUser = urlParams.get('user');
-    if (viewUser && viewUser !== currentUser.username) {
-        document.getElementById('profileName').textContent = viewUser;
-        document.getElementById('profileBio').textContent = 'Пользователь ASL';
-        document.getElementById('addFriendBtn').style.display = 'block';
-    }
-    
-    renderFriends();
-    renderBadges();
-    renderAchievements();
-    
-    // Обработка enter в чате
     document.getElementById('chatInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
-</script>
-    <!-- Подключение Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-  // 🔴 ЗАМЕНИ НА СВОИ ДАННЫЕ ИЗ FIREBASE 🔴
-  const firebaseConfig = {
-  apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
-  authDomain: "apex-8f11e.firebaseapp.com",
-  projectId: "apex-8f11e",
-  storageBucket: "apex-8f11e.firebasestorage.app",
-  messagingSenderId: "923734077108",
-  appId: "1:923734077108:web:f6d2d4059972c215c371e1",
-  measurementId: "G-WTKS5JQ7Z5"
-  };
-
-  // Инициализация
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // Анонимный вход (для теста)
-  signInAnonymously(auth).catch(error => console.error("Ошибка входа:", error));
-
-  // Следим за пользователем
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      console.log("Вошел как:", user.uid);
-      localStorage.setItem('asl_uid', user.uid);
-      
-      // Загружаем или создаём профиль
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      
-      if (!userSnap.exists()) {
-        // Создаём новый профиль
-        await setDoc(userRef, {
-          username: localStorage.getItem('asl_username') || "Игрок_" + user.uid.slice(0, 6),
-          avatar: "🧊",
-          bio: "Люблю эксперименты ASL",
-          friends: [],
-          level: 1,
-          cubes: 100,
-          badges: ["КУБОКЛИКЕР"],
-          achievements: []
-        });
-      }
-      
-      // Загружаем данные в интерфейс
-      const userData = (await getDoc(userRef)).data();
-      document.getElementById('profileName').textContent = userData.username;
-      document.getElementById('profileBio').textContent = userData.bio;
-      document.getElementById('level').textContent = userData.level;
-      document.getElementById('cubes').textContent = userData.cubes;
-      document.getElementById('avatarEmoji').textContent = userData.avatar;
-      
-      // Загружаем друзей
-      renderFriendsFromFirebase(userData.friends, db);
-      
-    } else {
-      console.log("Не вошёл");
-    }
-  });
-  
-  async function renderFriendsFromFirebase(friendIds, db) {
-    const container = document.getElementById('friendsList');
-    if (!friendIds || friendIds.length === 0) {
-      container.innerHTML = '<div style="color:#aaa;">У вас пока нет друзей. Добавьте кого-нибудь!</div>';
-      return;
-    }
     
-    let friendsHtml = '';
-    for (const friendId of friendIds) {
-      const friendRef = doc(db, "users", friendId);
-      const friendSnap = await getDoc(friendRef);
-      if (friendSnap.exists()) {
-        const friendData = friendSnap.data();
-        friendsHtml += `
-          <div class="friend-card" onclick="openChat('${friendId}')">
-            <div class="friend-avatar">${friendData.avatar || '👤'}</div>
-            <div class="friend-info">
-              <div class="friend-name">${friendData.username}</div>
-              <div class="friend-status">● В сети</div>
-            </div>
-            <button class="chat-btn" onclick="event.stopPropagation(); openChat('${friendId}')">💬</button>
-          </div>
-        `;
-      }
-    }
-    container.innerHTML = friendsHtml;
-    document.getElementById('friendsCount').textContent = friendIds.length;
-  }
-  
-  // Функция добавления друга по имени (нужно будет доработать)
-  window.addFriend = async function() {
-    const searchName = document.getElementById('friendSearch').value.trim();
-    if (!searchName) return;
-    
-    const usersRef = collection(db, "users");
-    const q = query(usersRef, where("username", "==", searchName));
-    const querySnapshot = await getDocs(q);
-    
-    if (querySnapshot.empty) {
-      alert("Пользователь не найден!");
-      return;
-    }
-    
-    const friendDoc = querySnapshot.docs[0];
-    const friendId = friendDoc.id;
-    const myId = localStorage.getItem('asl_uid');
-    
-    if (friendId === myId) {
-      alert("Нельзя добавить самого себя!");
-      return;
-    }
-    
-    const myRef = doc(db, "users", myId);
-    await updateDoc(myRef, {
-      friends: arrayUnion(friendId)
-    });
-    
-    alert(`✅ ${searchName} добавлен в друзья!`);
-    location.reload(); // Обновляем страницу
-  };
-  
-  // Функция открытия чата
-  window.openChat = function(friendId) {
-    alert("Чат в разработке! Скоро будет работать через Firebase.");
-  };
+    loadCurrentUser();
+    renderBadges();
+    renderAchievements();
 </script>
 </body>
 </html>
