@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASL | Бланк трудоустройства</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -297,6 +301,22 @@
 </div>
 
 <script>
+    // ========== FIREBASE КОНФИГ ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
+        authDomain: "apex-8f11e.firebaseapp.com",
+        projectId: "apex-8f11e",
+        storageBucket: "apex-8f11e.firebasestorage.app",
+        messagingSenderId: "923734077108",
+        appId: "1:923734077108:web:f6d2d4059972c215c371e1",
+        measurementId: "G-WTKS5JQ7Z5"
+    };
+
+    // Инициализация Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
     // ========== УСТАНОВКА РЕАЛЬНОЙ ДАТЫ ==========
     const today = new Date();
     const formattedDate = today.toLocaleDateString('ru-RU', {
@@ -344,8 +364,8 @@
 
     passwordInput.addEventListener('input', validatePassword);
 
-    // ========== РЕГИСТРАЦИЯ ==========
-    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    // ========== РЕГИСТРАЦИЯ В FIREBASE ==========
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const surname = document.getElementById('surname').value;
@@ -354,6 +374,7 @@
         const email = document.getElementById('email').value;
         const about = document.getElementById('about').value;
         const birthdate = document.getElementById('birthdate').value;
+        const password = document.getElementById('password').value;
 
         if (!surname || !name || !nickname || !email) {
             alert('Заполните все обязательные поля!');
@@ -365,30 +386,60 @@
             return;
         }
 
-        // Сохраняем данные пользователя
-        const userData = {
-            username: nickname,
-            fullName: surname + ' ' + name,
-            email: email,
-            bio: about || 'Новый сотрудник ASL',
-            avatar: '🧊',
-            level: 1,
-            cubes: 100,
-            birthdate: birthdate,
-            registeredAt: new Date().toISOString()
-        };
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'РЕГИСТРАЦИЯ...';
 
-        localStorage.setItem('asl_user', JSON.stringify(userData));
+        try {
+            // 1. Создаём пользователя в Firebase Auth
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
 
-        // Сохраняем в список всех пользователей
-        let allUsers = JSON.parse(localStorage.getItem('asl_all_users')) || [];
-        if (!allUsers.includes(nickname)) {
-            allUsers.push(nickname);
-            localStorage.setItem('asl_all_users', JSON.stringify(allUsers));
+            // 2. Сохраняем профиль в Firestore
+            await db.collection('users').doc(user.uid).set({
+                uid: user.uid,
+                surname: surname,
+                name: name,
+                username: nickname,
+                email: email,
+                bio: about || 'Новый сотрудник ASL',
+                birthdate: birthdate,
+                avatar: '🧊',
+                level: 1,
+                cubes: 100,
+                registeredAt: new Date().toISOString()
+            });
+
+            // 3. Сохраняем в localStorage для быстрого доступа
+            const userData = {
+                uid: user.uid,
+                username: nickname,
+                fullName: surname + ' ' + name,
+                email: email,
+                bio: about || 'Новый сотрудник ASL',
+                avatar: '🧊',
+                level: 1,
+                cubes: 100,
+                birthdate: birthdate
+            };
+            localStorage.setItem('asl_user', JSON.stringify(userData));
+
+            alert('✅ Регистрация успешна! Добро пожаловать в ASL.');
+            window.location.href = 'profile.html';
+
+        } catch (error) {
+            console.error('Ошибка регистрации:', error);
+            let errorMessage = 'Ошибка регистрации. ';
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = 'Этот email уже зарегистрирован!';
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = 'Пароль слишком слабый!';
+            } else {
+                errorMessage += error.message;
+            }
+            alert(errorMessage);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'ПОДАТЬ ЗАЯВЛЕНИЕ';
         }
-
-        alert('✅ Регистрация успешна! Добро пожаловать в ASL.');
-        window.location.href = 'profile.html';
     });
 
     validatePassword();
