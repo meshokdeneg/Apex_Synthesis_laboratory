@@ -7,7 +7,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion, arrayRemove, collection, query, where, getDocs, onSnapshot, addDoc, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getDatabase, ref, set, get, update, push, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
@@ -22,7 +22,7 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
 
         // DOM элементы
         const loginScreen = document.getElementById('loginScreen');
@@ -54,17 +54,23 @@
         
         let currentUserData = null;
         let selectedFriendId = null;
+        let unsubscribeFriends = null;
+        let unsubscribeRequests = null;
         let unsubscribeMessages = null;
 
         // Проверка уникальности ника
         async function isNicknameUnique(nickname) {
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('name', '==', nickname));
-            const querySnapshot = await getDocs(q);
-            return querySnapshot.empty;
+            const usersRef = ref(db, 'users');
+            const snapshot = await get(usersRef);
+            if (!snapshot.exists()) return true;
+            const users = snapshot.val();
+            for (let uid in users) {
+                if (users[uid].name === nickname) return false;
+            }
+            return true;
         }
 
-        // Регистрация с проверкой уникальности ника
+        // Регистрация
         registerBtn.addEventListener('click', async () => {
             const email = loginEmail.value.trim();
             const password = loginPassword.value;
@@ -76,7 +82,6 @@
                 return;
             }
             
-            // Проверка уникальности ника
             const isUnique = await isNicknameUnique(nickname);
             if (!isUnique) {
                 loginError.textContent = 'Этот ник уже занят. Выберите другой';
@@ -86,12 +91,12 @@
             
             try {
                 const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                await setDoc(doc(db, 'users', userCred.user.uid), {
+                await set(ref(db, 'users/' + userCred.user.uid), {
                     email: email,
                     name: nickname,
-                    friends: [],
-                    incomingRequests: [],
-                    createdAt: serverTimestamp()
+                    friends: {},
+                    incomingRequests: {},
+                    createdAt: Date.now()
                 });
                 loginError.style.display = 'none';
                 loginNickname.value = '';
@@ -131,40 +136,38 @@
                 return;
             }
             
-            const usersRef = collection(db, 'users');
-            const q = query(usersRef, where('name', '==', nickname));
-            const querySnapshot = await getDocs(q);
+            const usersRef = ref(db, 'users');
+            const snapshot = await get(usersRef);
+            if (!snapshot.exists()) {
+                alert('Пользователь не найден');
+                return;
+            }
             
-            if (querySnapshot.empty) {
+            let foundUser = null;
+            const users = snapshot.val();
+            for (let uid in users) {
+                if (users[uid].name === nickname) {
+                    foundUser = { id: uid, ...users[uid] };
+                    break;
+                }
+            }
+            
+            if (!foundUser) {
                 alert('Пользователь с таким ником не найден');
                 return;
             }
             
-            const userDoc = querySnapshot.docs[0];
-            const foundUser = {
-                id: userDoc.id,
-                name: userDoc.data().name,
-                email: userDoc.data().email
-            };
-            
-            // Проверяем, не друг ли уже
-            const isFriend = currentUserData?.friends?.some(f => f.id === foundUser.id);
+            const isFriend = currentUserData.friends && currentUserData.friends[foundUser.id];
             if (isFriend) {
                 alert(`${foundUser.name} уже в ваших друзьях`);
                 return;
             }
             
-            // Проверяем, не отправляли ли уже заявку
-            const isRequestSent = currentUserData?.incomingRequests?.some(r => r.fromId === foundUser.id) ||
-                                  currentUserData?.sentRequests?.includes(foundUser.id);
-            
             if (confirm(`Найден пользователь: ${foundUser.name} (${foundUser.email})\nОтправить заявку в друзья?`)) {
-                const friendRef = doc(db, 'users', foundUser.id);
-                await updateDoc(friendRef, {
-                    incomingRequests: arrayUnion({
-                        fromId: currentUserData.uid,
-                        fromName: currentUserData.name
-                    })
+                await set(ref(db, `users/${foundUser.id}/incomingRequests/${currentUserData.uid}`), {
+                    fromId: currentUserData.uid,
+                    fromName: currentUserData.name,
+                    fromEmail: currentUserData.email
                 });
                 alert(`Приглашение отправлено пользователю ${foundUser.name}`);
                 searchFriendInput.value = '';
@@ -176,17 +179,17 @@
             if (user) {
                 loginScreen.style.display = 'none';
                 profileScreen.style.display = 'block';
-                currentUserData = user;
-                userEmailSpan.textContent = user.email;
+                currentUserData = { uid: user.uid, email: user.email };
                 
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (!userDoc.exists()) {
-                    await setDoc(doc(db, 'users', user.uid), {
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                if (!snapshot.exists()) {
+                    await set(userRef, {
                         email: user.email,
                         name: user.email.split('@')[0],
-                        friends: [],
-                        incomingRequests: [],
-                        createdAt: serverTimestamp()
+                        friends: {},
+                        incomingRequests: {},
+                        createdAt: Date.now()
                     });
                 }
                 
@@ -198,6 +201,8 @@
                 loginPassword.value = '';
                 loginNickname.value = '';
                 loginError.style.display = 'none';
+                if (unsubscribeFriends) unsubscribeFriends();
+                if (unsubscribeRequests) unsubscribeRequests();
                 if (unsubscribeMessages) unsubscribeMessages();
                 selectedFriendId = null;
                 chatFriendName.textContent = 'Выберите друга';
@@ -206,29 +211,34 @@
 
         // Подписка на данные пользователя
         function subscribeToUserData(uid) {
-            const userRef = doc(db, 'users', uid);
-            onSnapshot(userRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
+            const userRef = ref(db, 'users/' + uid);
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
                     currentUserData = { ...currentUserData, ...data };
                     currentUserName.textContent = data.name || currentUserData.email.split('@')[0];
-                    friendsCountSpan.textContent = data.friends?.length || 0;
-                    requestsCountSpan.textContent = data.incomingRequests?.length || 0;
+                    userEmailSpan.textContent = currentUserData.email;
                     
-                    renderRequests(data.incomingRequests || []);
-                    renderFriendsList(data.friends || []);
+                    const friendsCount = data.friends ? Object.keys(data.friends).length : 0;
+                    const requestsCount = data.incomingRequests ? Object.keys(data.incomingRequests).length : 0;
+                    friendsCountSpan.textContent = friendsCount;
+                    requestsCountSpan.textContent = requestsCount;
+                    
+                    renderRequests(data.incomingRequests || {});
+                    renderFriendsList(data.friends || {});
                 }
             });
         }
 
         // Рендер входящих заявок
         function renderRequests(requests) {
-            if (!requests.length) {
+            const requestsArray = Object.entries(requests).map(([id, req]) => ({ id, ...req }));
+            if (!requestsArray.length) {
                 requestsList.innerHTML = '<div style="padding: 15px; text-align: center; color: #777;">Нет новых заявок</div>';
                 return;
             }
             requestsList.innerHTML = '';
-            requests.forEach(req => {
+            requestsArray.forEach(req => {
                 const div = document.createElement('div');
                 div.className = 'request-item';
                 div.innerHTML = `
@@ -258,37 +268,29 @@
 
         // Принять заявку
         async function acceptRequest(fromId, fromName) {
-            const userRef = doc(db, 'users', currentUserData.uid);
-            const friendRef = doc(db, 'users', fromId);
+            const fromUserRef = ref(db, 'users/' + fromId);
+            const fromSnapshot = await get(fromUserRef);
+            const fromName2 = fromSnapshot.val().name;
             
-            await updateDoc(userRef, {
-                friends: arrayUnion({ id: fromId, name: fromName }),
-                incomingRequests: arrayRemove({ fromId, fromName })
-            });
-            await updateDoc(friendRef, {
-                friends: arrayUnion({ id: currentUserData.uid, name: currentUserData.name })
-            });
+            await update(ref(db, `users/${currentUserData.uid}/friends`), { [fromId]: { id: fromId, name: fromName } });
+            await update(ref(db, `users/${fromId}/friends`), { [currentUserData.uid]: { id: currentUserData.uid, name: currentUserData.name } });
+            await set(ref(db, `users/${currentUserData.uid}/incomingRequests/${fromId}`), null);
         }
 
         // Отклонить заявку
         async function rejectRequest(fromId) {
-            const userRef = doc(db, 'users', currentUserData.uid);
-            const request = currentUserData.incomingRequests?.find(r => r.fromId === fromId);
-            if (request) {
-                await updateDoc(userRef, {
-                    incomingRequests: arrayRemove(request)
-                });
-            }
+            await set(ref(db, `users/${currentUserData.uid}/incomingRequests/${fromId}`), null);
         }
 
         // Рендер списка друзей
         function renderFriendsList(friends) {
-            if (!friends.length) {
+            const friendsArray = Object.entries(friends).map(([id, friend]) => ({ id, ...friend }));
+            if (!friendsArray.length) {
                 friendsListDiv.innerHTML = '<div style="padding: 15px; text-align: center; color: #777;">У вас пока нет друзей</div>';
                 return;
             }
             friendsListDiv.innerHTML = '';
-            friends.forEach(friend => {
+            friendsArray.forEach(friend => {
                 const btn = document.createElement('button');
                 btn.className = 'friend-item';
                 btn.innerHTML = `👤 ${friend.name}`;
@@ -309,21 +311,22 @@
             if (unsubscribeMessages) unsubscribeMessages();
             
             const chatId = [currentUserData.uid, friendId].sort().join('_');
-            const messagesRef = collection(db, 'chats', chatId, 'messages');
-            const q = query(messagesRef, orderBy('timestamp', 'asc'));
+            const messagesRef = ref(db, 'chats/' + chatId + '/messages');
             
-            unsubscribeMessages = onSnapshot(q, (snapshot) => {
+            unsubscribeMessages = onValue(messagesRef, (snapshot) => {
                 messagesList.innerHTML = '';
-                if (snapshot.empty) {
+                if (!snapshot.exists()) {
                     messagesList.innerHTML = '<div style="color: #aaa; text-align: center; padding: 40px;">Нет сообщений. Напишите что-нибудь!</div>';
+                    return;
                 }
-                snapshot.forEach(doc => {
-                    const msg = doc.data();
+                const messages = snapshot.val();
+                const messagesArray = Object.entries(messages).map(([id, msg]) => ({ id, ...msg })).sort((a,b) => a.timestamp - b.timestamp);
+                messagesArray.forEach(msg => {
                     const msgDiv = document.createElement('div');
                     msgDiv.className = `message ${msg.fromId === currentUserData.uid ? 'my-message' : 'friend-message'}`;
                     msgDiv.innerHTML = `
                         <div class="message-text">${escapeHtml(msg.text)}</div>
-                        <div class="message-time">${msg.time || ''}</div>
+                        <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
                     `;
                     messagesList.appendChild(msgDiv);
                 });
@@ -351,18 +354,15 @@
             if (!text) return;
             
             const chatId = [currentUserData.uid, selectedFriendId].sort().join('_');
-            const messagesRef = collection(db, 'chats', chatId, 'messages');
-            
-            await addDoc(messagesRef, {
+            const newMsgRef = push(ref(db, 'chats/' + chatId + '/messages'));
+            await set(newMsgRef, {
                 fromId: currentUserData.uid,
                 text: text,
-                timestamp: serverTimestamp(),
-                time: new Date().toLocaleTimeString()
+                timestamp: Date.now()
             });
             messageInput.value = '';
         });
 
-        // Открыть панель друзей на мобилке
         openFriendsPanelBtn.addEventListener('click', () => {
             friendsPanel.classList.add('open');
         });
