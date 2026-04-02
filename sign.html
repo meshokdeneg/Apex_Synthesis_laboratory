@@ -2,207 +2,283 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASL | Вход</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ASL | Бейдж ASL</title>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // ТВОИ РЕАЛЬНЫЕ ДАННЫЕ ИЗ FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
+            authDomain: "apex-8f11e.firebaseapp.com",
+            databaseURL: "https://apex-8f11e-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "apex-8f11e",
+            storageBucket: "apex-8f11e.firebasestorage.app",
+            messagingSenderId: "923734077108",
+            appId: "1:923734077108:web:f6d2d4059972c215c371e1",
+            measurementId: "G-WTKS5JQ7Z5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const form = document.getElementById('loginForm');
+        const errorDiv = document.getElementById('errorMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                showError('Заполните оба поля');
+                return;
+            }
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                alert('✅ Добро пожаловать, ' + userCredential.user.email);
+                // ПЕРЕНАПРАВЛЕНИЕ НА index.html
+                window.location.href = 'index.html';
+            } catch (error) {
+                let message = 'Ошибка входа. Проверьте ник (email) и пароль.';
+                if (error.code === 'auth/user-not-found') message = 'Пользователь не найден';
+                if (error.code === 'auth/wrong-password') message = 'Неверный пароль';
+                if (error.code === 'auth/invalid-email') message = 'Неверный формат email';
+                showError(message);
+            }
+        });
+
+        function showError(text) {
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = `⚠️ ${text}`;
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 4000);
+        }
+    </script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #0a0f1a 0%, #0c111c 100%);
-            font-family: 'Segoe UI', system-ui;
+            background: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg') repeat;
+            background-size: 64px 64px;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            color: #1a1a1a;
+            line-height: 1.5;
+            padding: 40px 20px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0;
-            padding: 20px;
         }
-        .login-container {
-            background: rgba(30,35,45,0.95);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid #FF8C00;
+
+        /* Контейнер — усиленный контур, чтобы не сливался с фоном */
+        .badge-container {
+            max-width: 550px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(1px);
+            border: 3px solid #2c3e2f;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.3);
+            border-radius: 12px;
+            overflow: hidden;
         }
-        h2 {
-            color: #FF8C00;
+
+        /* Шапка — как на странице "О ASL" */
+        .badge-header {
+            background: #1a2a2f;
+            padding: 22px 30px;
+            border-bottom: 4px solid #FF8C00;
             text-align: center;
-            margin-bottom: 30px;
         }
-        input {
+
+        .badge-header h1 {
+            font-size: 32px;
+            color: #FF8C00;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        .badge-header p {
+            font-size: 14px;
+            color: #ccc;
+            margin-top: 8px;
+        }
+
+        /* Основное тело */
+        .badge-body {
+            padding: 32px 30px 35px;
+        }
+
+        .badge-sub {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 12px;
+            text-align: center;
+        }
+
+        /* Поля ввода */
+        .input-group {
+            text-align: left;
+            margin-bottom: 22px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a2a2f;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: rgba(0,0,0,0.5);
-            border: 1px solid #4A90E2;
+            padding: 12px 15px;
+            font-size: 15px;
+            font-family: 'Segoe UI', monospace;
+            background: #fff;
+            border: 1.5px solid #b0b0b0;
             border-radius: 8px;
-            color: white;
-            font-size: 16px;
-            box-sizing: border-box;
+            transition: 0.2s;
+            color: #1a1a1a;
         }
-        input:focus {
+
+        .input-group input:focus {
             outline: none;
             border-color: #FF8C00;
+            box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
         }
-        button {
+
+        /* Кнопка — как в футере страницы "О ASL" */
+        .login-btn {
             width: 100%;
             padding: 12px;
-            background: #4A90E2;
-            border: none;
-            border-radius: 8px;
-            color: white;
+            background: #2c3e2f;
+            border: 2px solid #FF8C00;
+            border-radius: 40px;
             font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #FF8C00;
             cursor: pointer;
-            margin-top: 10px;
             transition: 0.2s;
+            margin-top: 10px;
+            font-family: inherit;
         }
-        button:hover {
+
+        .login-btn:hover {
             background: #FF8C00;
+            color: #1a2a2f;
+            border-color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
         }
-        .error {
-            color: #e74c3c;
-            text-align: center;
-            margin-top: 10px;
+
+        /* Ссылка назад */
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
             font-size: 14px;
-        }
-        .link {
-            text-align: center;
-            margin-top: 15px;
-            color: #aaa;
-        }
-        .link a {
-            color: #FF8C00;
+            color: #4A90E2;
             text-decoration: none;
+            border-bottom: 1px dashed #4A90E2;
         }
-        .link a:hover {
-            text-decoration: underline;
-        }
-        .loading {
-            text-align: center;
-            margin-top: 10px;
+
+        .back-link:hover {
             color: #FF8C00;
+            border-bottom-color: #FF8C00;
+        }
+
+        /* Футер */
+        .asl-footer {
+            margin-top: 30px;
+            padding-top: 18px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+            font-size: 11px;
+            color: #888;
+            font-family: monospace;
+        }
+
+        /* Ошибка */
+        .error-message {
+            background: #fff2f0;
+            border-left: 3px solid #d32f2f;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: #b33;
+            margin-bottom: 20px;
+            text-align: left;
+            font-family: monospace;
             display: none;
+            border-radius: 6px;
+        }
+
+        /* Адаптация под телефон */
+        @media (max-width: 600px) {
+            .badge-header h1 {
+                font-size: 26px;
+            }
+            .badge-header {
+                padding: 16px 20px;
+            }
+            .badge-body {
+                padding: 24px 20px 28px;
+            }
+            .input-group input {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            .login-btn {
+                padding: 10px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="login-container">
-    <h2>🔐 ВХОД В ASL</h2>
-    <form id="loginForm">
-        <input type="email" id="email" placeholder="Email" required autocomplete="email">
-        <input type="password" id="password" placeholder="Пароль" required autocomplete="current-password">
-        <button type="submit">ВОЙТИ</button>
-        <div class="error" id="errorMsg"></div>
-        <div class="loading" id="loadingMsg">⏳ Загрузка профиля...</div>
-        <div class="link">Нет аккаунта? <a href="reg.html">Зарегистрироваться</a></div>
-        <div class="link"><a href="index.html">← На главную</a></div>
-    </form>
-</div>
+    <div class="badge-container">
+        <!-- Шапка -->
+        <div class="badge-header">
+            <h1>🏷️ БЕЙДЖ ASL</h1>
+            <p>Авторизация в системе</p>
+        </div>
 
-<script>
-    // ========== FIREBASE КОНФИГ ==========
-    const firebaseConfig = {
-        apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
-        authDomain: "apex-8f11e.firebaseapp.com",
-        projectId: "apex-8f11e",
-        storageBucket: "apex-8f11e.firebasestorage.app",
-        messagingSenderId: "923734077108",
-        appId: "1:923734077108:web:f6d2d4059972c215c371e1",
-        measurementId: "G-WTKS5JQ7Z5"
-    };
+        <!-- Тело -->
+        <div class="badge-body">
+            <div class="badge-sub">Доступ к защищённым протоколам</div>
 
-    // Инициализация Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+            <div class="error-message" id="errorMsg"></div>
 
-    const form = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const errorMsg = document.getElementById('errorMsg');
-    const loadingMsg = document.getElementById('loadingMsg');
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>Идентификатор сотрудника</label>
+                    <input type="text" id="username" placeholder="ник" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Код доступа</label>
+                    <input type="password" id="password" placeholder="пароль">
+                </div>
+                <button type="submit" class="login-btn">ВОЙТИ →</button>
+            </form>
 
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        
-        if (!email || !password) {
-            errorMsg.textContent = 'Заполните все поля!';
-            return;
-        }
-        
-        errorMsg.textContent = '';
-        loadingMsg.style.display = 'block';
-        
-        try {
-            // 1. Вход в Firebase Auth
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const user = userCredential.user;
-            
-            // 2. Загружаем профиль из Firestore
-            const docRef = db.collection('users').doc(user.uid);
-            const docSnap = await docRef.get();
-            
-            let userData = {};
-            
-            if (docSnap.exists) {
-                userData = docSnap.data();
-            } else {
-                // Если профиля нет — создаём минимальный
-                userData = {
-                    username: email.split('@')[0],
-                    bio: 'Новый сотрудник ASL',
-                    avatar: '🧊',
-                    level: 1,
-                    cubes: 100,
-                    email: email
-                };
-                await docRef.set(userData);
-            }
-            
-            // 3. Сохраняем в localStorage
-            localStorage.setItem('asl_user', JSON.stringify({
-                uid: user.uid,
-                username: userData.username || email.split('@')[0],
-                email: email,
-                bio: userData.bio || 'Новый сотрудник ASL',
-                avatar: userData.avatar || '🧊',
-                level: userData.level || 1,
-                cubes: userData.cubes || 100
-            }));
-            
-            // 4. Перенаправляем на главную
-            window.location.href = 'index.html';
-            
-        } catch (error) {
-            console.error('Ошибка входа:', error);
-            loadingMsg.style.display = 'none';
-            
-            switch (error.code) {
-                case 'auth/invalid-email':
-                    errorMsg.textContent = 'Неверный формат email';
-                    break;
-                case 'auth/user-disabled':
-                    errorMsg.textContent = 'Аккаунт отключён';
-                    break;
-                case 'auth/user-not-found':
-                    errorMsg.textContent = 'Пользователь не найден';
-                    break;
-                case 'auth/wrong-password':
-                    errorMsg.textContent = 'Неверный пароль';
-                    break;
-                default:
-                    errorMsg.textContent = 'Ошибка входа: ' + error.message;
-            }
-        }
-    });
-</script>
+            <div style="text-align: center;">
+                <a href="index.html" class="back-link">← вернуться на главную страницу</a>
+            </div>
+
+            <div class="asl-footer">
+                ASL • отдел TToS • версия протокола 2.3
+            </div>
+        </div>
+    </div>
 </body>
 </html>
