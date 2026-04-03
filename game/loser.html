@@ -12,8 +12,9 @@
             user-select: none;
         }
 
+        /* Начальное состояние: чёрный экран, кнопка по центру */
         body {
-            background: #050505;
+            background: #000;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -21,8 +22,50 @@
             font-family: 'Courier New', monospace;
             overflow: hidden;
             position: relative;
-            cursor: pointer;
+            transition: background 0.5s ease;
         }
+        body.loaded {
+            background: #050505;
+        }
+
+        /* Кнопка запуска */
+        .start-btn {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,100,0,0.8);
+            border: 4px solid #FF8C00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(255,140,0,0.6);
+            transition: transform 0.2s, opacity 0.5s;
+            z-index: 1000;
+        }
+        .start-btn:hover {
+            transform: scale(1.1);
+            background: #FF8C00;
+        }
+        .start-btn.hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.5);
+        }
+
+        /* Основной контейнер (изначально скрыт) */
+        .main-scene {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .main-scene.visible {
+            display: block;
+            opacity: 1;
+        }
+
         body.shake-cam {
             animation: camShake 0.15s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
@@ -528,365 +571,356 @@
     </style>
 </head>
 <body>
-<div class="bg-wall">
-    <div class="panel panel1"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
-    <div class="panel panel2"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
-    <div class="panel panel3"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
-    <div class="pipe pipe1 pipe-hor"></div>
-    <div class="pipe pipe2 pipe-hor"></div>
-    <div class="pipe pipe3 pipe-ver"></div>
-    <div class="pipe pipe4 pipe-ver"></div>
-    <div class="pipe pipe5 pipe-ver"></div>
-    <div class="valve valve1"></div>
-    <div class="valve valve2"></div>
-    <div class="valve valve3"></div>
-    <div class="floor-grate"></div>
-    <div class="fog"></div>
-</div>
-
-<div class="platform">
-    <div class="conveyor-belt"></div>
-    <div class="rollers">
-        <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
-        <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
-        <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
-    </div>
-    <div class="press">
-        <div class="rivet rivet1"></div><div class="rivet rivet2"></div>
-        <div class="rivet rivet3"></div><div class="rivet rivet4"></div>
-        <div class="rivet rivet5"></div><div class="rivet rivet6"></div>
-        <div class="rivet rivet7"></div><div class="rivet rivet8"></div>
-        <div class="hydraulic-left"></div><div class="hydraulic-right"></div>
-        <div class="hose"></div>
-        <div class="gauge"><div class="gauge-needle" id="gaugeNeedle"></div></div>
-        <div class="press-top"></div>
-        <div class="press-bottom"></div>
-        <div class="press-text">⚠️ ГИДРАВЛИЧЕСКИЙ ПРЕСС ⚠️</div>
-    </div>
-    <div class="player" id="player"><div class="avatar-symbol" id="avatarSymbol">⚛️</div></div>
-    <div class="gluk-box" id="glukBox">
-        <div class="gluk-header">
-            <div class="gluk-avatar">🟩</div>
-            <div class="gluk-name">ГЛюК (главный логический компьютер)</div>
+    <div class="start-btn" id="startBtn">⚙️</div>
+    <div class="main-scene" id="mainScene">
+        <div class="bg-wall">
+            <div class="panel panel1"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+            <div class="panel panel2"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+            <div class="panel panel3"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+            <div class="pipe pipe1 pipe-hor"></div>
+            <div class="pipe pipe2 pipe-hor"></div>
+            <div class="pipe pipe3 pipe-ver"></div>
+            <div class="pipe pipe4 pipe-ver"></div>
+            <div class="pipe pipe5 pipe-ver"></div>
+            <div class="valve valve1"></div>
+            <div class="valve valve2"></div>
+            <div class="valve valve3"></div>
+            <div class="floor-grate"></div>
+            <div class="fog"></div>
         </div>
-        <div class="gluk-text" id="glukText"></div>
+        <div class="platform">
+            <div class="conveyor-belt"></div>
+            <div class="rollers">
+                <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
+                <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
+                <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
+            </div>
+            <div class="press">
+                <div class="rivet rivet1"></div><div class="rivet rivet2"></div>
+                <div class="rivet rivet3"></div><div class="rivet rivet4"></div>
+                <div class="rivet rivet5"></div><div class="rivet rivet6"></div>
+                <div class="rivet rivet7"></div><div class="rivet rivet8"></div>
+                <div class="hydraulic-left"></div><div class="hydraulic-right"></div>
+                <div class="hose"></div>
+                <div class="gauge"><div class="gauge-needle" id="gaugeNeedle"></div></div>
+                <div class="press-top"></div>
+                <div class="press-bottom"></div>
+                <div class="press-text">⚠️ ГИДРАВЛИЧЕСКИЙ ПРЕСС ⚠️</div>
+            </div>
+            <div class="player" id="player"><div class="avatar-symbol" id="avatarSymbol">⚛️</div></div>
+            <div class="gluk-box" id="glukBox">
+                <div class="gluk-header">
+                    <div class="gluk-avatar">🟩</div>
+                    <div class="gluk-name">ГЛюК (главный логический компьютер)</div>
+                </div>
+                <div class="gluk-text" id="glukText"></div>
+            </div>
+            <button id="returnBtn" class="return-btn">💀 ВЕРНУТЬСЯ В МЕНЮ 💀</button>
+            <div class="alert-light"></div>
+            <div class="alert-light alert-light2"></div>
+        </div>
     </div>
-    <button id="returnBtn" class="return-btn">💀 ВЕРНУТЬСЯ В МЕНЮ 💀</button>
-    <div class="alert-light"></div>
-    <div class="alert-light alert-light2"></div>
-</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
-        authDomain: "apex-8f11e.firebaseapp.com",
-        databaseURL: "https://apex-8f11e-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "apex-8f11e",
-        storageBucket: "apex-8f11e.firebasestorage.app",
-        messagingSenderId: "923734077108",
-        appId: "1:923734077108:web:f6d2d4059972c215c371e1"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-
-    // ========== ЗВУК ХРУСТА (синтезированный) ==========
-    let audioContext = null;
-    function playCrunchSound() {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        const now = audioContext.currentTime;
-        const gain = audioContext.createGain();
-        gain.connect(audioContext.destination);
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-        
-        // Генератор хруста (шум + короткие импульсы)
-        const bufferSize = 4096;
-        const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
-        noise.onaudioprocess = function(e) {
-            const output = e.outputBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = (Math.random() - 0.5) * 0.8;
-            }
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
+            authDomain: "apex-8f11e.firebaseapp.com",
+            databaseURL: "https://apex-8f11e-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "apex-8f11e",
+            storageBucket: "apex-8f11e.firebasestorage.app",
+            messagingSenderId: "923734077108",
+            appId: "1:923734077108:web:f6d2d4059972c215c371e1"
         };
-        noise.connect(gain);
-        noise.start(now);
-        noise.stop(now + 0.4);
-        
-        // Добавляем несколько коротких щелчков для эффекта хруста
-        for (let i = 0; i < 12; i++) {
-            const osc = audioContext.createOscillator();
-            const oscGain = audioContext.createGain();
-            osc.type = 'triangle';
-            osc.frequency.value = 200 + Math.random() * 400;
-            osc.connect(oscGain);
-            oscGain.connect(audioContext.destination);
-            oscGain.gain.setValueAtTime(0.15, now + i * 0.03);
-            oscGain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.03 + 0.1);
-            osc.start(now + i * 0.03);
-            osc.stop(now + i * 0.03 + 0.1);
-        }
-    }
 
-    // ========== ЗАГРУЗКА АВАТАРА ИЗ FIREBASE ==========
-    async function loadUserAvatar() {
-        return new Promise((resolve) => {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    const userRef = ref(db, 'users/' + user.uid);
-                    const snapshot = await get(userRef);
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        const avatar = userData.avatar || '⚛️';
-                        resolve(avatar);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        // === Звук хруста ===
+        let audioContext = null;
+        function playCrunchSound() {
+            if (!audioContext) return;
+            const now = audioContext.currentTime;
+            const gain = audioContext.createGain();
+            gain.connect(audioContext.destination);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+            
+            const bufferSize = 4096;
+            const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
+            noise.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = (Math.random() - 0.5) * 0.8;
+                }
+            };
+            noise.connect(gain);
+            noise.start(now);
+            noise.stop(now + 0.4);
+            
+            for (let i = 0; i < 12; i++) {
+                const osc = audioContext.createOscillator();
+                const oscGain = audioContext.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = 200 + Math.random() * 400;
+                osc.connect(oscGain);
+                oscGain.connect(audioContext.destination);
+                oscGain.gain.setValueAtTime(0.15, now + i * 0.03);
+                oscGain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.03 + 0.1);
+                osc.start(now + i * 0.03);
+                osc.stop(now + i * 0.03 + 0.1);
+            }
+        }
+
+        // === Загрузка аватара из Firebase ===
+        async function loadUserAvatar() {
+            return new Promise((resolve) => {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        const userRef = ref(db, 'users/' + user.uid);
+                        const snapshot = await get(userRef);
+                        if (snapshot.exists()) {
+                            const userData = snapshot.val();
+                            resolve(userData.avatar || '⚛️');
+                        } else {
+                            resolve('⚛️');
+                        }
                     } else {
                         resolve('⚛️');
                     }
+                });
+            });
+        }
+
+        // === Основная логика ===
+        const startBtn = document.getElementById('startBtn');
+        const mainScene = document.getElementById('mainScene');
+        const playerDiv = document.getElementById('player');
+        const avatarSymbolSpan = document.getElementById('avatarSymbol');
+        const pressDiv = document.querySelector('.press');
+        const returnBtn = document.getElementById('returnBtn');
+        const glukTextDiv = document.getElementById('glukText');
+        const platform = document.querySelector('.platform');
+        const bodyEl = document.body;
+        const gaugeNeedle = document.getElementById('gaugeNeedle');
+
+        let currentLeft = 70;
+        let targetLeft = 0;
+        let moveInterval = null;
+        let animationActive = false;
+        let soundEnabled = false;
+        let tickBuffer = null;
+        let musicSource = null;
+
+        async function initAudioAndStart() {
+            if (audioContext) return;
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            tickBuffer = audioContext.createBuffer(1, 2205, 44100);
+            let data = tickBuffer.getChannelData(0);
+            for (let i = 0; i < 2205; i++) {
+                data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
+            }
+            const musicGain = audioContext.createGain();
+            musicGain.gain.value = 0.25;
+            musicGain.connect(audioContext.destination);
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 55;
+            oscillator.connect(musicGain);
+            const noise = audioContext.createBufferSource();
+            const noiseBuffer = audioContext.createBuffer(1, 44100 * 2, 44100);
+            let noiseData = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < 44100 * 2; i++) {
+                noiseData[i] = (Math.random() - 0.5) * 0.1;
+            }
+            noise.buffer = noiseBuffer;
+            noise.loop = true;
+            noise.connect(musicGain);
+            oscillator.start();
+            noise.start();
+            musicSource = { osc: oscillator, noise: noise };
+            soundEnabled = true;
+        }
+
+        function playTick() {
+            if (!soundEnabled || !audioContext || !tickBuffer) return;
+            const source = audioContext.createBufferSource();
+            source.buffer = tickBuffer;
+            source.connect(audioContext.destination);
+            source.start();
+        }
+
+        function createSpark(x, y) {
+            const spark = document.createElement('div');
+            spark.classList.add('spark');
+            spark.style.left = x + 'px';
+            spark.style.top = y + 'px';
+            document.body.appendChild(spark);
+            setTimeout(() => spark.remove(), 200);
+        }
+        function createSmoke(x, y) {
+            const smoke = document.createElement('div');
+            smoke.classList.add('smoke');
+            smoke.style.left = x + 'px';
+            smoke.style.top = y + 'px';
+            document.body.appendChild(smoke);
+            setTimeout(() => smoke.remove(), 800);
+        }
+        function createBloodSpray(x, y) {
+            for(let i=0;i<40;i++) {
+                const drop = document.createElement('div');
+                drop.classList.add('blood');
+                drop.style.width = Math.random()*8+3 + 'px';
+                drop.style.height = drop.style.width;
+                drop.style.left = x + (Math.random()-0.5)*70 + 'px';
+                drop.style.top = y + (Math.random()-0.5)*80 + 'px';
+                drop.style.opacity = Math.random()*0.7+0.2;
+                document.body.appendChild(drop);
+                setTimeout(() => drop.remove(), 2000);
+            }
+        }
+
+        function startMovingToPress() {
+            if (moveInterval) clearInterval(moveInterval);
+            animationActive = true;
+            const step = 14;
+            moveInterval = setInterval(() => {
+                if (currentLeft < targetLeft) {
+                    currentLeft += step;
+                    playerDiv.style.left = currentLeft + 'px';
+                    const rect = playerDiv.getBoundingClientRect();
+                    createSpark(rect.left + 20, rect.bottom - 12);
+                    if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
                 } else {
-                    resolve('⚛️');
+                    clearInterval(moveInterval);
+                    animatePressAndCrush();
                 }
-            });
-        });
-    }
-
-    // ========== ОСНОВНАЯ ЛОГИКА ==========
-    const playerDiv = document.getElementById('player');
-    const avatarSymbolSpan = document.getElementById('avatarSymbol');
-    const pressDiv = document.querySelector('.press');
-    const returnBtn = document.getElementById('returnBtn');
-    const glukTextDiv = document.getElementById('glukText');
-    const platform = document.querySelector('.platform');
-    const bodyEl = document.body;
-    const gaugeNeedle = document.getElementById('gaugeNeedle');
-
-    let currentLeft = 70;
-    let targetLeft = 0;
-    let moveInterval = null;
-    let animationActive = false;
-    let soundEnabled = false; // для фоновой музыки (опционально)
-    let tickBuffer = null;
-    let musicSource = null;
-
-    // Инициализация звука (первый клик)
-    async function initAudio() {
-        if (audioContext) return;
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        // Буфер для звука печати
-        tickBuffer = audioContext.createBuffer(1, 2205, 44100);
-        let data = tickBuffer.getChannelData(0);
-        for (let i = 0; i < 2205; i++) {
-            data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
+            }, 40);
         }
-        // Фоновая музыка (гул)
-        const musicGain = audioContext.createGain();
-        musicGain.gain.value = 0.25;
-        musicGain.connect(audioContext.destination);
-        const oscillator = audioContext.createOscillator();
-        oscillator.type = 'sine';
-        oscillator.frequency.value = 55;
-        oscillator.connect(musicGain);
-        const noise = audioContext.createBufferSource();
-        const noiseBuffer = audioContext.createBuffer(1, 44100 * 2, 44100);
-        let noiseData = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < 44100 * 2; i++) {
-            noiseData[i] = (Math.random() - 0.5) * 0.1;
-        }
-        noise.buffer = noiseBuffer;
-        noise.loop = true;
-        noise.connect(musicGain);
-        oscillator.start();
-        noise.start();
-        musicSource = { osc: oscillator, noise: noise };
-        soundEnabled = true;
-    }
 
-    function playTick() {
-        if (!soundEnabled || !audioContext || !tickBuffer) return;
-        const source = audioContext.createBufferSource();
-        source.buffer = tickBuffer;
-        source.connect(audioContext.destination);
-        source.start();
-    }
-
-    // Эффекты
-    function createSpark(x, y) {
-        const spark = document.createElement('div');
-        spark.classList.add('spark');
-        spark.style.left = x + 'px';
-        spark.style.top = y + 'px';
-        document.body.appendChild(spark);
-        setTimeout(() => spark.remove(), 200);
-    }
-    function createSmoke(x, y) {
-        const smoke = document.createElement('div');
-        smoke.classList.add('smoke');
-        smoke.style.left = x + 'px';
-        smoke.style.top = y + 'px';
-        document.body.appendChild(smoke);
-        setTimeout(() => smoke.remove(), 800);
-    }
-    function createBloodSpray(x, y) {
-        for(let i=0;i<40;i++) {
-            const drop = document.createElement('div');
-            drop.classList.add('blood');
-            drop.style.width = Math.random()*8+3 + 'px';
-            drop.style.height = drop.style.width;
-            drop.style.left = x + (Math.random()-0.5)*70 + 'px';
-            drop.style.top = y + (Math.random()-0.5)*80 + 'px';
-            drop.style.opacity = Math.random()*0.7+0.2;
-            document.body.appendChild(drop);
-            setTimeout(() => drop.remove(), 2000);
-        }
-    }
-
-    function startMovingToPress() {
-        if (moveInterval) clearInterval(moveInterval);
-        animationActive = true;
-        const step = 14;
-        moveInterval = setInterval(() => {
-            if (currentLeft < targetLeft) {
-                currentLeft += step;
-                playerDiv.style.left = currentLeft + 'px';
-                const rect = playerDiv.getBoundingClientRect();
-                createSpark(rect.left + 20, rect.bottom - 12);
-                if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
-            } else {
-                clearInterval(moveInterval);
-                animatePressAndCrush();
-            }
-        }, 40);
-    }
-
-    function animatePressAndCrush() {
-        pressDiv.classList.add('press-crush');
-        platform.classList.add('shake-platform');
-        bodyEl.classList.add('shake-cam');
-        setTimeout(() => bodyEl.classList.remove('shake-cam'), 300);
-        setTimeout(() => platform.classList.remove('shake-platform'), 400);
-        
-        // Звук хруста
-        if (audioContext) playCrunchSound();
-        
-        const pressRect = pressDiv.getBoundingClientRect();
-        for(let i=0;i<70;i++) {
-            setTimeout(() => {
-                createSpark(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-            }, i*10);
-        }
-        for(let i=0;i<40;i++) {
-            setTimeout(() => {
-                createSmoke(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-            }, i*18);
-        }
-        
-        setTimeout(() => {
-            playerDiv.style.transform = 'scale(0.1)';
-            playerDiv.style.opacity = '0';
-            createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
-            const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
-            typeText(finalMsg, () => {
-                returnBtn.style.display = 'block';
-            });
-        }, 200);
-    }
-
-    // Печать текста
-    let isTyping = false;
-    function typeText(text, callback) {
-        if (isTyping) return;
-        isTyping = true;
-        glukTextDiv.innerHTML = '';
-        let i = 0;
-        const interval = setInterval(() => {
-            if (i < text.length) {
-                glukTextDiv.innerHTML += text[i];
-                if (soundEnabled) playTick();
-                i++;
-            } else {
-                clearInterval(interval);
-                isTyping = false;
-                const cursorSpan = document.createElement('span');
-                cursorSpan.className = 'cursor';
-                glukTextDiv.appendChild(cursorSpan);
-                if (callback) callback();
-            }
-        }, 45);
-    }
-
-    const messages = [
-        "ПЯТЬ поражений в крестиках-ноликах. ПЯТЬ! Это клинический случай.",
-        "Даже мой старый холодильник (сервер) обыграл бы тебя с закрытыми глазами.",
-        "Правила элементарны: три в ряд. Но ты, видимо, решил проверить, что будет, если играть без мозгов.",
-        "Теперь ты отправишься в промышленный пресс. Таков закон ASL.",
-        "Надеюсь, хоть сейчас до тебя дойдёт, что надо блокировать ходы соперника, а не ставить крестики в угол для красоты.",
-        "Ладно, хватит слов. Конвейер уже ждёт."
-    ];
-    let msgIndex = 0;
-    function playNextMessage() {
-        if (msgIndex < messages.length) {
-            typeText(messages[msgIndex], () => {
-                msgIndex++;
+        function animatePressAndCrush() {
+            pressDiv.classList.add('press-crush');
+            platform.classList.add('shake-platform');
+            bodyEl.classList.add('shake-cam');
+            setTimeout(() => bodyEl.classList.remove('shake-cam'), 300);
+            setTimeout(() => platform.classList.remove('shake-platform'), 400);
+            
+            if (audioContext) playCrunchSound();
+            
+            const pressRect = pressDiv.getBoundingClientRect();
+            for(let i=0;i<70;i++) {
                 setTimeout(() => {
-                    glukTextDiv.innerHTML = '';
-                    playNextMessage();
-                }, 1300);
-            });
-        } else {
-            setTimeout(() => {
-                startMovingToPress();
-            }, 600);
-        }
-    }
-
-    // Запуск после загрузки аватара
-    window.addEventListener('load', async () => {
-        const avatar = await loadUserAvatar();
-        avatarSymbolSpan.textContent = avatar;
-        playerDiv.style.left = '70px';
-        playerDiv.style.bottom = '95px';
-        currentLeft = 70;
-        const platformRect = platform.getBoundingClientRect();
-        const pressRect = pressDiv.getBoundingClientRect();
-        targetLeft = pressRect.left - platformRect.left - 80;
-        if (targetLeft < 200) targetLeft = 800;
-        playNextMessage();
-        setInterval(() => {
-            if (!animationActive) {
-                const angle = 30 + Math.random() * 60;
-                gaugeNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
-            } else {
-                gaugeNeedle.style.transform = `translateX(-50%) rotate(80deg)`;
+                    createSpark(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
+                }, i*10);
             }
-        }, 800);
-    });
-
-    // Активация звука по первому клику
-    document.body.addEventListener('click', () => {
-        if (!audioContext) {
-            initAudio();
+            for(let i=0;i<40;i++) {
+                setTimeout(() => {
+                    createSmoke(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
+                }, i*18);
+            }
+            
+            setTimeout(() => {
+                playerDiv.style.transform = 'scale(0.1)';
+                playerDiv.style.opacity = '0';
+                createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
+                const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
+                typeText(finalMsg, () => {
+                    returnBtn.style.display = 'block';
+                });
+            }, 200);
         }
-    }, { once: true });
 
-    returnBtn.addEventListener('click', () => {
-        localStorage.removeItem('ttt_losses');
-        window.location.href = '../minigames.html';
-    });
+        let isTyping = false;
+        function typeText(text, callback) {
+            if (isTyping) return;
+            isTyping = true;
+            glukTextDiv.innerHTML = '';
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < text.length) {
+                    glukTextDiv.innerHTML += text[i];
+                    if (soundEnabled) playTick();
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    isTyping = false;
+                    const cursorSpan = document.createElement('span');
+                    cursorSpan.className = 'cursor';
+                    glukTextDiv.appendChild(cursorSpan);
+                    if (callback) callback();
+                }
+            }, 45);
+        }
 
-    window.addEventListener('resize', () => {
-        if (!animationActive) {
+        const messages = [
+            "ПЯТЬ поражений в крестиках-ноликах. ПЯТЬ! Это клинический случай.",
+            "Даже мой старый холодильник (сервер) обыграл бы тебя с закрытыми глазами.",
+            "Правила элементарны: три в ряд. Но ты, видимо, решил проверить, что будет, если играть без мозгов.",
+            "Теперь ты отправишься в промышленный пресс. Таков закон ASL.",
+            "Надеюсь, хоть сейчас до тебя дойдёт, что надо блокировать ходы соперника, а не ставить крестики в угол для красоты.",
+            "Ладно, хватит слов. Конвейер уже ждёт."
+        ];
+        let msgIndex = 0;
+        function playNextMessage() {
+            if (msgIndex < messages.length) {
+                typeText(messages[msgIndex], () => {
+                    msgIndex++;
+                    setTimeout(() => {
+                        glukTextDiv.innerHTML = '';
+                        playNextMessage();
+                    }, 1300);
+                });
+            } else {
+                setTimeout(() => {
+                    startMovingToPress();
+                }, 600);
+            }
+        }
+
+        // Запуск по нажатию кнопки
+        startBtn.addEventListener('click', async () => {
+            startBtn.classList.add('hide');
+            await initAudioAndStart();
+            const avatar = await loadUserAvatar();
+            avatarSymbolSpan.textContent = avatar;
+            mainScene.classList.add('visible');
+            document.body.classList.add('loaded');
+            // Настройка позиции игрока
+            playerDiv.style.left = '70px';
+            playerDiv.style.bottom = '95px';
+            currentLeft = 70;
             const platformRect = platform.getBoundingClientRect();
             const pressRect = pressDiv.getBoundingClientRect();
             targetLeft = pressRect.left - platformRect.left - 80;
             if (targetLeft < 200) targetLeft = 800;
-        }
-    });
-</script>
+            playNextMessage();
+            setInterval(() => {
+                if (!animationActive) {
+                    const angle = 30 + Math.random() * 60;
+                    gaugeNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+                } else {
+                    gaugeNeedle.style.transform = `translateX(-50%) rotate(80deg)`;
+                }
+            }, 800);
+        });
+
+        returnBtn.addEventListener('click', () => {
+            localStorage.removeItem('ttt_losses');
+            window.location.href = '../minigames.html';
+        });
+
+        window.addEventListener('resize', () => {
+            if (!animationActive && mainScene.classList.contains('visible')) {
+                const platformRect = platform.getBoundingClientRect();
+                const pressRect = pressDiv.getBoundingClientRect();
+                targetLeft = pressRect.left - platformRect.left - 80;
+                if (targetLeft < 200) targetLeft = 800;
+            }
+        });
+    </script>
 </body>
 </html>
