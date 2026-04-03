@@ -21,6 +21,7 @@
             font-family: 'Courier New', monospace;
             overflow: hidden;
             position: relative;
+            cursor: pointer;
         }
         body.shake-cam {
             animation: camShake 0.15s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -47,6 +48,7 @@
             z-index: -2;
         }
 
+        /* Металлические панели */
         .panel {
             position: absolute;
             background: #1a1a1a;
@@ -72,6 +74,7 @@
         .bolt3 { bottom: 15px; left: 15px; }
         .bolt4 { bottom: 15px; right: 15px; }
 
+        /* Трубы */
         .pipe {
             position: absolute;
             background: #2a2a2a;
@@ -79,8 +82,16 @@
             box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 0 2px 5px black;
             z-index: -1;
         }
-        .pipe-hor { height: 24px; left: 0; right: 0; }
-        .pipe-ver { width: 24px; top: 0; bottom: 0; }
+        .pipe-hor {
+            height: 24px;
+            left: 0;
+            right: 0;
+        }
+        .pipe-ver {
+            width: 24px;
+            top: 0;
+            bottom: 0;
+        }
         .pipe1 { top: 120px; height: 28px; width: 350px; left: -50px; }
         .pipe2 { top: 480px; height: 32px; width: 450px; right: -100px; }
         .pipe3 { left: 80px; width: 28px; height: 250px; top: 60px; }
@@ -101,6 +112,7 @@
         .valve2 { top: 490px; right: 160px; }
         .valve3 { top: 260px; left: 515px; }
 
+        /* Решётка пола */
         .floor-grate {
             position: absolute;
             bottom: 0;
@@ -111,6 +123,8 @@
             border-top: 3px solid #3a3a3a;
             z-index: -1;
         }
+
+        /* Туман */
         .fog {
             position: absolute;
             top: 0;
@@ -122,6 +136,7 @@
             z-index: -1;
         }
 
+        /* Платформа */
         .platform {
             position: relative;
             width: 1200px;
@@ -138,6 +153,7 @@
             z-index: 1;
         }
 
+        /* Конвейер */
         .conveyor-belt {
             position: absolute;
             bottom: 50px;
@@ -174,6 +190,7 @@
             box-shadow: inset 0 2px 5px #ccc, 0 2px 5px black;
         }
 
+        /* Пресс */
         .press {
             position: absolute;
             right: 80px;
@@ -327,6 +344,7 @@
             100% { transform: translateX(0); }
         }
 
+        /* Игрок */
         .player {
             position: absolute;
             left: 70px;
@@ -344,9 +362,8 @@
             transition: left 0.04s linear;
             cursor: default;
         }
-        .player::after {
-            content: "😨";
-            font-size: 54px;
+        .player .avatar-symbol {
+            font-size: 52px;
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
         }
 
@@ -508,39 +525,6 @@
             left: 20px;
             right: auto;
         }
-
-        /* ЭКРАН ЗАГРУЗКИ (тёмный, с кнопкой) */
-        .start-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: opacity 0.5s;
-        }
-        .start-btn {
-            width: 120px;
-            height: 120px;
-            background: rgba(30,30,30,0.8);
-            border: 3px solid #FF8C00;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 0 20px rgba(255,140,0,0.5);
-        }
-        .start-btn:hover {
-            transform: scale(1.05);
-            background: rgba(255,140,0,0.3);
-            box-shadow: 0 0 30px rgba(255,140,0,0.8);
-        }
-        .start-btn:active {
-            transform: scale(0.95);
-        }
     </style>
 </head>
 <body>
@@ -579,7 +563,7 @@
         <div class="press-bottom"></div>
         <div class="press-text">⚠️ ГИДРАВЛИЧЕСКИЙ ПРЕСС ⚠️</div>
     </div>
-    <div class="player" id="player"></div>
+    <div class="player" id="player"><div class="avatar-symbol" id="avatarSymbol">⚛️</div></div>
     <div class="gluk-box" id="glukBox">
         <div class="gluk-header">
             <div class="gluk-avatar">🟩</div>
@@ -592,30 +576,116 @@
     <div class="alert-light alert-light2"></div>
 </div>
 
-<!-- Экран затемнения с кнопкой -->
-<div class="start-screen" id="startScreen">
-    <div class="start-btn" id="startBtn"></div>
-</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-<script>
-    // ========== АУДИО (включается при клике на кнопку) ==========
+    const firebaseConfig = {
+        apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
+        authDomain: "apex-8f11e.firebaseapp.com",
+        databaseURL: "https://apex-8f11e-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "apex-8f11e",
+        storageBucket: "apex-8f11e.firebasestorage.app",
+        messagingSenderId: "923734077108",
+        appId: "1:923734077108:web:f6d2d4059972c215c371e1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // ========== ЗВУК ХРУСТА (синтезированный) ==========
     let audioContext = null;
-    let musicSource = null;
-    let musicGain = null;
-    let soundEnabled = false;
-    let tickBuffer = null;
+    function playCrunchSound() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const now = audioContext.currentTime;
+        const gain = audioContext.createGain();
+        gain.connect(audioContext.destination);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+        
+        // Генератор хруста (шум + короткие импульсы)
+        const bufferSize = 4096;
+        const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
+        noise.onaudioprocess = function(e) {
+            const output = e.outputBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = (Math.random() - 0.5) * 0.8;
+            }
+        };
+        noise.connect(gain);
+        noise.start(now);
+        noise.stop(now + 0.4);
+        
+        // Добавляем несколько коротких щелчков для эффекта хруста
+        for (let i = 0; i < 12; i++) {
+            const osc = audioContext.createOscillator();
+            const oscGain = audioContext.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = 200 + Math.random() * 400;
+            osc.connect(oscGain);
+            oscGain.connect(audioContext.destination);
+            oscGain.gain.setValueAtTime(0.15, now + i * 0.03);
+            oscGain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.03 + 0.1);
+            osc.start(now + i * 0.03);
+            osc.stop(now + i * 0.03 + 0.1);
+        }
+    }
 
+    // ========== ЗАГРУЗКА АВАТАРА ИЗ FIREBASE ==========
+    async function loadUserAvatar() {
+        return new Promise((resolve) => {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    const userRef = ref(db, 'users/' + user.uid);
+                    const snapshot = await get(userRef);
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        const avatar = userData.avatar || '⚛️';
+                        resolve(avatar);
+                    } else {
+                        resolve('⚛️');
+                    }
+                } else {
+                    resolve('⚛️');
+                }
+            });
+        });
+    }
+
+    // ========== ОСНОВНАЯ ЛОГИКА ==========
+    const playerDiv = document.getElementById('player');
+    const avatarSymbolSpan = document.getElementById('avatarSymbol');
+    const pressDiv = document.querySelector('.press');
+    const returnBtn = document.getElementById('returnBtn');
+    const glukTextDiv = document.getElementById('glukText');
+    const platform = document.querySelector('.platform');
+    const bodyEl = document.body;
+    const gaugeNeedle = document.getElementById('gaugeNeedle');
+
+    let currentLeft = 70;
+    let targetLeft = 0;
+    let moveInterval = null;
+    let animationActive = false;
+    let soundEnabled = false; // для фоновой музыки (опционально)
+    let tickBuffer = null;
+    let musicSource = null;
+
+    // Инициализация звука (первый клик)
     async function initAudio() {
         if (audioContext) return;
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        // Буфер для звука печати (короткий "тик")
+        // Буфер для звука печати
         tickBuffer = audioContext.createBuffer(1, 2205, 44100);
         let data = tickBuffer.getChannelData(0);
         for (let i = 0; i < 2205; i++) {
             data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
         }
-        // Фоновая музыка – гул (низкий осциллятор + шум)
-        musicGain = audioContext.createGain();
+        // Фоновая музыка (гул)
+        const musicGain = audioContext.createGain();
         musicGain.gain.value = 0.25;
         musicGain.connect(audioContext.destination);
         const oscillator = audioContext.createOscillator();
@@ -644,22 +714,6 @@
         source.connect(audioContext.destination);
         source.start();
     }
-
-    // ========== ОСНОВНАЯ ЛОГИКА ==========
-    const player = document.getElementById('player');
-    const pressDiv = document.querySelector('.press');
-    const returnBtn = document.getElementById('returnBtn');
-    const glukTextDiv = document.getElementById('glukText');
-    const platform = document.querySelector('.platform');
-    const bodyEl = document.body;
-    const gaugeNeedle = document.getElementById('gaugeNeedle');
-    const startScreen = document.getElementById('startScreen');
-    const startBtn = document.getElementById('startBtn');
-
-    let currentLeft = 70;
-    let targetLeft = 0;
-    let moveInterval = null;
-    let animationActive = false;
 
     // Эффекты
     function createSpark(x, y) {
@@ -699,8 +753,8 @@
         moveInterval = setInterval(() => {
             if (currentLeft < targetLeft) {
                 currentLeft += step;
-                player.style.left = currentLeft + 'px';
-                const rect = player.getBoundingClientRect();
+                playerDiv.style.left = currentLeft + 'px';
+                const rect = playerDiv.getBoundingClientRect();
                 createSpark(rect.left + 20, rect.bottom - 12);
                 if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
             } else {
@@ -717,6 +771,9 @@
         setTimeout(() => bodyEl.classList.remove('shake-cam'), 300);
         setTimeout(() => platform.classList.remove('shake-platform'), 400);
         
+        // Звук хруста
+        if (audioContext) playCrunchSound();
+        
         const pressRect = pressDiv.getBoundingClientRect();
         for(let i=0;i<70;i++) {
             setTimeout(() => {
@@ -730,8 +787,8 @@
         }
         
         setTimeout(() => {
-            player.style.transform = 'scale(0.1)';
-            player.style.opacity = '0';
+            playerDiv.style.transform = 'scale(0.1)';
+            playerDiv.style.opacity = '0';
             createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
             const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
             typeText(finalMsg, () => {
@@ -740,7 +797,7 @@
         }, 200);
     }
 
-    // Печать текста со звуком
+    // Печать текста
     let isTyping = false;
     function typeText(text, callback) {
         if (isTyping) return;
@@ -788,30 +845,18 @@
         }
     }
 
-    // Инициализация: всё скрыто за затемнением, анимация не запущена
-    // После клика на кнопку – убираем затемнение, включаем звук и запускаем диалоги
-    startBtn.addEventListener('click', async () => {
-        // Включаем звук
-        await initAudio();
-        // Убираем стартовый экран
-        startScreen.style.opacity = '0';
-        setTimeout(() => {
-            startScreen.style.display = 'none';
-        }, 500);
-        // Запускаем сценарий
-        playNextMessage();
-    });
-
-    // Рассчёт целевой позиции (для движения игрока)
-    window.addEventListener('load', () => {
-        player.style.left = '70px';
-        player.style.bottom = '95px';
+    // Запуск после загрузки аватара
+    window.addEventListener('load', async () => {
+        const avatar = await loadUserAvatar();
+        avatarSymbolSpan.textContent = avatar;
+        playerDiv.style.left = '70px';
+        playerDiv.style.bottom = '95px';
         currentLeft = 70;
         const platformRect = platform.getBoundingClientRect();
         const pressRect = pressDiv.getBoundingClientRect();
         targetLeft = pressRect.left - platformRect.left - 80;
         if (targetLeft < 200) targetLeft = 800;
-        // Анимация стрелки манометра
+        playNextMessage();
         setInterval(() => {
             if (!animationActive) {
                 const angle = 30 + Math.random() * 60;
@@ -821,6 +866,13 @@
             }
         }, 800);
     });
+
+    // Активация звука по первому клику
+    document.body.addEventListener('click', () => {
+        if (!audioContext) {
+            initAudio();
+        }
+    }, { once: true });
 
     returnBtn.addEventListener('click', () => {
         localStorage.removeItem('ttt_losses');
