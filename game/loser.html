@@ -33,118 +33,111 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* Фоновая стена с устрашающими элементами */
+        /* Индустриальный фон */
         .bg-wall {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0a0a0a;
-            background-image: repeating-linear-gradient(0deg, #1a1a1a 0px, #1a1a1a 2px, #0a0a0a 2px, #0a0a0a 15px),
-                              radial-gradient(circle at 20% 40%, rgba(80,20,20,0.3) 0%, transparent 50%);
+            background: #0f0f0f;
+            background-image: 
+                repeating-linear-gradient(0deg, #1a1a1a 0px, #1a1a1a 2px, #0a0a0a 2px, #0a0a0a 20px),
+                repeating-linear-gradient(90deg, rgba(30,30,40,0.2) 0px, rgba(30,30,40,0.2) 1px, transparent 1px, transparent 40px);
             z-index: -2;
         }
-        /* Кровавые пятна на стене */
-        .bloodstain {
+
+        /* Металлические панели */
+        .panel {
             position: absolute;
-            background: radial-gradient(ellipse, #4a0000, #1a0000);
+            background: #1a1a1a;
+            border: 2px solid #2a2a2a;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 0 1px #3a3a3a;
+            z-index: -1;
+        }
+        .panel1 { width: 300px; height: 200px; top: 50px; left: 50px; }
+        .panel2 { width: 400px; height: 250px; bottom: 50px; right: 50px; }
+        .panel3 { width: 250px; height: 150px; top: 300px; left: 600px; }
+
+        /* Болты на панелях */
+        .bolt {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle at 30% 30%, #5a5a5a, #2a2a2a);
             border-radius: 50%;
-            filter: blur(12px);
-            opacity: 0.5;
-            z-index: -1;
+            box-shadow: inset 0 0 2px #aaa, 0 1px 2px black;
         }
-        .bloodstain1 { width: 250px; height: 180px; top: 50px; left: 100px; }
-        .bloodstain2 { width: 350px; height: 250px; bottom: 20px; right: 50px; }
-        .bloodstain3 { width: 180px; height: 140px; top: 300px; left: 600px; }
-        /* Разбитые окна с мрачным светом */
-        .window {
+        .bolt1 { top: 15px; left: 15px; }
+        .bolt2 { top: 15px; right: 15px; }
+        .bolt3 { bottom: 15px; left: 15px; }
+        .bolt4 { bottom: 15px; right: 15px; }
+
+        /* Трубы */
+        .pipe {
             position: absolute;
-            top: 80px;
-            right: 150px;
-            width: 180px;
-            height: 250px;
-            background: #0a0a1a;
-            border: 6px solid #3a3a3a;
+            background: #2a2a2a;
             border-radius: 12px;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 0 2px #222;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 0 2px 5px black;
             z-index: -1;
-            overflow: hidden;
         }
-        .window::before {
-            content: "";
+        .pipe-hor {
+            height: 24px;
+            left: 0;
+            right: 0;
+        }
+        .pipe-ver {
+            width: 24px;
+            top: 0;
+            bottom: 0;
+        }
+        .pipe1 { top: 120px; height: 28px; width: 350px; left: -50px; }
+        .pipe2 { top: 480px; height: 32px; width: 450px; right: -100px; }
+        .pipe3 { left: 80px; width: 28px; height: 250px; top: 60px; }
+        .pipe4 { right: 80px; width: 32px; height: 300px; bottom: 20px; }
+        .pipe5 { top: 250px; left: 500px; width: 30px; height: 150px; }
+
+        /* Вентили на трубах */
+        .valve {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            background: #4a4a4a;
+            border-radius: 50%;
+            border: 2px solid #6a6a6a;
+            box-shadow: inset 0 0 5px black, 0 2px 5px black;
+            z-index: -1;
+        }
+        .valve1 { top: 130px; left: 220px; }
+        .valve2 { top: 490px; right: 160px; }
+        .valve3 { top: 260px; left: 515px; }
+
+        /* Решётка пола */
+        .floor-grate {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: repeating-linear-gradient(90deg, #1a1a1a, #1a1a1a 40px, #2a2a2a 40px, #2a2a2a 80px);
+            border-top: 3px solid #3a3a3a;
+            z-index: -1;
+        }
+
+        /* Туман / дымка */
+        .fog {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(90deg, rgba(255,50,50,0.05) 0px, rgba(255,50,50,0.05) 2px, transparent 2px, transparent 20px);
-        }
-        .window::after {
-            content: "💀";
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            font-size: 40px;
-            opacity: 0.4;
-            color: #aa3333;
-            filter: drop-shadow(0 0 5px red);
-        }
-        /* Трещины */
-        .crack {
-            position: absolute;
-            top: 30px;
-            left: 40px;
-            width: 80px;
-            height: 2px;
-            background: #888;
-            transform: rotate(45deg);
-            box-shadow: 0 0 2px black;
-        }
-        .crack2 {
-            top: 60px;
-            left: 80px;
-            width: 50px;
-            transform: rotate(60deg);
-        }
-        /* Ржавые трубы */
-        .pipe {
-            position: absolute;
-            background: #3a3a3a;
-            border-radius: 20px;
-            box-shadow: inset 0 0 8px black, 0 0 5px #8a0000;
+            background: radial-gradient(ellipse at 50% 70%, rgba(0,0,0,0.3), rgba(0,0,0,0.8));
+            pointer-events: none;
             z-index: -1;
         }
-        .pipe1 { top: 150px; height: 25px; width: 300px; left: -50px; }
-        .pipe2 { top: 400px; height: 30px; width: 400px; right: -100px; background: #4a2a2a; }
-        .pipe3 { left: 100px; width: 25px; height: 200px; top: 50px; }
-        .pipe4 { right: 50px; width: 30px; height: 350px; bottom: 0; background: #5a2a2a; }
-        /* Вентили (ржавые) */
-        .valve {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #6a4422;
-            border-radius: 50%;
-            box-shadow: inset 0 0 5px black, 0 2px 5px black;
-            z-index: -1;
-        }
-        .valve1 { top: 160px; left: 220px; }
-        .valve2 { top: 410px; right: 180px; }
-        /* Провода, свисающие */
-        .wire {
-            position: absolute;
-            background: #1a1a1a;
-            height: 3px;
-            border-radius: 2px;
-            z-index: -1;
-            box-shadow: 0 0 2px #aaa;
-        }
-        .wire1 { width: 150px; top: 80px; left: 250px; transform: rotate(15deg); }
-        .wire2 { width: 200px; top: 120px; right: 200px; transform: rotate(-10deg); }
-        .wire3 { width: 100px; bottom: 200px; left: 50px; transform: rotate(45deg); }
 
-        /* Металлическая платформа (тёмная) */
+        /* Металлическая платформа (сцена) */
         .platform {
             position: relative;
             width: 1200px;
@@ -156,21 +149,21 @@
             background-size: 30px 30px;
             border: 6px solid #4a4a4a;
             border-radius: 40px;
-            box-shadow: inset 0 0 60px rgba(0,0,0,0.9), 0 20px 40px rgba(0,0,0,0.8);
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.6);
             overflow: hidden;
             z-index: 1;
         }
 
-        /* Конвейерная лента с роликами */
+        /* Конвейерная лента */
         .conveyor-belt {
             position: absolute;
             bottom: 50px;
             left: 0;
             width: 100%;
             height: 90px;
-            background: repeating-linear-gradient(90deg, #444, #444 40px, #666 40px, #666 80px);
-            border-top: 4px solid #888;
-            border-bottom: 4px solid #111;
+            background: repeating-linear-gradient(90deg, #555, #555 40px, #777 40px, #777 80px);
+            border-top: 4px solid #aaa;
+            border-bottom: 4px solid #222;
             animation: beltMove 0.3s linear infinite;
             z-index: 5;
             box-shadow: inset 0 5px 10px rgba(0,0,0,0.5);
@@ -179,6 +172,7 @@
             0% { background-position: 0 0; }
             100% { background-position: 80px 0; }
         }
+
         /* Ролики */
         .rollers {
             position: absolute;
@@ -193,38 +187,37 @@
         .roller {
             width: 30px;
             height: 20px;
-            background: #777;
+            background: #888;
             border-radius: 20px;
-            box-shadow: inset 0 2px 5px #bbb, 0 2px 5px black;
+            box-shadow: inset 0 2px 5px #ccc, 0 2px 5px black;
         }
 
-        /* Пресс – детализированный, мрачный */
+        /* Пресс – детализированный */
         .press {
             position: absolute;
             right: 80px;
             bottom: 50px;
             width: 320px;
             height: 340px;
-            background: #3a3a3a;
-            background-image: repeating-linear-gradient(0deg, #4a4a4a 0px, #4a4a4a 2px, #2a2a2a 2px, #2a2a2a 8px);
-            border: 6px solid #7a7a7a;
+            background: #4a4a4a;
+            background-image: repeating-linear-gradient(0deg, #5a5a5a 0px, #5a5a5a 2px, #3a3a3a 2px, #3a3a3a 8px);
+            border: 6px solid #9a9a9a;
             border-radius: 30px;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.7), 0 0 0 4px #111, 0 10px 20px rgba(0,0,0,0.6);
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 0 4px #222, 0 10px 20px rgba(0,0,0,0.5);
             z-index: 20;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: transform 0.1s;
         }
         /* Заклёпки */
         .rivet {
             position: absolute;
             width: 14px;
             height: 14px;
-            background: radial-gradient(circle at 30% 30%, #8a8a8a, #3a3a3a);
+            background: radial-gradient(circle at 30% 30%, #b0b0b0, #505050);
             border-radius: 50%;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 1px 2px black;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 1px 2px black;
         }
         .rivet1 { top: 15px; left: 15px; }
         .rivet2 { top: 15px; right: 15px; }
@@ -240,11 +233,11 @@
             position: absolute;
             width: 45px;
             height: 100px;
-            background: linear-gradient(90deg, #4a4a4a, #6a6a6a);
+            background: linear-gradient(90deg, #5a5a5a, #7a7a7a);
             border-radius: 25px;
             top: -80px;
             box-shadow: inset 0 0 8px black, 0 5px 10px rgba(0,0,0,0.6);
-            border: 1px solid #888;
+            border: 1px solid #aaa;
         }
         .hydraulic-left { left: 20px; }
         .hydraulic-right { right: 20px; }
@@ -254,7 +247,7 @@
             bottom: -30px;
             left: -5px;
             font-size: 32px;
-            color: #aa5533;
+            color: #ffaa33;
             filter: drop-shadow(0 0 3px orange);
         }
         /* Шланги */
@@ -262,7 +255,7 @@
             position: absolute;
             width: 12px;
             height: 70px;
-            background: #1a1a1a;
+            background: #2a2a2a;
             border-radius: 6px;
             top: -50px;
             left: 50%;
@@ -277,40 +270,40 @@
             font-size: 18px;
             opacity: 0.4;
         }
-        /* Манометр с красной зоной */
+        /* Манометр */
         .gauge {
             position: absolute;
             top: 20px;
             left: 20px;
             width: 55px;
             height: 55px;
-            background: #222;
+            background: #ddd;
             border-radius: 50%;
-            border: 3px solid #8a0000;
-            box-shadow: inset 0 0 5px #000, 0 2px 5px black;
+            border: 3px solid #333;
+            box-shadow: inset 0 0 5px #fff, 0 2px 5px black;
             z-index: 30;
         }
         .gauge-needle {
             position: absolute;
             width: 3px;
             height: 20px;
-            background: #ff3333;
+            background: red;
             top: 50%;
             left: 50%;
             transform-origin: top center;
-            transform: translateX(-50%) rotate(65deg);
+            transform: translateX(-50%) rotate(45deg);
             transition: transform 0.1s;
         }
-        /* Верхняя плита пресса */
+        /* Верхняя плита */
         .press-top {
             position: absolute;
             top: -20px;
             left: 15px;
             right: 15px;
             height: 55px;
-            background: linear-gradient(145deg, #7a7a7a, #4a4a4a);
+            background: linear-gradient(145deg, #9a9a9a, #6a6a6a);
             border-radius: 20px;
-            box-shadow: inset 0 2px 5px #aaa, 0 5px 15px black;
+            box-shadow: inset 0 2px 5px #ccc, 0 5px 15px black;
             z-index: 25;
             transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
@@ -318,10 +311,10 @@
         .press-bottom {
             width: 90%;
             height: 50px;
-            background: linear-gradient(145deg, #6a6a6a, #3a3a3a);
+            background: linear-gradient(145deg, #8a8a8a, #5a5a5a);
             border-radius: 20px;
             margin-top: 30px;
-            box-shadow: inset 0 2px 5px #888, 0 5px 15px black;
+            box-shadow: inset 0 2px 5px #aaa, 0 5px 15px black;
             position: relative;
         }
         .press-bottom::after {
@@ -330,23 +323,23 @@
             bottom: 8px;
             left: 50%;
             transform: translateX(-50%);
-            color: #111;
+            color: #222;
             font-size: 20px;
             letter-spacing: 2px;
-            opacity: 0.6;
+            opacity: 0.5;
         }
         .press-text {
-            color: #cc2200;
+            color: #ff3300;
             font-weight: bold;
             font-size: 24px;
             text-shadow: 0 0 8px darkred;
             margin-top: 15px;
             letter-spacing: 2px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.6);
             padding: 4px 12px;
             border-radius: 40px;
         }
-        /* Анимация опускания пресса */
+        /* Анимация опускания */
         .press-crush .press-top {
             transform: translateY(220px);
         }
@@ -367,13 +360,13 @@
             bottom: 95px;
             width: 70px;
             height: 70px;
-            background: radial-gradient(circle at 30% 30%, #c06020, #8a3a00);
+            background: radial-gradient(circle at 30% 30%, #f5b042, #d97a00);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 48px;
-            box-shadow: 0 0 25px rgba(200,80,0,0.6);
+            box-shadow: 0 0 25px rgba(255,100,0,0.8);
             z-index: 25;
             transition: left 0.04s linear;
             cursor: default;
@@ -384,7 +377,7 @@
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
         }
 
-        /* Эффекты */
+        /* Эффекты тряски */
         .shake-platform {
             animation: platformShake 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
@@ -417,7 +410,7 @@
             position: absolute;
             width: 25px;
             height: 25px;
-            background: radial-gradient(circle, #444, #111, transparent);
+            background: radial-gradient(circle, #555, #222, transparent);
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
@@ -436,14 +429,6 @@
             z-index: 150;
             filter: blur(1px);
         }
-        .oil {
-            position: absolute;
-            background: #1a1a1a;
-            border-radius: 50%;
-            opacity: 0.4;
-            filter: blur(2px);
-            z-index: 10;
-        }
 
         /* Диалоговое окно ГЛюКа */
         .gluk-box {
@@ -451,7 +436,7 @@
             top: 20px;
             left: 20px;
             max-width: 550px;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.85);
             border-left: 8px solid #00FF9D;
             border-radius: 24px;
             padding: 18px 22px;
@@ -500,35 +485,39 @@
             margin-left: 5px;
             animation: blink 1s step-end infinite;
         }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
 
         /* Кнопка возврата */
         .return-btn {
             position: absolute;
             bottom: 30px;
             right: 30px;
-            background: linear-gradient(145deg, #3a2a1a, #1a0a00);
-            border: 2px solid #aa4422;
+            background: linear-gradient(145deg, #5a3a2a, #3a2a1a);
+            border: 2px solid #aa6a3a;
             padding: 14px 32px;
             border-radius: 60px;
             font-size: 18px;
             font-weight: bold;
-            color: #aa6644;
+            color: #ffaa66;
             cursor: pointer;
             z-index: 200;
             transition: 0.2s;
             display: none;
             font-family: monospace;
-            box-shadow: 0 6px 0 #1a0a00;
+            box-shadow: 0 6px 0 #2a1a0a;
             text-shadow: 0 0 3px black;
         }
         .return-btn:hover {
-            background: #5a3a2a;
+            background: #8a4a2a;
             transform: translateY(-2px);
-            box-shadow: 0 8px 0 #1a0a00;
-            color: #cc8866;
+            box-shadow: 0 8px 0 #2a1a0a;
+            color: #ffcc88;
         }
 
-        /* Аварийные огни (красные, мигающие) */
+        /* Аварийные огни */
         .alert-light {
             position: absolute;
             top: 20px;
@@ -537,7 +526,7 @@
             height: 24px;
             background: red;
             border-radius: 50%;
-            box-shadow: 0 0 20px red;
+            box-shadow: 0 0 15px red;
             animation: pulseRed 0.5s infinite;
             z-index: 200;
         }
@@ -551,39 +540,41 @@
             left: 20px;
             right: auto;
         }
-        /* Дополнительный красный туман */
-        .red-fog {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 200px;
-            background: radial-gradient(ellipse at center, rgba(80,0,0,0.3), transparent);
-            pointer-events: none;
-            z-index: 2;
-        }
     </style>
 </head>
 <body>
 <div class="bg-wall">
-    <div class="bloodstain bloodstain1"></div>
-    <div class="bloodstain bloodstain2"></div>
-    <div class="bloodstain bloodstain3"></div>
-    <div class="window">
-        <div class="crack"></div>
-        <div class="crack crack2"></div>
+    <!-- Металлические панели -->
+    <div class="panel panel1">
+        <div class="bolt bolt1"></div><div class="bolt bolt2"></div>
+        <div class="bolt bolt3"></div><div class="bolt bolt4"></div>
     </div>
-    <div class="pipe pipe1"></div>
-    <div class="pipe pipe2"></div>
-    <div class="pipe pipe3"></div>
-    <div class="pipe pipe4"></div>
+    <div class="panel panel2">
+        <div class="bolt bolt1"></div><div class="bolt bolt2"></div>
+        <div class="bolt bolt3"></div><div class="bolt bolt4"></div>
+    </div>
+    <div class="panel panel3">
+        <div class="bolt bolt1"></div><div class="bolt bolt2"></div>
+        <div class="bolt bolt3"></div><div class="bolt bolt4"></div>
+    </div>
+
+    <!-- Трубы -->
+    <div class="pipe pipe1 pipe-hor"></div>
+    <div class="pipe pipe2 pipe-hor"></div>
+    <div class="pipe pipe3 pipe-ver"></div>
+    <div class="pipe pipe4 pipe-ver"></div>
+    <div class="pipe pipe5 pipe-ver"></div>
+
+    <!-- Вентили -->
     <div class="valve valve1"></div>
     <div class="valve valve2"></div>
-    <div class="wire wire1"></div>
-    <div class="wire wire2"></div>
-    <div class="wire wire3"></div>
-    <div class="oil" style="width: 80px; height: 50px; top: 200px; left: 400px;"></div>
-    <div class="oil" style="width: 100px; height: 40px; top: 500px; left: 800px;"></div>
+    <div class="valve valve3"></div>
+
+    <!-- Решётка пола -->
+    <div class="floor-grate"></div>
+
+    <!-- Туман -->
+    <div class="fog"></div>
 </div>
 
 <div class="platform">
@@ -621,7 +612,6 @@
     <button id="returnBtn" class="return-btn">💀 ВЕРНУТЬСЯ В МЕНЮ 💀</button>
     <div class="alert-light"></div>
     <div class="alert-light alert-light2"></div>
-    <div class="red-fog"></div>
 </div>
 
 <script>
@@ -638,6 +628,7 @@
     let moveInterval = null;
     let animationActive = false;
 
+    // Эффекты
     function createSpark(x, y) {
         const spark = document.createElement('div');
         spark.classList.add('spark');
@@ -668,6 +659,7 @@
         }
     }
 
+    // Движение к прессу
     function startMovingToPress() {
         if (moveInterval) clearInterval(moveInterval);
         animationActive = true;
@@ -686,6 +678,7 @@
         }, 40);
     }
 
+    // Анимация пресса
     function animatePressAndCrush() {
         pressDiv.classList.add('press-crush');
         platform.classList.add('shake-platform');
@@ -716,6 +709,7 @@
         }, 200);
     }
 
+    // Печать текста
     let isTyping = false;
     function typeText(text, callback) {
         if (isTyping) return;
@@ -771,12 +765,13 @@
         targetLeft = pressRect.left - platformRect.left - 80;
         if (targetLeft < 200) targetLeft = 800;
         playNextMessage();
+        // Анимация стрелки манометра
         setInterval(() => {
             if (!animationActive) {
                 const angle = 30 + Math.random() * 60;
                 gaugeNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
             } else {
-                gaugeNeedle.style.transform = `translateX(-50%) rotate(85deg)`;
+                gaugeNeedle.style.transform = `translateX(-50%) rotate(80deg)`;
             }
         }, 800);
     });
