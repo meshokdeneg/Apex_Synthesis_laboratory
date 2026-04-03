@@ -21,7 +21,6 @@
             font-family: 'Courier New', monospace;
             overflow: hidden;
             position: relative;
-            cursor: pointer;
         }
         body.shake-cam {
             animation: camShake 0.15s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -48,7 +47,6 @@
             z-index: -2;
         }
 
-        /* Металлические панели */
         .panel {
             position: absolute;
             background: #1a1a1a;
@@ -74,7 +72,6 @@
         .bolt3 { bottom: 15px; left: 15px; }
         .bolt4 { bottom: 15px; right: 15px; }
 
-        /* Трубы */
         .pipe {
             position: absolute;
             background: #2a2a2a;
@@ -82,16 +79,8 @@
             box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 0 2px 5px black;
             z-index: -1;
         }
-        .pipe-hor {
-            height: 24px;
-            left: 0;
-            right: 0;
-        }
-        .pipe-ver {
-            width: 24px;
-            top: 0;
-            bottom: 0;
-        }
+        .pipe-hor { height: 24px; left: 0; right: 0; }
+        .pipe-ver { width: 24px; top: 0; bottom: 0; }
         .pipe1 { top: 120px; height: 28px; width: 350px; left: -50px; }
         .pipe2 { top: 480px; height: 32px; width: 450px; right: -100px; }
         .pipe3 { left: 80px; width: 28px; height: 250px; top: 60px; }
@@ -112,7 +101,6 @@
         .valve2 { top: 490px; right: 160px; }
         .valve3 { top: 260px; left: 515px; }
 
-        /* Решётка пола */
         .floor-grate {
             position: absolute;
             bottom: 0;
@@ -123,8 +111,6 @@
             border-top: 3px solid #3a3a3a;
             z-index: -1;
         }
-
-        /* Туман */
         .fog {
             position: absolute;
             top: 0;
@@ -136,7 +122,6 @@
             z-index: -1;
         }
 
-        /* Платформа */
         .platform {
             position: relative;
             width: 1200px;
@@ -153,7 +138,6 @@
             z-index: 1;
         }
 
-        /* Конвейер */
         .conveyor-belt {
             position: absolute;
             bottom: 50px;
@@ -190,7 +174,6 @@
             box-shadow: inset 0 2px 5px #ccc, 0 2px 5px black;
         }
 
-        /* Пресс */
         .press {
             position: absolute;
             right: 80px;
@@ -344,7 +327,6 @@
             100% { transform: translateX(0); }
         }
 
-        /* Игрок */
         .player {
             position: absolute;
             left: 70px;
@@ -526,6 +508,39 @@
             left: 20px;
             right: auto;
         }
+
+        /* ЭКРАН ЗАГРУЗКИ (тёмный, с кнопкой) */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s;
+        }
+        .start-btn {
+            width: 120px;
+            height: 120px;
+            background: rgba(30,30,30,0.8);
+            border: 3px solid #FF8C00;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 0 20px rgba(255,140,0,0.5);
+        }
+        .start-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255,140,0,0.3);
+            box-shadow: 0 0 30px rgba(255,140,0,0.8);
+        }
+        .start-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -577,8 +592,13 @@
     <div class="alert-light alert-light2"></div>
 </div>
 
+<!-- Экран затемнения с кнопкой -->
+<div class="start-screen" id="startScreen">
+    <div class="start-btn" id="startBtn"></div>
+</div>
+
 <script>
-    // ========== АУДИО (автоматически включается после первого клика) ==========
+    // ========== АУДИО (включается при клике на кнопку) ==========
     let audioContext = null;
     let musicSource = null;
     let musicGain = null;
@@ -625,13 +645,6 @@
         source.start();
     }
 
-    // Автоматический запуск звука после любого клика по странице (браузер требует жеста)
-    document.body.addEventListener('click', () => {
-        if (!soundEnabled && !audioContext) {
-            initAudio();
-        }
-    }, { once: true }); // запустим только один раз при первом клике
-
     // ========== ОСНОВНАЯ ЛОГИКА ==========
     const player = document.getElementById('player');
     const pressDiv = document.querySelector('.press');
@@ -640,12 +653,15 @@
     const platform = document.querySelector('.platform');
     const bodyEl = document.body;
     const gaugeNeedle = document.getElementById('gaugeNeedle');
+    const startScreen = document.getElementById('startScreen');
+    const startBtn = document.getElementById('startBtn');
 
     let currentLeft = 70;
     let targetLeft = 0;
     let moveInterval = null;
     let animationActive = false;
 
+    // Эффекты
     function createSpark(x, y) {
         const spark = document.createElement('div');
         spark.classList.add('spark');
@@ -772,6 +788,21 @@
         }
     }
 
+    // Инициализация: всё скрыто за затемнением, анимация не запущена
+    // После клика на кнопку – убираем затемнение, включаем звук и запускаем диалоги
+    startBtn.addEventListener('click', async () => {
+        // Включаем звук
+        await initAudio();
+        // Убираем стартовый экран
+        startScreen.style.opacity = '0';
+        setTimeout(() => {
+            startScreen.style.display = 'none';
+        }, 500);
+        // Запускаем сценарий
+        playNextMessage();
+    });
+
+    // Рассчёт целевой позиции (для движения игрока)
     window.addEventListener('load', () => {
         player.style.left = '70px';
         player.style.bottom = '95px';
@@ -780,7 +811,7 @@
         const pressRect = pressDiv.getBoundingClientRect();
         targetLeft = pressRect.left - platformRect.left - 80;
         if (targetLeft < 200) targetLeft = 800;
-        playNextMessage();
+        // Анимация стрелки манометра
         setInterval(() => {
             if (!animationActive) {
                 const angle = 30 + Math.random() * 60;
