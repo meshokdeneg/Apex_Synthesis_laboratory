@@ -21,6 +21,7 @@
             font-family: 'Courier New', monospace;
             overflow: hidden;
             position: relative;
+            cursor: pointer;
         }
         body.shake-cam {
             animation: camShake 0.15s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -60,7 +61,6 @@
         .panel2 { width: 400px; height: 250px; bottom: 50px; right: 50px; }
         .panel3 { width: 250px; height: 150px; top: 300px; left: 600px; }
 
-        /* Болты на панелях */
         .bolt {
             position: absolute;
             width: 12px;
@@ -98,7 +98,6 @@
         .pipe4 { right: 80px; width: 32px; height: 300px; bottom: 20px; }
         .pipe5 { top: 250px; left: 500px; width: 30px; height: 150px; }
 
-        /* Вентили на трубах */
         .valve {
             position: absolute;
             width: 34px;
@@ -125,7 +124,7 @@
             z-index: -1;
         }
 
-        /* Туман / дымка */
+        /* Туман */
         .fog {
             position: absolute;
             top: 0;
@@ -137,7 +136,7 @@
             z-index: -1;
         }
 
-        /* Металлическая платформа (сцена) */
+        /* Платформа */
         .platform {
             position: relative;
             width: 1200px;
@@ -154,7 +153,7 @@
             z-index: 1;
         }
 
-        /* Конвейерная лента */
+        /* Конвейер */
         .conveyor-belt {
             position: absolute;
             bottom: 50px;
@@ -173,7 +172,6 @@
             100% { background-position: 80px 0; }
         }
 
-        /* Ролики */
         .rollers {
             position: absolute;
             bottom: 140px;
@@ -192,7 +190,7 @@
             box-shadow: inset 0 2px 5px #ccc, 0 2px 5px black;
         }
 
-        /* Пресс – детализированный */
+        /* Пресс */
         .press {
             position: absolute;
             right: 80px;
@@ -210,7 +208,6 @@
             align-items: center;
             justify-content: center;
         }
-        /* Заклёпки */
         .rivet {
             position: absolute;
             width: 14px;
@@ -228,7 +225,6 @@
         .rivet7 { top: 30px; left: 50%; margin-left: -7px; }
         .rivet8 { bottom: 30px; left: 50%; margin-left: -7px; }
 
-        /* Гидравлика */
         .hydraulic-left, .hydraulic-right {
             position: absolute;
             width: 45px;
@@ -250,7 +246,6 @@
             color: #ffaa33;
             filter: drop-shadow(0 0 3px orange);
         }
-        /* Шланги */
         .hose {
             position: absolute;
             width: 12px;
@@ -270,7 +265,6 @@
             font-size: 18px;
             opacity: 0.4;
         }
-        /* Манометр */
         .gauge {
             position: absolute;
             top: 20px;
@@ -294,7 +288,6 @@
             transform: translateX(-50%) rotate(45deg);
             transition: transform 0.1s;
         }
-        /* Верхняя плита */
         .press-top {
             position: absolute;
             top: -20px;
@@ -307,7 +300,6 @@
             z-index: 25;
             transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
-        /* Нижняя плита */
         .press-bottom {
             width: 90%;
             height: 50px;
@@ -339,7 +331,6 @@
             padding: 4px 12px;
             border-radius: 40px;
         }
-        /* Анимация опускания */
         .press-crush .press-top {
             transform: translateY(220px);
         }
@@ -377,7 +368,6 @@
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
         }
 
-        /* Эффекты тряски */
         .shake-platform {
             animation: platformShake 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
@@ -395,7 +385,6 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* Искры, дым, кровь */
         .spark {
             position: absolute;
             width: 6px;
@@ -430,7 +419,6 @@
             filter: blur(1px);
         }
 
-        /* Диалоговое окно ГЛюКа */
         .gluk-box {
             position: absolute;
             top: 20px;
@@ -490,7 +478,6 @@
             50% { opacity: 0; }
         }
 
-        /* Кнопка возврата */
         .return-btn {
             position: absolute;
             bottom: 30px;
@@ -517,7 +504,6 @@
             color: #ffcc88;
         }
 
-        /* Аварийные огни */
         .alert-light {
             position: absolute;
             top: 20px;
@@ -544,36 +530,18 @@
 </head>
 <body>
 <div class="bg-wall">
-    <!-- Металлические панели -->
-    <div class="panel panel1">
-        <div class="bolt bolt1"></div><div class="bolt bolt2"></div>
-        <div class="bolt bolt3"></div><div class="bolt bolt4"></div>
-    </div>
-    <div class="panel panel2">
-        <div class="bolt bolt1"></div><div class="bolt bolt2"></div>
-        <div class="bolt bolt3"></div><div class="bolt bolt4"></div>
-    </div>
-    <div class="panel panel3">
-        <div class="bolt bolt1"></div><div class="bolt bolt2"></div>
-        <div class="bolt bolt3"></div><div class="bolt bolt4"></div>
-    </div>
-
-    <!-- Трубы -->
+    <div class="panel panel1"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+    <div class="panel panel2"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+    <div class="panel panel3"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
     <div class="pipe pipe1 pipe-hor"></div>
     <div class="pipe pipe2 pipe-hor"></div>
     <div class="pipe pipe3 pipe-ver"></div>
     <div class="pipe pipe4 pipe-ver"></div>
     <div class="pipe pipe5 pipe-ver"></div>
-
-    <!-- Вентили -->
     <div class="valve valve1"></div>
     <div class="valve valve2"></div>
     <div class="valve valve3"></div>
-
-    <!-- Решётка пола -->
     <div class="floor-grate"></div>
-
-    <!-- Туман -->
     <div class="fog"></div>
 </div>
 
@@ -584,23 +552,18 @@
         <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
         <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
     </div>
-
     <div class="press">
         <div class="rivet rivet1"></div><div class="rivet rivet2"></div>
         <div class="rivet rivet3"></div><div class="rivet rivet4"></div>
         <div class="rivet rivet5"></div><div class="rivet rivet6"></div>
         <div class="rivet rivet7"></div><div class="rivet rivet8"></div>
-        <div class="hydraulic-left"></div>
-        <div class="hydraulic-right"></div>
+        <div class="hydraulic-left"></div><div class="hydraulic-right"></div>
         <div class="hose"></div>
-        <div class="gauge">
-            <div class="gauge-needle" id="gaugeNeedle"></div>
-        </div>
+        <div class="gauge"><div class="gauge-needle" id="gaugeNeedle"></div></div>
         <div class="press-top"></div>
         <div class="press-bottom"></div>
         <div class="press-text">⚠️ ГИДРАВЛИЧЕСКИЙ ПРЕСС ⚠️</div>
     </div>
-
     <div class="player" id="player"></div>
     <div class="gluk-box" id="glukBox">
         <div class="gluk-header">
@@ -615,6 +578,61 @@
 </div>
 
 <script>
+    // ========== АУДИО (автоматически включается после первого клика) ==========
+    let audioContext = null;
+    let musicSource = null;
+    let musicGain = null;
+    let soundEnabled = false;
+    let tickBuffer = null;
+
+    async function initAudio() {
+        if (audioContext) return;
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Буфер для звука печати (короткий "тик")
+        tickBuffer = audioContext.createBuffer(1, 2205, 44100);
+        let data = tickBuffer.getChannelData(0);
+        for (let i = 0; i < 2205; i++) {
+            data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
+        }
+        // Фоновая музыка – гул (низкий осциллятор + шум)
+        musicGain = audioContext.createGain();
+        musicGain.gain.value = 0.25;
+        musicGain.connect(audioContext.destination);
+        const oscillator = audioContext.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 55;
+        oscillator.connect(musicGain);
+        const noise = audioContext.createBufferSource();
+        const noiseBuffer = audioContext.createBuffer(1, 44100 * 2, 44100);
+        let noiseData = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < 44100 * 2; i++) {
+            noiseData[i] = (Math.random() - 0.5) * 0.1;
+        }
+        noise.buffer = noiseBuffer;
+        noise.loop = true;
+        noise.connect(musicGain);
+        oscillator.start();
+        noise.start();
+        musicSource = { osc: oscillator, noise: noise };
+        soundEnabled = true;
+    }
+
+    function playTick() {
+        if (!soundEnabled || !audioContext || !tickBuffer) return;
+        const source = audioContext.createBufferSource();
+        source.buffer = tickBuffer;
+        source.connect(audioContext.destination);
+        source.start();
+    }
+
+    // Автоматический запуск звука после любого клика по странице (браузер требует жеста)
+    document.body.addEventListener('click', () => {
+        if (!soundEnabled && !audioContext) {
+            initAudio();
+        }
+    }, { once: true }); // запустим только один раз при первом клике
+
+    // ========== ОСНОВНАЯ ЛОГИКА ==========
     const player = document.getElementById('player');
     const pressDiv = document.querySelector('.press');
     const returnBtn = document.getElementById('returnBtn');
@@ -628,7 +646,6 @@
     let moveInterval = null;
     let animationActive = false;
 
-    // Эффекты
     function createSpark(x, y) {
         const spark = document.createElement('div');
         spark.classList.add('spark');
@@ -659,7 +676,6 @@
         }
     }
 
-    // Движение к прессу
     function startMovingToPress() {
         if (moveInterval) clearInterval(moveInterval);
         animationActive = true;
@@ -678,7 +694,6 @@
         }, 40);
     }
 
-    // Анимация пресса
     function animatePressAndCrush() {
         pressDiv.classList.add('press-crush');
         platform.classList.add('shake-platform');
@@ -709,7 +724,7 @@
         }, 200);
     }
 
-    // Печать текста
+    // Печать текста со звуком
     let isTyping = false;
     function typeText(text, callback) {
         if (isTyping) return;
@@ -719,6 +734,7 @@
         const interval = setInterval(() => {
             if (i < text.length) {
                 glukTextDiv.innerHTML += text[i];
+                if (soundEnabled) playTick();
                 i++;
             } else {
                 clearInterval(interval);
@@ -765,7 +781,6 @@
         targetLeft = pressRect.left - platformRect.left - 80;
         if (targetLeft < 200) targetLeft = 800;
         playNextMessage();
-        // Анимация стрелки манометра
         setInterval(() => {
             if (!animationActive) {
                 const angle = 30 + Math.random() * 60;
