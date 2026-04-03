@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASL | Наказание</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* запрет выделения */
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0a0a0a, #000000);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* металлическая текстура стола */
+        .surface {
+            position: relative;
+            width: 1000px;
+            height: 600px;
+            background: #2a2a2a;
+            background-image: repeating-linear-gradient(45deg, #3a3a3a 0px, #3a3a3a 2px, #2a2a2a 2px, #2a2a2a 8px);
+            border: 4px solid #5a5a5a;
+            border-radius: 30px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 25px rgba(0,0,0,0.5);
+            overflow: visible;
+        }
+
+        /* Пресс – массивная металлическая конструкция справа */
+        .press {
+            position: absolute;
+            right: 80px;
+            bottom: 50px;
+            width: 200px;
+            height: 200px;
+            background: #4a4a4a;
+            border: 4px solid #888;
+            border-radius: 20px;
+            box-shadow: 0 0 0 2px #222, inset 0 0 15px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .press::before {
+            content: "⚙️";
+            font-size: 60px;
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            filter: drop-shadow(0 0 5px #ff6600);
+        }
+        .press-plate {
+            width: 160px;
+            height: 30px;
+            background: #666;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 2px 0 #ccc;
+        }
+        .press-text {
+            color: #ff3300;
+            font-weight: bold;
+            font-size: 24px;
+            text-shadow: 0 0 5px red;
+            margin-top: 10px;
+        }
+
+        /* Игрок (человечек, который движется) */
+        .player {
+            position: absolute;
+            left: 80px;
+            bottom: 80px;
+            width: 70px;
+            height: 70px;
+            background: #ffaa33;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 0 15px rgba(255,170,51,0.8);
+            z-index: 20;
+            transition: all 0.1s linear;
+            cursor: default;
+        }
+        .player::after {
+            content: "😨";
+            font-size: 50px;
+        }
+
+        /* Область диалога ГЛюКа */
+        .gluk-dialog {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            border-left: 6px solid #00FF9D;
+            padding: 15px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            font-family: 'Courier New', monospace;
+            color: #0f0;
+            font-size: 18px;
+            z-index: 100;
+            max-width: 600px;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .gluk-name {
+            color: #FF8C00;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .gluk-name span {
+            background: #00FF9D;
+            width: 30px;
+            height: 30px;
+            display: inline-block;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            color: black;
+        }
+        .gluk-text {
+            line-height: 1.4;
+            letter-spacing: 1px;
+        }
+        .gluk-text .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: #0f0;
+            vertical-align: middle;
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Кнопка "Вернуться" появляется после анимации */
+        .return-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: #4A90E2;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            z-index: 200;
+            transition: 0.2s;
+            display: none;
+            font-family: monospace;
+        }
+        .return-btn:hover {
+            background: #FF8C00;
+            transform: scale(1.05);
+        }
+
+        /* затемнение / пульсация */
+        .red-pulse {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(255,0,0,0.2));
+            pointer-events: none;
+            animation: pulseRed 1s infinite;
+            z-index: 5;
+        }
+
+        @keyframes pulseRed {
+            0% { opacity: 0.1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* анимация падения пресса (в конце) */
+        .press-crush {
+            animation: crushPress 0.3s forwards;
+        }
+        @keyframes crushPress {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); filter: brightness(0.8); }
+        }
+
+        /* звуковая кнопка? не обязательна */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="surface">
+    <div class="press">
+        <div class="press-plate"></div>
+        <div class="press-text">ПРЕСС</div>
+    </div>
+    <div class="player" id="player"></div>
+    <div class="gluk-dialog" id="glukDialog">
+        <div class="gluk-name">
+            <span>🟩</span> ГЛюК (главный логический компьютер)
+        </div>
+        <div class="gluk-text" id="glukText"></div>
+    </div>
+    <button id="returnBtn" class="return-btn">🚪 ВЕРНУТЬСЯ В МЕНЮ</button>
+</div>
+<div class="red-pulse"></div>
+
+<script>
+    // Получаем элементы
+    const player = document.getElementById('player');
+    const press = document.querySelector('.press');
+    const returnBtn = document.getElementById('returnBtn');
+    const glukTextDiv = document.getElementById('glukText');
+
+    // Координаты пресса (правый нижний угол)
+    const pressRect = press.getBoundingClientRect();
+    const surfaceRect = document.querySelector('.surface').getBoundingClientRect();
+
+    // Начальные координаты игрока относительно поверхности
+    let startX = 80;
+    let startY = 80;
+    let targetX = pressRect.left - surfaceRect.left + pressRect.width/2 - 35; // центр пресса
+    let targetY = pressRect.top - surfaceRect.top + pressRect.height/2 - 35;
+
+    // Функция анимации движения
+    function animatePlayerToPress() {
+        let currentX = startX, currentY = startY;
+        const steps = 60;
+        let step = 0;
+        const dx = (targetX - startX) / steps;
+        const dy = (targetY - startY) / steps;
+
+        const interval = setInterval(() => {
+            if (step >= steps) {
+                clearInterval(interval);
+                // Достигли цели — игрок "сплющивается"
+                player.style.transform = 'scale(0.2)';
+                player.style.opacity = '0.3';
+                // Добавляем эффект удара пресса
+                press.classList.add('press-crush');
+                // Показываем кнопку возврата
+                returnBtn.style.display = 'block';
+                // Дополнительный текст в диалог
+                addGlukLine("... Хруст. Ещё один болван спрессован. Ладно, иди отсюда.");
+                return;
+            }
+            currentX += dx;
+            currentY += dy;
+            player.style.left = currentX + 'px';
+            player.style.bottom = currentY + 'px';
+            step++;
+        }, 15);
+    }
+
+    // Массив фраз ГЛюКа (с паузами)
+    const glukMessages = [
+        "Игрок, ты... болван.",
+        "Пять поражений в крестиках-ноликах. ПЯТЬ!",
+        "Даже мой холодильник (да, тот самый) обыграл бы тебя.",
+        "Напомню правила: три в ряд — победа. Но ты явно не знал.",
+        "Теперь ты отправишься в пресс. Это наказание за тупость.",
+        "Надеюсь, в следующий раз ты включишь мозги. Хотя… сомневаюсь."
+    ];
+
+    let currentMsgIndex = 0;
+    let isTyping = false;
+    let fullText = '';
+
+    // Функция печати текста с эффектом "печатной машинки"
+    function typeText(text, callback) {
+        if (isTyping) return;
+        isTyping = true;
+        let i = 0;
+        glukTextDiv.innerHTML = '';
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                glukTextDiv.innerHTML += text[i];
+                i++;
+            } else {
+                clearInterval(interval);
+                isTyping = false;
+                if (callback) callback();
+                // добавляем мигающий курсор
+                const cursor = document.createElement('span');
+                cursor.className = 'cursor';
+                glukTextDiv.appendChild(cursor);
+            }
+        }, 50);
+    }
+
+    // Последовательный вывод сообщений
+    function showNextMessage() {
+        if (currentMsgIndex < glukMessages.length) {
+            const msg = glukMessages[currentMsgIndex];
+            typeText(msg, () => {
+                currentMsgIndex++;
+                // пауза между сообщениями
+                setTimeout(() => {
+                    // очищаем текст, убираем курсор
+                    glukTextDiv.innerHTML = '';
+                    showNextMessage();
+                }, 1500);
+            });
+        } else {
+            // Все сообщения выведены, запускаем анимацию движения
+            animatePlayerToPress();
+        }
+    }
+
+    // Начинаем диалог с небольшой задержкой
+    setTimeout(() => {
+        showNextMessage();
+    }, 500);
+
+    // Обработчик кнопки возврата в меню (миниигры)
+    returnBtn.addEventListener('click', () => {
+        // Дополнительно очищаем localStorage счётчика поражений, если вдруг не очистился
+        localStorage.removeItem('ttt_losses');
+        window.location.href = '../minigames.html';  // возврат к списку игр
+    });
+
+    // Корректировка позиций при загрузке (на случай разных размеров)
+    window.addEventListener('load', () => {
+        const surface = document.querySelector('.surface');
+        const pressRectNew = press.getBoundingClientRect();
+        const surfaceRectNew = surface.getBoundingClientRect();
+        targetX = pressRectNew.left - surfaceRectNew.left + pressRectNew.width/2 - 35;
+        targetY = pressRectNew.top - surfaceRectNew.top + pressRectNew.height/2 - 35;
+        player.style.left = startX + 'px';
+        player.style.bottom = startY + 'px';
+    });
+</script>
+</body>
+</html>
