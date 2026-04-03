@@ -49,6 +49,11 @@
             font-size: 20px;
             color: #FF8C00;
         }
+        .loss-counter {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #aaa;
+        }
         button {
             background: #4A90E2;
             border: none;
@@ -67,6 +72,7 @@
 <body>
 <div class="game-container">
     <h2 style="color:#FF8C00;">КРЕСТИКИ-НОЛИКИ</h2>
+    <div class="loss-counter">😵 Поражений: <span id="lossCount">0</span> / 5</div>
     <div id="board" class="board"></div>
     <div id="status" class="status"></div>
     <button id="reset">🔄 Новая игра</button>
@@ -80,6 +86,7 @@
     ];
     let currentPlayer = 'X';
     let gameActive = true;
+    let lossCount = 0;
 
     const winPatterns = [
         [[0,0],[0,1],[0,2]],
@@ -91,6 +98,37 @@
         [[0,0],[1,1],[2,2]],
         [[0,2],[1,1],[2,0]]
     ];
+
+    // Загрузка счётчика из localStorage
+    function loadLossCount() {
+        const saved = localStorage.getItem('ttt_losses');
+        if (saved !== null) {
+            lossCount = parseInt(saved, 10);
+        } else {
+            lossCount = 0;
+        }
+        document.getElementById('lossCount').innerText = lossCount;
+    }
+
+    // Сохранение счётчика
+    function saveLossCount() {
+        localStorage.setItem('ttt_losses', lossCount);
+        document.getElementById('lossCount').innerText = lossCount;
+    }
+
+    function resetLossCount() {
+        lossCount = 0;
+        saveLossCount();
+    }
+
+    // Проверка, не пора ли сослать игрока в лосер-комнату
+    function checkAndRedirectOnLoss() {
+        if (lossCount >= 5) {
+            // очищаем счётчик перед редиректом, чтобы при возврате не было бесконечного цикла
+            localStorage.removeItem('ttt_losses');
+            window.location.href = 'game/loser.html';
+        }
+    }
 
     function render() {
         const boardDiv = document.getElementById('board');
@@ -108,9 +146,19 @@
         }
         const statusDiv = document.getElementById('status');
         if (!gameActive) {
-            statusDiv.innerHTML = checkWinner() ? `🏆 ${currentPlayer} победил!` : 'Ничья!';
+            if (checkWinner()) {
+                if (currentPlayer === 'X') {
+                    // выиграл игрок (X)
+                    statusDiv.innerHTML = '🏆 Вы победили!';
+                } else {
+                    // выиграл компьютер (O)
+                    statusDiv.innerHTML = '🤖 Компьютер победил...';
+                }
+            } else {
+                statusDiv.innerHTML = 'Ничья!';
+            }
         } else {
-            statusDiv.innerHTML = `Ход: ${currentPlayer}`;
+            statusDiv.innerHTML = `Ход: ${currentPlayer === 'X' ? 'Вы (X)' : 'Компьютер (O)'}`;
         }
     }
 
@@ -131,11 +179,15 @@
         return true;
     }
 
-    function playerMove(row, col) {
-        if (!gameActive) return;
-        if (board[row][col] !== '') return;
-        board[row][col] = currentPlayer;
+    function afterMove() {
+        // проверяем победу или ничью
         if (checkWinner()) {
+            if (currentPlayer === 'O') {
+                // компьютер выиграл – увеличиваем счётчик поражений
+                lossCount++;
+                saveLossCount();
+                checkAndRedirectOnLoss();
+            }
             gameActive = false;
             render();
             return;
@@ -145,11 +197,21 @@
             render();
             return;
         }
+        // смена игрока
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
         render();
+
+        // если теперь ход компьютера и игра активна
         if (gameActive && currentPlayer === 'O') {
             setTimeout(computerMove, 200);
         }
+    }
+
+    function playerMove(row, col) {
+        if (!gameActive) return;
+        if (board[row][col] !== '') return;
+        board[row][col] = currentPlayer;
+        afterMove();
     }
 
     function computerMove() {
@@ -162,18 +224,7 @@
         if (empty.length === 0) return;
         let [row, col] = empty[Math.floor(Math.random() * empty.length)];
         board[row][col] = 'O';
-        if (checkWinner()) {
-            gameActive = false;
-            render();
-            return;
-        }
-        if (isDraw()) {
-            gameActive = false;
-            render();
-            return;
-        }
-        currentPlayer = 'X';
-        render();
+        afterMove();
     }
 
     function resetGame() {
@@ -184,11 +235,15 @@
         ];
         currentPlayer = 'X';
         gameActive = true;
+        // сброс счётчика поражений – по логике новая игра обнуляет историю проигрышей
+        resetLossCount();
         render();
     }
 
+    // инициализация
+    loadLossCount();
+    resetGame(); // запускает игру и рендер
     document.getElementById('reset').addEventListener('click', resetGame);
-    resetGame();
 </script>
 </body>
 </html>
