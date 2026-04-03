@@ -21,7 +21,6 @@
             font-family: 'Courier New', monospace;
             overflow: hidden;
             position: relative;
-            transition: transform 0.1s ease;
         }
         body.shake-cam {
             animation: camShake 0.15s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
@@ -34,7 +33,7 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* Фоновая стена с трубами и окнами */
+        /* Фоновая стена с кирпичами и ржавчиной */
         .bg-wall {
             position: fixed;
             top: 0;
@@ -42,10 +41,24 @@
             width: 100%;
             height: 100%;
             background: #1a1a1a;
-            background-image: repeating-linear-gradient(0deg, #2a2a2a 0px, #2a2a2a 2px, #1a1a1a 2px, #1a1a1a 15px);
+            background-image: repeating-linear-gradient(0deg, #2a2a2a 0px, #2a2a2a 2px, #1a1a1a 2px, #1a1a1a 15px),
+                              repeating-linear-gradient(90deg, rgba(60,40,20,0.3) 0px, rgba(60,40,20,0.3) 2px, transparent 2px, transparent 30px);
             z-index: -2;
         }
-        /* Окна в стене */
+        /* Ржавые пятна */
+        .rust {
+            position: absolute;
+            background: radial-gradient(ellipse at center, #8a4a2a, #4a2a1a);
+            border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0.4;
+            z-index: -1;
+        }
+        .rust1 { width: 200px; height: 150px; top: 50px; left: 100px; }
+        .rust2 { width: 300px; height: 200px; bottom: 20px; right: 50px; }
+        .rust3 { width: 150px; height: 120px; top: 300px; left: 600px; }
+
+        /* Окна (разбитые) */
         .window {
             position: absolute;
             top: 80px;
@@ -77,7 +90,25 @@
             opacity: 0.3;
             color: #ffaa33;
         }
-        /* Трубы на стене */
+        /* Трещина на окне */
+        .crack {
+            position: absolute;
+            top: 30px;
+            left: 40px;
+            width: 80px;
+            height: 2px;
+            background: #aaa;
+            transform: rotate(45deg);
+            box-shadow: 0 0 2px black;
+        }
+        .crack2 {
+            top: 60px;
+            left: 80px;
+            width: 50px;
+            transform: rotate(60deg);
+        }
+
+        /* Трубы и вентили */
         .pipe {
             position: absolute;
             background: #4a4a4a;
@@ -99,6 +130,31 @@
         .pipe2 { top: 400px; height: 30px; width: 400px; right: -100px; }
         .pipe3 { left: 100px; width: 25px; height: 200px; top: 50px; }
         .pipe4 { right: 50px; width: 30px; height: 350px; bottom: 0; }
+        .valve {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #aa8844;
+            border-radius: 50%;
+            box-shadow: inset 0 0 5px black, 0 2px 5px black;
+            z-index: -1;
+        }
+        .valve1 { top: 160px; left: 220px; }
+        .valve2 { top: 410px; right: 180px; }
+
+        /* Провода */
+        .wire {
+            position: absolute;
+            background: #2a2a2a;
+            height: 3px;
+            border-radius: 2px;
+            transform-origin: left center;
+            z-index: -1;
+            box-shadow: 0 0 2px #aaa;
+        }
+        .wire1 { width: 150px; top: 80px; left: 250px; transform: rotate(15deg); }
+        .wire2 { width: 200px; top: 120px; right: 200px; transform: rotate(-10deg); }
+        .wire3 { width: 100px; bottom: 200px; left: 50px; transform: rotate(45deg); }
 
         /* Металлическая платформа */
         .platform {
@@ -135,7 +191,7 @@
             0% { background-position: 0 0; }
             100% { background-position: 80px 0; }
         }
-        /* Ролики конвейера */
+        /* Ролики */
         .rollers {
             position: absolute;
             bottom: 140px;
@@ -159,8 +215,8 @@
             position: absolute;
             right: 80px;
             bottom: 50px;
-            width: 300px;
-            height: 320px;
+            width: 320px;
+            height: 340px;
             background: #4a4a4a;
             background-image: repeating-linear-gradient(0deg, #5a5a5a 0px, #5a5a5a 2px, #3a3a3a 2px, #3a3a3a 8px);
             border: 6px solid #9a9a9a;
@@ -171,8 +227,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: transform 0.1s;
         }
-        /* Заклёпки по углам и по бокам */
+        /* Заклёпки */
         .rivet {
             position: absolute;
             width: 14px;
@@ -189,8 +246,10 @@
         .rivet6 { top: 50%; right: 10px; margin-top: -7px; }
         .rivet7 { top: 30px; left: 50%; margin-left: -7px; }
         .rivet8 { bottom: 30px; left: 50%; margin-left: -7px; }
+        .rivet9 { top: 15px; left: 40%; }
+        .rivet10 { top: 15px; right: 40%; }
 
-        /* Гидравлические цилиндры */
+        /* Гидравлика */
         .hydraulic-left, .hydraulic-right {
             position: absolute;
             width: 45px;
@@ -232,36 +291,37 @@
             font-size: 18px;
             opacity: 0.6;
         }
-        /* Манометр */
+        /* Манометр с подвижной стрелкой */
         .gauge {
             position: absolute;
             top: 20px;
             left: 20px;
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             background: #ddd;
             border-radius: 50%;
             border: 3px solid #333;
             box-shadow: inset 0 0 5px #fff, 0 2px 5px black;
             z-index: 30;
         }
-        .gauge::after {
-            content: "▲";
+        .gauge-needle {
             position: absolute;
-            top: 8px;
+            width: 3px;
+            height: 20px;
+            background: red;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            font-size: 20px;
-            color: red;
-            text-shadow: 0 0 2px black;
+            transform-origin: top center;
+            transform: translateX(-50%) rotate(45deg);
+            transition: transform 0.1s;
         }
         /* Панель управления */
         .control-panel {
             position: absolute;
             bottom: 20px;
-            left: -60px;
-            width: 80px;
-            height: 120px;
+            left: -70px;
+            width: 90px;
+            height: 140px;
             background: #2a2a2a;
             border: 3px solid #aaa;
             border-radius: 10px;
@@ -270,25 +330,38 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 5px 10px black;
         }
         .button {
-            width: 30px;
-            height: 30px;
-            background: #aa3333;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             box-shadow: inset 0 1px 3px rgba(255,255,255,0.5), 0 2px 3px black;
+            cursor: default;
         }
-        .button.red { background: #aa3333; }
-        .button.green { background: #33aa33; }
+        .button.red { background: #aa3333; background: radial-gradient(circle at 30% 30%, #cc5555, #881111); }
+        .button.green { background: #33aa33; background: radial-gradient(circle at 30% 30%, #55cc55, #117711); }
         .lever {
-            width: 10px;
-            height: 40px;
+            width: 12px;
+            height: 45px;
             background: #666;
-            border-radius: 5px;
+            border-radius: 6px;
             margin-top: 5px;
-            transform: rotate(20deg);
+            transform: rotate(25deg);
             box-shadow: inset 0 0 3px black;
+        }
+        .led {
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+            box-shadow: 0 0 5px red;
+            animation: blinkLed 1s infinite;
+        }
+        @keyframes blinkLed {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
 
         /* Верхняя плита пресса (подвижная) */
@@ -297,7 +370,7 @@
             top: -20px;
             left: 15px;
             right: 15px;
-            height: 50px;
+            height: 55px;
             background: linear-gradient(145deg, #9a9a9a, #6a6a6a);
             border-radius: 20px;
             box-shadow: inset 0 2px 5px #ccc, 0 5px 15px black;
@@ -307,7 +380,7 @@
         /* Нижняя плита */
         .press-bottom {
             width: 90%;
-            height: 45px;
+            height: 50px;
             background: linear-gradient(145deg, #8a8a8a, #5a5a5a);
             border-radius: 20px;
             margin-top: 30px;
@@ -338,7 +411,7 @@
         }
         /* Анимация опускания пресса */
         .press-crush .press-top {
-            transform: translateY(210px);
+            transform: translateY(220px);
         }
         .press-crush {
             animation: shakePress 0.2s;
@@ -374,7 +447,7 @@
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
         }
 
-        /* Эффекты тряски */
+        /* Эффекты */
         .shake-platform {
             animation: platformShake 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
@@ -426,7 +499,6 @@
             z-index: 150;
             filter: blur(1px);
         }
-        /* Масляные пятна */
         .oil {
             position: absolute;
             background: #2a2a2a;
@@ -436,7 +508,7 @@
             z-index: 10;
         }
 
-        /* Диалоговое окно ГЛюКа (поднято) */
+        /* Диалоговое окно ГЛюКа */
         .gluk-box {
             position: absolute;
             top: 20px;
@@ -491,12 +563,7 @@
             margin-left: 5px;
             animation: blink 1s step-end infinite;
         }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
 
-        /* Кнопка возврата */
         .return-btn {
             position: absolute;
             bottom: 30px;
@@ -523,7 +590,6 @@
             color: #ffcc88;
         }
 
-        /* Аварийные огни */
         .alert-light {
             position: absolute;
             top: 20px;
@@ -550,12 +616,22 @@
 </head>
 <body>
 <div class="bg-wall">
-    <div class="window"></div>
+    <div class="rust rust1"></div>
+    <div class="rust rust2"></div>
+    <div class="rust rust3"></div>
+    <div class="window">
+        <div class="crack"></div>
+        <div class="crack crack2"></div>
+    </div>
     <div class="pipe pipe1"></div>
     <div class="pipe pipe2"></div>
     <div class="pipe pipe3"></div>
     <div class="pipe pipe4"></div>
-    <!-- масляные пятна на стене -->
+    <div class="valve valve1"></div>
+    <div class="valve valve2"></div>
+    <div class="wire wire1"></div>
+    <div class="wire wire2"></div>
+    <div class="wire wire3"></div>
     <div class="oil" style="width: 60px; height: 40px; top: 200px; left: 400px;"></div>
     <div class="oil" style="width: 80px; height: 30px; top: 500px; left: 800px;"></div>
 </div>
@@ -573,14 +649,18 @@
         <div class="rivet rivet3"></div><div class="rivet rivet4"></div>
         <div class="rivet rivet5"></div><div class="rivet rivet6"></div>
         <div class="rivet rivet7"></div><div class="rivet rivet8"></div>
+        <div class="rivet rivet9"></div><div class="rivet rivet10"></div>
         <div class="hydraulic-left"></div>
         <div class="hydraulic-right"></div>
         <div class="hose"></div>
-        <div class="gauge"></div>
+        <div class="gauge">
+            <div class="gauge-needle" id="gaugeNeedle"></div>
+        </div>
         <div class="control-panel">
             <div class="button red"></div>
             <div class="button green"></div>
             <div class="lever"></div>
+            <div class="led"></div>
         </div>
         <div class="press-top"></div>
         <div class="press-bottom"></div>
@@ -607,12 +687,14 @@
     const glukTextDiv = document.getElementById('glukText');
     const platform = document.querySelector('.platform');
     const bodyEl = document.body;
+    const gaugeNeedle = document.getElementById('gaugeNeedle');
 
     let currentLeft = 70;
     let targetLeft = 0;
     let moveInterval = null;
     let animationActive = false;
 
+    // Эффекты
     function createSpark(x, y) {
         const spark = document.createElement('div');
         spark.classList.add('spark');
@@ -630,7 +712,7 @@
         setTimeout(() => smoke.remove(), 800);
     }
     function createBloodSpray(x, y) {
-        for(let i=0;i<35;i++) {
+        for(let i=0;i<40;i++) {
             const drop = document.createElement('div');
             drop.classList.add('blood');
             drop.style.width = Math.random()*8+3 + 'px';
@@ -643,6 +725,7 @@
         }
     }
 
+    // Движение к прессу
     function startMovingToPress() {
         if (moveInterval) clearInterval(moveInterval);
         animationActive = true;
@@ -661,6 +744,7 @@
         }, 40);
     }
 
+    // Анимация пресса
     function animatePressAndCrush() {
         pressDiv.classList.add('press-crush');
         platform.classList.add('shake-platform');
@@ -669,12 +753,12 @@
         setTimeout(() => platform.classList.remove('shake-platform'), 400);
         
         const pressRect = pressDiv.getBoundingClientRect();
-        for(let i=0;i<60;i++) {
+        for(let i=0;i<70;i++) {
             setTimeout(() => {
                 createSpark(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
             }, i*10);
         }
-        for(let i=0;i<35;i++) {
+        for(let i=0;i<40;i++) {
             setTimeout(() => {
                 createSmoke(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
             }, i*18);
@@ -691,6 +775,7 @@
         }, 200);
     }
 
+    // Печать текста
     let isTyping = false;
     function typeText(text, callback) {
         if (isTyping) return;
@@ -746,6 +831,15 @@
         targetLeft = pressRect.left - platformRect.left - 80;
         if (targetLeft < 200) targetLeft = 800;
         playNextMessage();
+        // Анимация стрелки манометра
+        setInterval(() => {
+            if (!animationActive) {
+                const angle = 30 + Math.random() * 60;
+                gaugeNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+            } else {
+                gaugeNeedle.style.transform = `translateX(-50%) rotate(80deg)`;
+            }
+        }, 800);
     });
 
     returnBtn.addEventListener('click', () => {
