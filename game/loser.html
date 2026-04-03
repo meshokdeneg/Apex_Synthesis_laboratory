@@ -12,7 +12,6 @@
             user-select: none;
         }
 
-        /* Начальное состояние: чёрный экран, кнопка по центру */
         body {
             background: #000;
             min-height: 100vh;
@@ -28,7 +27,6 @@
             background: #050505;
         }
 
-        /* Кнопка запуска */
         .start-btn {
             width: 100px;
             height: 100px;
@@ -55,7 +53,6 @@
             transform: scale(0.5);
         }
 
-        /* Основной контейнер (изначально скрыт) */
         .main-scene {
             display: none;
             opacity: 0;
@@ -91,7 +88,6 @@
             z-index: -2;
         }
 
-        /* Металлические панели */
         .panel {
             position: absolute;
             background: #1a1a1a;
@@ -103,7 +99,6 @@
         .panel1 { width: 300px; height: 200px; top: 50px; left: 50px; }
         .panel2 { width: 400px; height: 250px; bottom: 50px; right: 50px; }
         .panel3 { width: 250px; height: 150px; top: 300px; left: 600px; }
-
         .bolt {
             position: absolute;
             width: 12px;
@@ -117,7 +112,6 @@
         .bolt3 { bottom: 15px; left: 15px; }
         .bolt4 { bottom: 15px; right: 15px; }
 
-        /* Трубы */
         .pipe {
             position: absolute;
             background: #2a2a2a;
@@ -125,22 +119,13 @@
             box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 0 2px 5px black;
             z-index: -1;
         }
-        .pipe-hor {
-            height: 24px;
-            left: 0;
-            right: 0;
-        }
-        .pipe-ver {
-            width: 24px;
-            top: 0;
-            bottom: 0;
-        }
+        .pipe-hor { height: 24px; left: 0; right: 0; }
+        .pipe-ver { width: 24px; top: 0; bottom: 0; }
         .pipe1 { top: 120px; height: 28px; width: 350px; left: -50px; }
         .pipe2 { top: 480px; height: 32px; width: 450px; right: -100px; }
         .pipe3 { left: 80px; width: 28px; height: 250px; top: 60px; }
         .pipe4 { right: 80px; width: 32px; height: 300px; bottom: 20px; }
         .pipe5 { top: 250px; left: 500px; width: 30px; height: 150px; }
-
         .valve {
             position: absolute;
             width: 34px;
@@ -154,8 +139,6 @@
         .valve1 { top: 130px; left: 220px; }
         .valve2 { top: 490px; right: 160px; }
         .valve3 { top: 260px; left: 515px; }
-
-        /* Решётка пола */
         .floor-grate {
             position: absolute;
             bottom: 0;
@@ -166,8 +149,6 @@
             border-top: 3px solid #3a3a3a;
             z-index: -1;
         }
-
-        /* Туман */
         .fog {
             position: absolute;
             top: 0;
@@ -179,7 +160,6 @@
             z-index: -1;
         }
 
-        /* Платформа */
         .platform {
             position: relative;
             width: 1200px;
@@ -196,7 +176,6 @@
             z-index: 1;
         }
 
-        /* Конвейер */
         .conveyor-belt {
             position: absolute;
             bottom: 50px;
@@ -214,7 +193,6 @@
             0% { background-position: 0 0; }
             100% { background-position: 80px 0; }
         }
-
         .rollers {
             position: absolute;
             bottom: 140px;
@@ -233,7 +211,6 @@
             box-shadow: inset 0 2px 5px #ccc, 0 2px 5px black;
         }
 
-        /* Пресс */
         .press {
             position: absolute;
             right: 80px;
@@ -267,7 +244,6 @@
         .rivet6 { top: 50%; right: 10px; margin-top: -7px; }
         .rivet7 { top: 30px; left: 50%; margin-left: -7px; }
         .rivet8 { bottom: 30px; left: 50%; margin-left: -7px; }
-
         .hydraulic-left, .hydraulic-right {
             position: absolute;
             width: 45px;
@@ -299,14 +275,6 @@
             left: 50%;
             transform: translateX(-50%);
             box-shadow: 0 0 5px black;
-        }
-        .hose::before {
-            content: "💧";
-            position: absolute;
-            top: -15px;
-            left: -8px;
-            font-size: 18px;
-            opacity: 0.4;
         }
         .gauge {
             position: absolute;
@@ -387,7 +355,6 @@
             100% { transform: translateX(0); }
         }
 
-        /* Игрок */
         .player {
             position: absolute;
             left: 70px;
@@ -402,7 +369,7 @@
             font-size: 48px;
             box-shadow: 0 0 25px rgba(255,100,0,0.8);
             z-index: 25;
-            transition: left 0.04s linear;
+            transition: left 0.04s linear, transform 0.2s, opacity 0.2s;
             cursor: default;
         }
         .player .avatar-symbol {
@@ -635,13 +602,16 @@
             messagingSenderId: "923734077108",
             appId: "1:923734077108:web:f6d2d4059972c215c371e1"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // === Звук хруста ===
+        // ========== ЗВУКИ ==========
         let audioContext = null;
+        let tickBuffer = null;
+        let musicSource = null;
+        let soundEnabled = false;
+
         function playCrunchSound() {
             if (!audioContext) return;
             const now = audioContext.currentTime;
@@ -649,19 +619,15 @@
             gain.connect(audioContext.destination);
             gain.gain.setValueAtTime(0.3, now);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-            
             const bufferSize = 4096;
             const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
             noise.onaudioprocess = function(e) {
                 const output = e.outputBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    output[i] = (Math.random() - 0.5) * 0.8;
-                }
+                for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() - 0.5) * 0.8;
             };
             noise.connect(gain);
             noise.start(now);
             noise.stop(now + 0.4);
-            
             for (let i = 0; i < 12; i++) {
                 const osc = audioContext.createOscillator();
                 const oscGain = audioContext.createGain();
@@ -676,27 +642,56 @@
             }
         }
 
-        // === Загрузка аватара из Firebase ===
+        function playTick() {
+            if (!soundEnabled || !audioContext || !tickBuffer) return;
+            const source = audioContext.createBufferSource();
+            source.buffer = tickBuffer;
+            source.connect(audioContext.destination);
+            source.start();
+        }
+
+        async function initAudio() {
+            if (audioContext) return;
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            tickBuffer = audioContext.createBuffer(1, 2205, 44100);
+            let data = tickBuffer.getChannelData(0);
+            for (let i = 0; i < 2205; i++) data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
+            const musicGain = audioContext.createGain();
+            musicGain.gain.value = 0.25;
+            musicGain.connect(audioContext.destination);
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine';
+            oscillator.frequency.value = 55;
+            oscillator.connect(musicGain);
+            const noise = audioContext.createBufferSource();
+            const noiseBuffer = audioContext.createBuffer(1, 44100 * 2, 44100);
+            let noiseData = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < 44100 * 2; i++) noiseData[i] = (Math.random() - 0.5) * 0.1;
+            noise.buffer = noiseBuffer;
+            noise.loop = true;
+            noise.connect(musicGain);
+            oscillator.start();
+            noise.start();
+            musicSource = { osc: oscillator, noise: noise };
+            soundEnabled = true;
+        }
+
+        // ========== ЗАГРУЗКА АВАТАРА ==========
         async function loadUserAvatar() {
             return new Promise((resolve) => {
                 onAuthStateChanged(auth, async (user) => {
                     if (user) {
-                        const userRef = ref(db, 'users/' + user.uid);
-                        const snapshot = await get(userRef);
+                        const snapshot = await get(ref(db, 'users/' + user.uid));
                         if (snapshot.exists()) {
                             const userData = snapshot.val();
                             resolve(userData.avatar || '⚛️');
-                        } else {
-                            resolve('⚛️');
-                        }
-                    } else {
-                        resolve('⚛️');
-                    }
+                        } else resolve('⚛️');
+                    } else resolve('⚛️');
                 });
             });
         }
 
-        // === Основная логика ===
+        // ========== ОСНОВНАЯ ЛОГИКА ==========
         const startBtn = document.getElementById('startBtn');
         const mainScene = document.getElementById('mainScene');
         const playerDiv = document.getElementById('player');
@@ -712,47 +707,8 @@
         let targetLeft = 0;
         let moveInterval = null;
         let animationActive = false;
-        let soundEnabled = false;
-        let tickBuffer = null;
-        let musicSource = null;
-
-        async function initAudioAndStart() {
-            if (audioContext) return;
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            tickBuffer = audioContext.createBuffer(1, 2205, 44100);
-            let data = tickBuffer.getChannelData(0);
-            for (let i = 0; i < 2205; i++) {
-                data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
-            }
-            const musicGain = audioContext.createGain();
-            musicGain.gain.value = 0.25;
-            musicGain.connect(audioContext.destination);
-            const oscillator = audioContext.createOscillator();
-            oscillator.type = 'sine';
-            oscillator.frequency.value = 55;
-            oscillator.connect(musicGain);
-            const noise = audioContext.createBufferSource();
-            const noiseBuffer = audioContext.createBuffer(1, 44100 * 2, 44100);
-            let noiseData = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < 44100 * 2; i++) {
-                noiseData[i] = (Math.random() - 0.5) * 0.1;
-            }
-            noise.buffer = noiseBuffer;
-            noise.loop = true;
-            noise.connect(musicGain);
-            oscillator.start();
-            noise.start();
-            musicSource = { osc: oscillator, noise: noise };
-            soundEnabled = true;
-        }
-
-        function playTick() {
-            if (!soundEnabled || !audioContext || !tickBuffer) return;
-            const source = audioContext.createBufferSource();
-            source.buffer = tickBuffer;
-            source.connect(audioContext.destination);
-            source.start();
-        }
+        let msgIndex = 0;
+        let isTyping = false;
 
         function createSpark(x, y) {
             const spark = document.createElement('div');
@@ -803,6 +759,7 @@
         }
 
         function animatePressAndCrush() {
+            console.log("Пресс активирован!");
             pressDiv.classList.add('press-crush');
             platform.classList.add('shake-platform');
             bodyEl.classList.add('shake-cam');
@@ -824,7 +781,9 @@
             }
             
             setTimeout(() => {
-                playerDiv.style.transform = 'scale(0.1)';
+                // Исчезновение игрока
+                playerDiv.style.transition = 'transform 0.2s, opacity 0.2s';
+                playerDiv.style.transform = 'scale(0.01)';
                 playerDiv.style.opacity = '0';
                 createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
                 const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
@@ -834,7 +793,6 @@
             }, 200);
         }
 
-        let isTyping = false;
         function typeText(text, callback) {
             if (isTyping) return;
             isTyping = true;
@@ -864,7 +822,7 @@
             "Надеюсь, хоть сейчас до тебя дойдёт, что надо блокировать ходы соперника, а не ставить крестики в угол для красоты.",
             "Ладно, хватит слов. Конвейер уже ждёт."
         ];
-        let msgIndex = 0;
+
         function playNextMessage() {
             if (msgIndex < messages.length) {
                 typeText(messages[msgIndex], () => {
@@ -881,15 +839,14 @@
             }
         }
 
-        // Запуск по нажатию кнопки
+        // Запуск по кнопке
         startBtn.addEventListener('click', async () => {
             startBtn.classList.add('hide');
-            await initAudioAndStart();
+            await initAudio();
             const avatar = await loadUserAvatar();
             avatarSymbolSpan.textContent = avatar;
             mainScene.classList.add('visible');
             document.body.classList.add('loaded');
-            // Настройка позиции игрока
             playerDiv.style.left = '70px';
             playerDiv.style.bottom = '95px';
             currentLeft = 70;
@@ -897,6 +854,7 @@
             const pressRect = pressDiv.getBoundingClientRect();
             targetLeft = pressRect.left - platformRect.left - 80;
             if (targetLeft < 200) targetLeft = 800;
+            console.log("targetLeft:", targetLeft);
             playNextMessage();
             setInterval(() => {
                 if (!animationActive) {
