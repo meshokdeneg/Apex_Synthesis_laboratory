@@ -10,18 +10,6 @@
             padding: 0;
             box-sizing: border-box;
             user-select: none;
-        }<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>ASL | Пресс-наказание</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
         }
 
         body {
@@ -33,588 +21,18 @@
             font-family: 'Courier New', monospace;
             overflow: hidden;
             position: relative;
+            transition: transform 0.1s ease;
         }
-
-        /* Затемнение для атмосферы */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.6) 100%);
-            pointer-events: none;
-            z-index: 1;
+        /* Эффект дрожания камеры */
+        body.shake-cam {
+            animation: camShake 0.15s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
-
-        /* Металлическая платформа */
-        .platform {
-            position: relative;
-            width: 1200px;
-            height: 700px;
-            background: #2a2a2a;
-            background-image: 
-                linear-gradient(45deg, #3a3a3a 1px, transparent 1px),
-                linear-gradient(-45deg, #3a3a3a 1px, transparent 1px);
-            background-size: 30px 30px;
-            border: 6px solid #6a6a6a;
-            border-radius: 40px;
-            box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.6);
-            overflow: visible;
-            z-index: 2;
-        }
-
-        /* Конвейерная лента */
-        .conveyor-belt {
-            position: absolute;
-            bottom: 50px;
-            left: 0;
-            width: 100%;
-            height: 90px;
-            background: repeating-linear-gradient(90deg, #555, #555 40px, #777 40px, #777 80px);
-            border-top: 4px solid #aaa;
-            border-bottom: 4px solid #222;
-            animation: beltMove 0.3s linear infinite;
-            z-index: 5;
-            box-shadow: inset 0 5px 10px rgba(0,0,0,0.5);
-        }
-        @keyframes beltMove {
-            0% { background-position: 0 0; }
-            100% { background-position: 80px 0; }
-        }
-
-        /* Пресс (улучшенная детализация) */
-        .press {
-            position: absolute;
-            right: 100px;
-            bottom: 80px;
-            width: 280px;
-            height: 280px;
-            background: #4a4a4a;
-            border: 6px solid #8a8a8a;
-            border-radius: 30px;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 0 4px #222;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        /* Болты по углам */
-        .bolt {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background: radial-gradient(circle, #ccc, #666);
-            border-radius: 50%;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 1px 2px black;
-        }
-        .bolt-tl { top: 15px; left: 15px; }
-        .bolt-tr { top: 15px; right: 15px; }
-        .bolt-bl { bottom: 15px; left: 15px; }
-        .bolt-br { bottom: 15px; right: 15px; }
-
-        /* Гидравлические цилиндры */
-        .hydraulic-left, .hydraulic-right {
-            position: absolute;
-            width: 40px;
-            height: 90px;
-            background: #6a6a6a;
-            border-radius: 20px;
-            top: -70px;
-            box-shadow: inset 0 0 8px black, 0 2px 5px rgba(0,0,0,0.5);
-        }
-        .hydraulic-left { left: 30px; }
-        .hydraulic-right { right: 30px; }
-        .hydraulic-left::after, .hydraulic-right::after {
-            content: "⚙️";
-            position: absolute;
-            bottom: -30px;
-            left: -8px;
-            font-size: 32px;
-            color: silver;
-            filter: drop-shadow(0 0 2px black);
-        }
-        /* Верхняя подвижная плита */
-        .press-top {
-            position: absolute;
-            top: -15px;
-            left: 15px;
-            right: 15px;
-            height: 50px;
-            background: #888;
-            border-radius: 20px;
-            box-shadow: inset 0 2px 5px #ccc, 0 5px 10px black;
-            z-index: 25;
-            transition: all 0.15s ease-out;
-        }
-        /* Нижняя плита */
-        .press-bottom {
-            width: 90%;
-            height: 45px;
-            background: #777;
-            border-radius: 15px;
-            margin-top: 30px;
-            box-shadow: inset 0 2px 5px #aaa, 0 5px 10px black;
-        }
-        /* Металлические рёбра жёсткости */
-        .press-rib {
-            position: absolute;
-            width: 20px;
-            height: 100px;
-            background: #5a5a5a;
-            border-radius: 10px;
-            top: 50px;
-            left: 20px;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-        }
-        .press-rib-right {
-            left: auto;
-            right: 20px;
-        }
-        /* Надпись над прессом */
-        .press-label {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
-            border: 2px solid #FF8C00;
-            border-radius: 30px;
-            padding: 6px 20px;
-            font-size: 20px;
-            font-weight: bold;
-            color: #FF8C00;
-            white-space: nowrap;
-            backdrop-filter: blur(5px);
-            z-index: 30;
-            font-family: monospace;
-            letter-spacing: 2px;
-        }
-        .press-text {
-            color: #ff3300;
-            font-weight: bold;
-            font-size: 22px;
-            text-shadow: 0 0 6px darkred;
-            margin-top: 15px;
-            letter-spacing: 2px;
-        }
-        /* Анимация прессования */
-        .press-crush .press-top {
-            transform: translateY(180px);
-            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
-        .press-crush {
-            animation: shakePress 0.2s;
-        }
-        @keyframes shakePress {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-3px); }
-            75% { transform: translateX(3px); }
-            100% { transform: translateX(0); }
-        }
-
-        /* Игрок (человечек) */
-        .player {
-            position: absolute;
-            left: 70px;
-            bottom: 95px;
-            width: 70px;
-            height: 70px;
-            background: radial-gradient(circle at 30% 30%, #f5b042, #d97a00);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            box-shadow: 0 0 25px rgba(255,100,0,0.8);
-            z-index: 25;
-            transition: left 0.04s linear;
-            cursor: default;
-        }
-        .player::after {
-            content: "😨";
-            font-size: 54px;
-            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
-        }
-
-        /* Эффекты тряски */
-        .shake-platform {
-            animation: platformShake 0.2s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-        }
-        @keyframes platformShake {
+        @keyframes camShake {
             0% { transform: translate(1px, 1px); }
-            10% { transform: translate(-2px, -1px); }
-            20% { transform: translate(2px, 0px); }
-            30% { transform: translate(-1px, 2px); }
-            40% { transform: translate(1px, -1px); }
-            50% { transform: translate(-2px, 1px); }
-            60% { transform: translate(2px, 1px); }
-            70% { transform: translate(-1px, -1px); }
-            80% { transform: translate(1px, 2px); }
-            90% { transform: translate(0px, -1px); }
+            25% { transform: translate(-2px, 0px); }
+            50% { transform: translate(2px, -1px); }
+            75% { transform: translate(-1px, 2px); }
             100% { transform: translate(0, 0); }
-        }
-
-        /* Искры, дым, кровь */
-        .spark {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: #ffaa33;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 200;
-            box-shadow: 0 0 4px orange;
-        }
-        .smoke {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            background: radial-gradient(circle, #555, #222, transparent);
-            border-radius: 50%;
-            pointer-events: none;
-            opacity: 0;
-            animation: smokeFade 0.8s forwards;
-            z-index: 200;
-        }
-        @keyframes smokeFade {
-            0% { opacity: 0.8; transform: scale(0.6); }
-            100% { opacity: 0; transform: scale(2.5); }
-        }
-        .blood {
-            position: absolute;
-            background: #8b0000;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 150;
-            filter: blur(1px);
-        }
-
-        /* Диалоговое окно ГЛюКа (поднято выше, чтобы не перекрывало конвейер) */
-        .gluk-box {
-            position: absolute;
-            bottom: 120px;
-            left: 20px;
-            max-width: 550px;
-            background: rgba(0, 0, 0, 0.9);
-            border-left: 8px solid #00FF9D;
-            border-radius: 24px;
-            padding: 18px 22px;
-            backdrop-filter: blur(12px);
-            font-family: monospace;
-            z-index: 100;
-            box-shadow: 0 5px 25px rgba(0,255,157,0.2);
-        }
-        .gluk-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-        .gluk-avatar {
-            width: 44px;
-            height: 44px;
-            background: #00FF9D;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            color: black;
-            font-weight: bold;
-            box-shadow: 0 0 8px #0f0;
-        }
-        .gluk-name {
-            color: #FF8C00;
-            font-weight: bold;
-            font-size: 20px;
-            letter-spacing: 1px;
-        }
-        .gluk-text {
-            color: #0f0;
-            font-size: 17px;
-            line-height: 1.45;
-            white-space: pre-wrap;
-        }
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 17px;
-            background: #0f0;
-            vertical-align: middle;
-            margin-left: 5px;
-            animation: blink 1s step-end infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Кнопка возврата */
-        .return-btn {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            background: linear-gradient(145deg, #4A90E2, #2c5a8c);
-            border: none;
-            padding: 14px 32px;
-            border-radius: 60px;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-            z-index: 200;
-            transition: 0.2s;
-            display: none;
-            font-family: monospace;
-            box-shadow: 0 6px 0 #1a3a5a;
-        }
-        .return-btn:hover {
-            background: #FF8C00;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 #b85c00;
-        }
-
-        /* Аварийные огни */
-        .alert-light {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 24px;
-            height: 24px;
-            background: red;
-            border-radius: 50%;
-            box-shadow: 0 0 15px red;
-            animation: pulseRed 0.5s infinite;
-            z-index: 10;
-        }
-        @keyframes pulseRed {
-            0% { opacity: 0.3; transform: scale(0.9);}
-            100% { opacity: 1; transform: scale(1.2);}
-        }
-        .alert-light2 {
-            top: auto;
-            bottom: 20px;
-            left: auto;
-            right: 20px;
-        }
-    </style>
-</head>
-<body>
-<div class="platform">
-    <div class="conveyor-belt"></div>
-    <div class="press">
-        <!-- Болты -->
-        <div class="bolt bolt-tl"></div>
-        <div class="bolt bolt-tr"></div>
-        <div class="bolt bolt-bl"></div>
-        <div class="bolt bolt-br"></div>
-        <!-- Рёбра жёсткости -->
-        <div class="press-rib"></div>
-        <div class="press-rib press-rib-right"></div>
-        <!-- Гидравлика -->
-        <div class="hydraulic-left"></div>
-        <div class="hydraulic-right"></div>
-        <!-- Подвижная и неподвижная плиты -->
-        <div class="press-top"></div>
-        <div class="press-bottom"></div>
-        <div class="press-text">⚠️ ПРЕСС ⚠️</div>
-        <!-- Надпись над прессом -->
-        <div class="press-label">ГИДРАВЛИЧЕСКИЙ ПРЕСС</div>
-    </div>
-    <div class="player" id="player"></div>
-    <div class="gluk-box" id="glukBox">
-        <div class="gluk-header">
-            <div class="gluk-avatar">🟩</div>
-            <div class="gluk-name">ГЛюК (главный логический компьютер)</div>
-        </div>
-        <div class="gluk-text" id="glukText"></div>
-    </div>
-    <button id="returnBtn" class="return-btn">💀 ВЕРНУТЬСЯ В МЕНЮ 💀</button>
-    <div class="alert-light"></div>
-    <div class="alert-light alert-light2"></div>
-</div>
-
-<script>
-    const player = document.getElementById('player');
-    const pressDiv = document.querySelector('.press');
-    const returnBtn = document.getElementById('returnBtn');
-    const glukTextDiv = document.getElementById('glukText');
-    const platform = document.querySelector('.platform');
-
-    let currentLeft = 70;
-    let targetLeft = 0;
-    let moveInterval = null;
-    let animationActive = false;
-
-    // === Эффекты ===
-    function createSpark(x, y) {
-        const spark = document.createElement('div');
-        spark.classList.add('spark');
-        spark.style.left = x + 'px';
-        spark.style.top = y + 'px';
-        document.body.appendChild(spark);
-        setTimeout(() => spark.remove(), 200);
-    }
-    function createSmoke(x, y) {
-        const smoke = document.createElement('div');
-        smoke.classList.add('smoke');
-        smoke.style.left = x + 'px';
-        smoke.style.top = y + 'px';
-        document.body.appendChild(smoke);
-        setTimeout(() => smoke.remove(), 800);
-    }
-    function createBloodSpray(x, y) {
-        for(let i=0;i<25;i++) {
-            const drop = document.createElement('div');
-            drop.classList.add('blood');
-            drop.style.width = Math.random()*8+3 + 'px';
-            drop.style.height = drop.style.width;
-            drop.style.left = x + (Math.random()-0.5)*50 + 'px';
-            drop.style.top = y + (Math.random()-0.5)*60 + 'px';
-            drop.style.opacity = Math.random()*0.7+0.2;
-            document.body.appendChild(drop);
-            setTimeout(() => drop.remove(), 2000);
-        }
-    }
-
-    // === Движение игрока к прессу ===
-    function startMovingToPress() {
-        if (moveInterval) clearInterval(moveInterval);
-        animationActive = true;
-        const step = 14;
-        moveInterval = setInterval(() => {
-            if (currentLeft < targetLeft) {
-                currentLeft += step;
-                player.style.left = currentLeft + 'px';
-                const rect = player.getBoundingClientRect();
-                createSpark(rect.left + 20, rect.bottom - 12);
-                if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
-            } else {
-                clearInterval(moveInterval);
-                animatePressAndCrush();
-            }
-        }, 40);
-    }
-
-    // === Анимация прессования ===
-    function animatePressAndCrush() {
-        pressDiv.classList.add('press-crush');
-        platform.classList.add('shake-platform');
-        setTimeout(() => platform.classList.remove('shake-platform'), 400);
-        
-        const pressRect = pressDiv.getBoundingClientRect();
-        for(let i=0;i<40;i++) {
-            setTimeout(() => {
-                createSpark(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-            }, i*15);
-        }
-        for(let i=0;i<20;i++) {
-            setTimeout(() => {
-                createSmoke(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-            }, i*25);
-        }
-        
-        setTimeout(() => {
-            player.style.transform = 'scale(0.1)';
-            player.style.opacity = '0';
-            createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
-            const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
-            typeText(finalMsg, () => {
-                returnBtn.style.display = 'block';
-            });
-        }, 200);
-    }
-
-    // === Печать текста с курсором ===
-    let isTyping = false;
-    function typeText(text, callback) {
-        if (isTyping) return;
-        isTyping = true;
-        glukTextDiv.innerHTML = '';
-        let i = 0;
-        const interval = setInterval(() => {
-            if (i < text.length) {
-                glukTextDiv.innerHTML += text[i];
-                i++;
-            } else {
-                clearInterval(interval);
-                isTyping = false;
-                const cursorSpan = document.createElement('span');
-                cursorSpan.className = 'cursor';
-                glukTextDiv.appendChild(cursorSpan);
-                if (callback) callback();
-            }
-        }, 45);
-    }
-
-    // === Фразы ГЛюКа ===
-    const messages = [
-        "ПЯТЬ поражений в крестиках-ноликах. ПЯТЬ! Это диагноз.",
-        "Даже мой старый холодильник (сервер) обыграл бы тебя с закрытыми глазами.",
-        "Правила элементарны: три в ряд. Но ты, видимо, решил проверить, что будет, если играть без мозгов.",
-        "Теперь ты отправишься в промышленный пресс. Таков закон ASL.",
-        "Надеюсь, хоть сейчас до тебя дойдёт, что надо блокировать ходы соперника, а не ставить крестики в угол для красоты.",
-        "Ладно, хватит слов. Конвейер уже ждёт."
-    ];
-    let msgIndex = 0;
-    function playNextMessage() {
-        if (msgIndex < messages.length) {
-            typeText(messages[msgIndex], () => {
-                msgIndex++;
-                setTimeout(() => {
-                    glukTextDiv.innerHTML = '';
-                    playNextMessage();
-                }, 1200);
-            });
-        } else {
-            setTimeout(() => {
-                startMovingToPress();
-            }, 600);
-        }
-    }
-
-    // === Инициализация ===
-    window.addEventListener('load', () => {
-        player.style.left = '70px';
-        player.style.bottom = '95px';
-        currentLeft = 70;
-        const platformRect = platform.getBoundingClientRect();
-        const pressRect = pressDiv.getBoundingClientRect();
-        targetLeft = pressRect.left - platformRect.left - 80;
-        if (targetLeft < 200) targetLeft = 800;
-        playNextMessage();
-    });
-
-    // Возврат в меню мини-игр
-    returnBtn.addEventListener('click', () => {
-        localStorage.removeItem('ttt_losses');
-        window.location.href = '../minigames.html';
-    });
-
-    window.addEventListener('resize', () => {
-        if (!animationActive) {
-            const platformRect = platform.getBoundingClientRect();
-            const pressRect = pressDiv.getBoundingClientRect();
-            targetLeft = pressRect.left - platformRect.left - 80;
-            if (targetLeft < 200) targetLeft = 800;
-        }
-    });
-</script>
-</body>
-</html>
-
-        body {
-            background: radial-gradient(circle at 30% 20%, #0a0f0a, #000000);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Courier New', monospace;
-            overflow: hidden;
-            position: relative;
         }
 
         /* Металлическая платформа с текстурой */
@@ -652,17 +70,18 @@
             100% { background-position: 80px 0; }
         }
 
-        /* Пресс – детализированная конструкция */
+        /* Пресс – супер-детализированная конструкция */
         .press {
             position: absolute;
             right: 100px;
             bottom: 50px;
-            width: 250px;
-            height: 250px;
+            width: 280px;
+            height: 280px;
             background: #4a4a4a;
-            border: 6px solid #8a8a8a;
+            background-image: repeating-linear-gradient(0deg, #5a5a5a 0px, #5a5a5a 2px, #3a3a3a 2px, #3a3a3a 8px);
+            border: 6px solid #9a9a9a;
             border-radius: 30px;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 0 4px #222;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 0 4px #222, 0 10px 20px rgba(0,0,0,0.5);
             z-index: 20;
             display: flex;
             flex-direction: column;
@@ -670,69 +89,124 @@
             justify-content: center;
             transition: transform 0.1s;
         }
-        /* Гидравлические цилиндры */
+        /* Заклёпки по углам */
+        .rivet {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(circle at 30% 30%, #b0b0b0, #505050);
+            border-radius: 50%;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 1px 2px black;
+        }
+        .rivet1 { top: 15px; left: 15px; }
+        .rivet2 { top: 15px; right: 15px; }
+        .rivet3 { bottom: 15px; left: 15px; }
+        .rivet4 { bottom: 15px; right: 15px; }
+        .rivet5 { top: 50%; left: 10px; margin-top: -7px; }
+        .rivet6 { top: 50%; right: 10px; margin-top: -7px; }
+
+        /* Гидравлические цилиндры (усиленные) */
         .hydraulic-left, .hydraulic-right {
             position: absolute;
-            width: 35px;
-            height: 80px;
+            width: 45px;
+            height: 100px;
             background: #6a6a6a;
-            border-radius: 20px;
-            top: -60px;
-            box-shadow: inset 0 0 8px black, 0 2px 5px rgba(0,0,0,0.5);
+            background: linear-gradient(90deg, #5a5a5a, #7a7a7a);
+            border-radius: 25px;
+            top: -80px;
+            box-shadow: inset 0 0 8px black, 0 5px 10px rgba(0,0,0,0.6);
+            border: 1px solid #aaa;
         }
-        .hydraulic-left { left: 30px; }
-        .hydraulic-right { right: 30px; }
+        .hydraulic-left { left: 20px; }
+        .hydraulic-right { right: 20px; }
         .hydraulic-left::after, .hydraulic-right::after {
             content: "⚙️";
             position: absolute;
-            bottom: -25px;
-            left: -8px;
-            font-size: 28px;
-            color: silver;
-            filter: drop-shadow(0 0 2px black);
+            bottom: -30px;
+            left: -5px;
+            font-size: 32px;
+            color: #ffaa33;
+            filter: drop-shadow(0 0 3px orange);
         }
+        /* Шланги */
+        .hose {
+            position: absolute;
+            width: 12px;
+            height: 70px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px black;
+        }
+        .hose::before {
+            content: "💧";
+            position: absolute;
+            top: -15px;
+            left: -8px;
+            font-size: 18px;
+            opacity: 0.6;
+        }
+
         /* Верхняя плита пресса (подвижная) */
         .press-top {
             position: absolute;
-            top: -15px;
+            top: -20px;
             left: 15px;
             right: 15px;
-            height: 45px;
+            height: 50px;
             background: #888;
+            background: linear-gradient(145deg, #9a9a9a, #6a6a6a);
             border-radius: 20px;
-            box-shadow: inset 0 2px 5px #ccc, 0 5px 10px black;
+            box-shadow: inset 0 2px 5px #ccc, 0 5px 15px black;
             z-index: 25;
-            transition: all 0.15s ease-out;
+            transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.4, 1.1);
         }
         /* Нижняя плита (неподвижная) */
         .press-bottom {
             width: 90%;
-            height: 40px;
+            height: 45px;
             background: #777;
-            border-radius: 15px;
+            background: linear-gradient(145deg, #8a8a8a, #5a5a5a);
+            border-radius: 20px;
             margin-top: 30px;
-            box-shadow: inset 0 2px 5px #aaa, 0 5px 10px black;
+            box-shadow: inset 0 2px 5px #aaa, 0 5px 15px black;
+        }
+        /* Текстура решётки на плите */
+        .press-bottom::after {
+            content: "▓▓▓▓▓▓▓▓▓";
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #222;
+            font-size: 20px;
+            letter-spacing: 2px;
+            opacity: 0.5;
         }
         .press-text {
             color: #ff3300;
             font-weight: bold;
-            font-size: 22px;
-            text-shadow: 0 0 6px darkred;
+            font-size: 24px;
+            text-shadow: 0 0 8px darkred;
             margin-top: 15px;
             letter-spacing: 2px;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 12px;
+            border-radius: 40px;
         }
         /* Анимация опускания пресса */
         .press-crush .press-top {
-            transform: translateY(180px);
-            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform: translateY(210px);
         }
         .press-crush {
             animation: shakePress 0.2s;
         }
         @keyframes shakePress {
             0% { transform: translateX(0); }
-            25% { transform: translateX(-3px); }
-            75% { transform: translateX(3px); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
             100% { transform: translateX(0); }
         }
 
@@ -813,10 +287,10 @@
             filter: blur(1px);
         }
 
-        /* Диалоговое окно ГЛюКа (стильно) */
+        /* Диалоговое окно ГЛюКа — поднято выше */
         .gluk-box {
             position: absolute;
-            bottom: 20px;
+            top: 20px;
             left: 20px;
             max-width: 550px;
             background: rgba(0, 0, 0, 0.9);
@@ -826,7 +300,7 @@
             backdrop-filter: blur(12px);
             font-family: monospace;
             z-index: 100;
-            box-shadow: 0 5px 25px rgba(0,255,157,0.2);
+            box-shadow: 0 5px 25px rgba(0,255,157,0.3);
         }
         .gluk-header {
             display: flex;
@@ -855,7 +329,7 @@
         }
         .gluk-text {
             color: #0f0;
-            font-size: 17px;
+            font-size: 18px;
             line-height: 1.45;
             white-space: pre-wrap;
         }
@@ -873,36 +347,38 @@
             50% { opacity: 0; }
         }
 
-        /* Кнопка возврата */
+        /* Кнопка возврата — стиль ржавого металла */
         .return-btn {
             position: absolute;
             bottom: 30px;
             right: 30px;
-            background: linear-gradient(145deg, #4A90E2, #2c5a8c);
-            border: none;
+            background: linear-gradient(145deg, #5a3a2a, #3a2a1a);
+            border: 2px solid #aa6a3a;
             padding: 14px 32px;
             border-radius: 60px;
             font-size: 18px;
             font-weight: bold;
-            color: white;
+            color: #ffaa66;
             cursor: pointer;
             z-index: 200;
             transition: 0.2s;
             display: none;
             font-family: monospace;
-            box-shadow: 0 6px 0 #1a3a5a;
+            box-shadow: 0 6px 0 #2a1a0a;
+            text-shadow: 0 0 3px black;
         }
         .return-btn:hover {
-            background: #FF8C00;
+            background: #8a4a2a;
             transform: translateY(-2px);
-            box-shadow: 0 8px 0 #b85c00;
+            box-shadow: 0 8px 0 #2a1a0a;
+            color: #ffcc88;
         }
 
         /* Аварийные огни */
         .alert-light {
             position: absolute;
             top: 20px;
-            left: 20px;
+            right: 20px;
             width: 24px;
             height: 24px;
             background: red;
@@ -917,8 +393,8 @@
         .alert-light2 {
             top: auto;
             bottom: 20px;
-            left: auto;
-            right: 20px;
+            left: 20px;
+            right: auto;
         }
     </style>
 </head>
@@ -926,8 +402,17 @@
 <div class="platform">
     <div class="conveyor-belt"></div>
     <div class="press">
+        <!-- Заклёпки -->
+        <div class="rivet rivet1"></div>
+        <div class="rivet rivet2"></div>
+        <div class="rivet rivet3"></div>
+        <div class="rivet rivet4"></div>
+        <div class="rivet rivet5"></div>
+        <div class="rivet rivet6"></div>
+        <!-- Гидравлика -->
         <div class="hydraulic-left"></div>
         <div class="hydraulic-right"></div>
+        <div class="hose"></div>
         <div class="press-top"></div>
         <div class="press-bottom"></div>
         <div class="press-text">⚠️ ГИДРАВЛИЧЕСКИЙ ПРЕСС ⚠️</div>
@@ -951,9 +436,10 @@
     const returnBtn = document.getElementById('returnBtn');
     const glukTextDiv = document.getElementById('glukText');
     const platform = document.querySelector('.platform');
+    const bodyEl = document.body;
 
     let currentLeft = 70;
-    let targetLeft = 0; // рассчитаем после загрузки
+    let targetLeft = 0;
     let moveInterval = null;
     let animationActive = false;
 
@@ -975,20 +461,20 @@
         setTimeout(() => smoke.remove(), 800);
     }
     function createBloodSpray(x, y) {
-        for(let i=0;i<25;i++) {
+        for(let i=0;i<30;i++) {
             const drop = document.createElement('div');
             drop.classList.add('blood');
             drop.style.width = Math.random()*8+3 + 'px';
             drop.style.height = drop.style.width;
-            drop.style.left = x + (Math.random()-0.5)*50 + 'px';
-            drop.style.top = y + (Math.random()-0.5)*60 + 'px';
+            drop.style.left = x + (Math.random()-0.5)*60 + 'px';
+            drop.style.top = y + (Math.random()-0.5)*70 + 'px';
             drop.style.opacity = Math.random()*0.7+0.2;
             document.body.appendChild(drop);
             setTimeout(() => drop.remove(), 2000);
         }
     }
 
-    // === Движение игрока к прессу (рывками, с эффектами) ===
+    // === Движение игрока к прессу ===
     function startMovingToPress() {
         if (moveInterval) clearInterval(moveInterval);
         animationActive = true;
@@ -998,44 +484,39 @@
                 currentLeft += step;
                 player.style.left = currentLeft + 'px';
                 const rect = player.getBoundingClientRect();
-                const platformRect = platform.getBoundingClientRect();
                 createSpark(rect.left + 20, rect.bottom - 12);
                 if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
             } else {
                 clearInterval(moveInterval);
-                // Игрок достиг пресса – начинаем анимацию прессования
                 animatePressAndCrush();
             }
         }, 40);
     }
 
-    // === Полноценная анимация пресса (опускание, эффекты, сплющивание) ===
+    // === Анимация прессования с тряской камеры ===
     function animatePressAndCrush() {
-        // Добавляем класс для опускания верхней плиты
         pressDiv.classList.add('press-crush');
-        // Тряска платформы
         platform.classList.add('shake-platform');
+        bodyEl.classList.add('shake-cam');
+        setTimeout(() => bodyEl.classList.remove('shake-cam'), 300);
         setTimeout(() => platform.classList.remove('shake-platform'), 400);
         
-        // Искры и дым во время прессования
         const pressRect = pressDiv.getBoundingClientRect();
-        for(let i=0;i<40;i++) {
+        for(let i=0;i<50;i++) {
             setTimeout(() => {
                 createSpark(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-            }, i*15);
+            }, i*12);
         }
-        for(let i=0;i<20;i++) {
+        for(let i=0;i<30;i++) {
             setTimeout(() => {
                 createSmoke(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-            }, i*25);
+            }, i*20);
         }
         
-        // Игрок исчезает (сплющивается) через 200 мс (после опускания плиты)
         setTimeout(() => {
             player.style.transform = 'scale(0.1)';
             player.style.opacity = '0';
             createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
-            // Финальный текст ГЛюКа
             const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
             typeText(finalMsg, () => {
                 returnBtn.style.display = 'block';
@@ -1043,7 +524,7 @@
         }, 200);
     }
 
-    // === Печать текста с курсором ===
+    // === Печать текста ===
     let isTyping = false;
     function typeText(text, callback) {
         if (isTyping) return;
@@ -1065,9 +546,9 @@
         }, 45);
     }
 
-    // === Фразы ГЛюКа (безжалостные) ===
+    // === Фразы ГЛюКа (злые, насмешливые) ===
     const messages = [
-        "ПЯТЬ поражений в крестиках-ноликах. ПЯТЬ! Это диагноз.",
+        "ПЯТЬ поражений в крестиках-ноликах. ПЯТЬ! Это клинический случай.",
         "Даже мой старый холодильник (сервер) обыграл бы тебя с закрытыми глазами.",
         "Правила элементарны: три в ряд. Но ты, видимо, решил проверить, что будет, если играть без мозгов.",
         "Теперь ты отправишься в промышленный пресс. Таков закон ASL.",
@@ -1082,7 +563,7 @@
                 setTimeout(() => {
                     glukTextDiv.innerHTML = '';
                     playNextMessage();
-                }, 1200);
+                }, 1300);
             });
         } else {
             setTimeout(() => {
@@ -1091,26 +572,23 @@
         }
     }
 
-    // === Инициализация при загрузке ===
+    // === Инициализация ===
     window.addEventListener('load', () => {
         player.style.left = '70px';
         player.style.bottom = '95px';
         currentLeft = 70;
-        // Рассчитываем целевую позицию (чуть перед прессом)
         const platformRect = platform.getBoundingClientRect();
         const pressRect = pressDiv.getBoundingClientRect();
         targetLeft = pressRect.left - platformRect.left - 80;
-        if (targetLeft < 200) targetLeft = 800; // запас
+        if (targetLeft < 200) targetLeft = 800;
         playNextMessage();
     });
 
-    // Возврат в меню мини-игр (очищаем счётчик поражений)
     returnBtn.addEventListener('click', () => {
         localStorage.removeItem('ttt_losses');
-        window.location.href = 'minigames.html';
+        window.location.href = '../minigames.html';
     });
 
-    // Корректировка цели при изменении размера окна (пока игрок ещё не начал движение)
     window.addEventListener('resize', () => {
         if (!animationActive) {
             const platformRect = platform.getBoundingClientRect();
