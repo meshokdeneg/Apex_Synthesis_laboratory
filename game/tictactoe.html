@@ -6,7 +6,7 @@
     <title>ASL | Крестики-нолики</title>
     <style>
         body {
-            background: url('photo/i.png') no-repeat center center fixed;
+            background: url('../photo/i.png') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Courier New', monospace;
             display: flex;
@@ -70,7 +70,7 @@
     <div id="board" class="board"></div>
     <div id="status" class="status"></div>
     <button id="reset">🔄 Новая игра</button>
-    <div><a href="minigames.html">← К списку игр</a></div>
+    <div><a href="../minigames.html">← К списку игр</a></div>
 </div>
 <script>
     let board = [
@@ -78,9 +78,9 @@
         ['', '', ''],
         ['', '', '']
     ];
-    let currentPlayer = 'X';   // X — игрок, O — компьютер
+    let currentPlayer = 'X';
     let gameActive = true;
-    let lossCount = 0;          // скрытый счётчик поражений (не показывается)
+    let lossCount = 0;
 
     const winPatterns = [
         [[0,0],[0,1],[0,2]],
@@ -93,37 +93,24 @@
         [[0,2],[1,1],[2,0]]
     ];
 
-    // Загрузка счётчика поражений из localStorage (скрыто)
     function loadLossCount() {
         const saved = localStorage.getItem('ttt_losses');
-        if (saved !== null) {
-            lossCount = parseInt(saved, 10);
-        } else {
-            lossCount = 0;
-        }
+        lossCount = saved ? parseInt(saved, 10) : 0;
     }
-
-    // Сохранение счётчика
     function saveLossCount() {
         localStorage.setItem('ttt_losses', lossCount);
     }
-
-    // Сброс счётчика (только при переполнении или если нужно принудительно)
     function resetLossCount() {
         lossCount = 0;
         saveLossCount();
     }
-
-    // Проверка и редирект на страницу лузера (если поражений >=5)
-    function checkAndRedirectOnLoss() {
+    function checkAndRedirect() {
         if (lossCount >= 5) {
-            localStorage.removeItem('ttt_losses');   // очищаем счётчик, чтобы при возврате не было вечного редиректа
-            window.location.href = 'game/loser.html';
+            localStorage.removeItem('ttt_losses');
+            window.location.href = 'loser.html';
         }
     }
 
-    // --- Умный ИИ ---
-    // Проверка, может ли игрок (X) или компьютер (O) выиграть следующим ходом
     function findWinningMove(board, player) {
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
@@ -140,47 +127,35 @@
         return null;
     }
 
-    // Функция проверки победителя на доске (без изменения глобального состояния)
     function checkWinnerOnBoard(board) {
         for (let pattern of winPatterns) {
             const [a,b,c] = pattern;
             const val = board[a[0]][a[1]];
-            if (val && val === board[b[0]][b[1]] && val === board[c[0]][c[1]]) {
-                return true;
-            }
+            if (val && val === board[b[0]][b[1]] && val === board[c[0]][c[1]]) return true;
         }
         return false;
     }
 
-    // Ход компьютера (O) с оптимальной стратегией
     function computerMove() {
         if (!gameActive) return;
-
-        // 1. Если компьютер может выиграть — ходит туда
         let winMove = findWinningMove(board, 'O');
         if (winMove) {
             board[winMove[0]][winMove[1]] = 'O';
             afterMove();
             return;
         }
-
-        // 2. Если игрок может выиграть следующим ходом — блокируем
         let blockMove = findWinningMove(board, 'X');
         if (blockMove) {
             board[blockMove[0]][blockMove[1]] = 'O';
             afterMove();
             return;
         }
-
-        // 3. Если центр свободен — занять центр
         if (board[1][1] === '') {
             board[1][1] = 'O';
             afterMove();
             return;
         }
-
-        // 4. Занять любой угол (предпочтительно)
-        const corners = [[0,0], [0,2], [2,0], [2,2]];
+        const corners = [[0,0],[0,2],[2,0],[2,2]];
         for (let corner of corners) {
             if (board[corner[0]][corner[1]] === '') {
                 board[corner[0]][corner[1]] = 'O';
@@ -188,8 +163,6 @@
                 return;
             }
         }
-
-        // 5. Всё остальное — любой свободный ход (середины сторон)
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (board[i][j] === '') {
@@ -201,58 +174,40 @@
         }
     }
 
-    // Вызывается после каждого успешного хода
     function afterMove() {
-        // Проверяем победу
         if (checkWinnerOnBoard(board)) {
             if (currentPlayer === 'O') {
-                // компьютер выиграл – увеличиваем счётчик поражений
                 lossCount++;
                 saveLossCount();
-                checkAndRedirectOnLoss();
+                checkAndRedirect();
             }
             gameActive = false;
             render();
             return;
         }
-        // Проверка ничьи
         let isFull = true;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (board[i][j] === '') {
-                    isFull = false;
-                    break;
-                }
-            }
-        }
+        for (let i = 0; i < 3; i++)
+            for (let j = 0; j < 3; j++)
+                if (board[i][j] === '') isFull = false;
         if (isFull) {
             gameActive = false;
             render();
             return;
         }
-
-        // Смена игрока
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
         render();
-
-        // Если теперь ход компьютера и игра активна — делаем ход
         if (gameActive && currentPlayer === 'O') {
-            // небольшая задержка для имитации "мышления"
             setTimeout(() => computerMove(), 200);
         }
     }
 
-    // Ход игрока
     function playerMove(row, col) {
-        if (!gameActive) return;
+        if (!gameActive || currentPlayer !== 'X') return;
         if (board[row][col] !== '') return;
-        if (currentPlayer !== 'X') return; // только если ход игрока
-
         board[row][col] = 'X';
         afterMove();
     }
 
-    // Отрисовка доски и статуса
     function render() {
         const boardDiv = document.getElementById('board');
         boardDiv.innerHTML = '';
@@ -270,11 +225,7 @@
         const statusDiv = document.getElementById('status');
         if (!gameActive) {
             if (checkWinnerOnBoard(board)) {
-                if (currentPlayer === 'O') {
-                    statusDiv.innerHTML = '🤖 Компьютер победил...';
-                } else {
-                    statusDiv.innerHTML = '🏆 Вы победили!';
-                }
+                statusDiv.innerHTML = currentPlayer === 'O' ? '🤖 Компьютер победил...' : '🏆 Вы победили!';
             } else {
                 statusDiv.innerHTML = 'Ничья!';
             }
@@ -283,24 +234,15 @@
         }
     }
 
-    // Новая игра (сброс поля, но счётчик поражений НЕ обнуляется)
     function resetGame() {
-        board = [
-            ['', '', ''],
-            ['', '', ''],
-            ['', '', '']
-        ];
+        board = [['','',''],['','',''],['','','']];
         currentPlayer = 'X';
         gameActive = true;
         render();
-        // Если по какой-то причине после сброса сразу должен ходить компьютер? Нет, ходит игрок.
     }
 
-    // При загрузке страницы загружаем счётчик, инициализируем игру
     loadLossCount();
     resetGame();
-
-    // Слушатель кнопки "Новая игра"
     document.getElementById('reset').addEventListener('click', resetGame);
 </script>
 </body>
