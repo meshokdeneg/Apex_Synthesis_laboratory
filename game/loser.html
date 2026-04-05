@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ASL | Пресс-наказание</title>
     <style>
         * {
@@ -19,9 +19,10 @@
             justify-content: center;
             align-items: center;
             font-family: 'Courier New', monospace;
-            overflow: hidden;
+            overflow-x: auto;
             position: relative;
             transition: background 0.5s ease;
+            padding: 10px;
         }
         body.loaded {
             background: #050505;
@@ -57,6 +58,7 @@
             display: none;
             opacity: 0;
             transition: opacity 0.8s ease;
+            overflow-x: auto;
         }
         .main-scene.visible {
             display: block;
@@ -74,7 +76,7 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* Индустриальный фон */
+        /* Индустриальный фон – адаптив */
         .bg-wall {
             position: fixed;
             top: 0;
@@ -88,6 +90,7 @@
             z-index: -2;
         }
 
+        /* Металлические панели – адаптивные размеры */
         .panel {
             position: absolute;
             background: #1a1a1a;
@@ -112,6 +115,7 @@
         .bolt3 { bottom: 15px; left: 15px; }
         .bolt4 { bottom: 15px; right: 15px; }
 
+        /* Трубы */
         .pipe {
             position: absolute;
             background: #2a2a2a;
@@ -160,10 +164,13 @@
             z-index: -1;
         }
 
+        /* Платформа – адаптивная ширина */
         .platform {
             position: relative;
-            width: 1200px;
-            height: 700px;
+            width: 100%;
+            max-width: 1200px;
+            height: auto;
+            min-height: 700px;
             background: #1a1a1a;
             background-image: 
                 linear-gradient(45deg, #2a2a2a 1px, transparent 1px),
@@ -172,10 +179,12 @@
             border: 6px solid #4a4a4a;
             border-radius: 40px;
             box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.6);
-            overflow: hidden;
+            overflow-x: auto;
+            margin: 0 auto;
             z-index: 1;
         }
 
+        /* Конвейер */
         .conveyor-belt {
             position: absolute;
             bottom: 50px;
@@ -211,6 +220,7 @@
             box-shadow: inset 0 2px 5px #ccc, 0 2px 5px black;
         }
 
+        /* Пресс – адаптивные размеры */
         .press {
             position: absolute;
             right: 80px;
@@ -355,6 +365,7 @@
             100% { transform: translateX(0); }
         }
 
+        /* Игрок */
         .player {
             position: absolute;
             left: 70px;
@@ -428,10 +439,12 @@
             filter: blur(1px);
         }
 
+        /* Диалог ГЛюКа – адаптив */
         .gluk-box {
             position: absolute;
             top: 20px;
             left: 20px;
+            right: 20px;
             max-width: 550px;
             background: rgba(0, 0, 0, 0.85);
             border-left: 8px solid #00FF9D;
@@ -441,6 +454,7 @@
             font-family: monospace;
             z-index: 100;
             box-shadow: 0 5px 25px rgba(0,255,157,0.2);
+            font-size: clamp(12px, 4vw, 18px);
         }
         .gluk-header {
             display: flex;
@@ -464,12 +478,12 @@
         .gluk-name {
             color: #FF8C00;
             font-weight: bold;
-            font-size: 20px;
+            font-size: clamp(14px, 5vw, 20px);
             letter-spacing: 1px;
         }
         .gluk-text {
             color: #0f0;
-            font-size: 18px;
+            font-size: clamp(12px, 4vw, 18px);
             line-height: 1.45;
             white-space: pre-wrap;
         }
@@ -487,15 +501,16 @@
             50% { opacity: 0; }
         }
 
+        /* Кнопка возврата */
         .return-btn {
             position: absolute;
             bottom: 30px;
             right: 30px;
             background: linear-gradient(145deg, #5a3a2a, #3a2a1a);
             border: 2px solid #aa6a3a;
-            padding: 14px 32px;
+            padding: 12px 24px;
             border-radius: 60px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #ffaa66;
             cursor: pointer;
@@ -513,6 +528,7 @@
             color: #ffcc88;
         }
 
+        /* Аварийные огни */
         .alert-light {
             position: absolute;
             top: 20px;
@@ -534,6 +550,137 @@
             bottom: 20px;
             left: 20px;
             right: auto;
+        }
+
+        /* АДАПТАЦИЯ ПОД ТЕЛЕФОН */
+        @media (max-width: 768px) {
+            .platform {
+                min-height: 500px;
+                transform: scale(0.9);
+                transform-origin: center top;
+                margin-top: 20px;
+                border-width: 3px;
+            }
+            .press {
+                width: 240px;
+                height: 260px;
+                right: 40px;
+                bottom: 30px;
+            }
+            .press-text {
+                font-size: 16px;
+            }
+            .press-top, .press-bottom {
+                height: 35px;
+            }
+            .press-crush .press-top {
+                transform: translateY(140px);
+            }
+            .player {
+                width: 50px;
+                height: 50px;
+                font-size: 32px;
+                bottom: 70px;
+                left: 40px;
+            }
+            .player .avatar-symbol {
+                font-size: 38px;
+            }
+            .conveyor-belt {
+                height: 60px;
+                bottom: 30px;
+            }
+            .rollers {
+                bottom: 100px;
+            }
+            .roller {
+                width: 20px;
+                height: 14px;
+            }
+            .hydraulic-left, .hydraulic-right {
+                width: 30px;
+                height: 70px;
+                top: -55px;
+            }
+            .hydraulic-left::after, .hydraulic-right::after {
+                font-size: 22px;
+                bottom: -20px;
+            }
+            .gauge {
+                width: 40px;
+                height: 40px;
+                top: 10px;
+                left: 10px;
+            }
+            .gauge-needle {
+                height: 15px;
+            }
+            .rivet {
+                width: 10px;
+                height: 10px;
+            }
+            .gluk-box {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                max-width: 90%;
+                padding: 12px 16px;
+            }
+            .gluk-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 24px;
+            }
+            .return-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+                bottom: 20px;
+                right: 20px;
+            }
+            .alert-light, .alert-light2 {
+                width: 16px;
+                height: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .platform {
+                transform: scale(0.75);
+                margin-top: 40px;
+            }
+            .press {
+                width: 200px;
+                height: 220px;
+                right: 20px;
+            }
+            .player {
+                width: 40px;
+                height: 40px;
+                font-size: 28px;
+                bottom: 55px;
+                left: 20px;
+            }
+            .player .avatar-symbol {
+                font-size: 30px;
+            }
+            .conveyor-belt {
+                height: 45px;
+            }
+            .rollers {
+                bottom: 80px;
+            }
+            .roller {
+                width: 15px;
+                height: 10px;
+            }
+            .gluk-text {
+                font-size: 10px;
+            }
+            .start-btn {
+                width: 80px;
+                height: 80px;
+                font-size: 40px;
+            }
         }
     </style>
 </head>
@@ -655,7 +802,6 @@
             tickBuffer = audioContext.createBuffer(1, 2205, 44100);
             let data = tickBuffer.getChannelData(0);
             for (let i = 0; i < 2205; i++) data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
-            // фоновая музыка (гул)
             const musicGain = audioContext.createGain();
             musicGain.gain.value = 0.25;
             musicGain.connect(audioContext.destination);
@@ -758,7 +904,6 @@
         }
 
         function animatePressAndCrush() {
-            console.log("Пресс активирован!");
             pressDiv.classList.add('press-crush');
             platform.classList.add('shake-platform');
             bodyEl.classList.add('shake-cam');
@@ -780,7 +925,6 @@
             }
             
             setTimeout(() => {
-                // Игрок исчезает
                 playerDiv.style.transition = 'transform 0.2s, opacity 0.2s';
                 playerDiv.style.transform = 'scale(0.01)';
                 playerDiv.style.opacity = '0';
@@ -838,7 +982,6 @@
             }
         }
 
-        // Запуск по кнопке
         startBtn.addEventListener('click', async () => {
             startBtn.classList.add('hide');
             await initAudio();
@@ -849,13 +992,10 @@
             playerDiv.style.left = '70px';
             playerDiv.style.bottom = '95px';
             currentLeft = 70;
-            // Рассчитываем позицию пресса относительно платформы
             const platformRect = platform.getBoundingClientRect();
             const pressRect = pressDiv.getBoundingClientRect();
-            // Игрок должен остановиться чуть перед прессом
             targetLeft = pressRect.left - platformRect.left - 70;
             if (targetLeft < currentLeft) targetLeft = currentLeft + 600;
-            console.log("targetLeft:", targetLeft);
             playNextMessage();
             setInterval(() => {
                 if (!animationActive) {
