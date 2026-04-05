@@ -609,7 +609,6 @@
         // ========== ЗВУКИ ==========
         let audioContext = null;
         let tickBuffer = null;
-        let musicSource = null;
         let soundEnabled = false;
 
         function playCrunchSound() {
@@ -656,6 +655,7 @@
             tickBuffer = audioContext.createBuffer(1, 2205, 44100);
             let data = tickBuffer.getChannelData(0);
             for (let i = 0; i < 2205; i++) data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
+            // фоновая музыка (гул)
             const musicGain = audioContext.createGain();
             musicGain.gain.value = 0.25;
             musicGain.connect(audioContext.destination);
@@ -672,7 +672,6 @@
             noise.connect(musicGain);
             oscillator.start();
             noise.start();
-            musicSource = { osc: oscillator, noise: noise };
             soundEnabled = true;
         }
 
@@ -781,7 +780,7 @@
             }
             
             setTimeout(() => {
-                // Исчезновение игрока
+                // Игрок исчезает
                 playerDiv.style.transition = 'transform 0.2s, opacity 0.2s';
                 playerDiv.style.transform = 'scale(0.01)';
                 playerDiv.style.opacity = '0';
@@ -850,10 +849,12 @@
             playerDiv.style.left = '70px';
             playerDiv.style.bottom = '95px';
             currentLeft = 70;
+            // Рассчитываем позицию пресса относительно платформы
             const platformRect = platform.getBoundingClientRect();
             const pressRect = pressDiv.getBoundingClientRect();
-            targetLeft = pressRect.left - platformRect.left - 80;
-            if (targetLeft < 200) targetLeft = 800;
+            // Игрок должен остановиться чуть перед прессом
+            targetLeft = pressRect.left - platformRect.left - 70;
+            if (targetLeft < currentLeft) targetLeft = currentLeft + 600;
             console.log("targetLeft:", targetLeft);
             playNextMessage();
             setInterval(() => {
@@ -875,8 +876,8 @@
             if (!animationActive && mainScene.classList.contains('visible')) {
                 const platformRect = platform.getBoundingClientRect();
                 const pressRect = pressDiv.getBoundingClientRect();
-                targetLeft = pressRect.left - platformRect.left - 80;
-                if (targetLeft < 200) targetLeft = 800;
+                targetLeft = pressRect.left - platformRect.left - 70;
+                if (targetLeft < currentLeft) targetLeft = currentLeft + 600;
             }
         });
     </script>
