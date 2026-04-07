@@ -67,7 +67,7 @@
             border-radius: 50%;
             filter: blur(8px);
             opacity: 0;
-            animation: steamRise 5s ease-out forwards; /* 5 секунд, дольше */
+            animation: steamRise 5s ease-out forwards;
         }
         @keyframes steamRise {
             0% {
@@ -82,7 +82,7 @@
             }
             100% {
                 opacity: 0;
-                transform: translateY(-800px) scale(1.8); /* выше и дальше */
+                transform: translateY(-800px) scale(1.8);
             }
         }
 
@@ -405,7 +405,7 @@
             font-size: 48px;
             box-shadow: 0 0 25px rgba(255,100,0,0.8);
             z-index: 25;
-            transition: left 0.04s linear;
+            transition: left 0.04s linear, transform 0.2s, opacity 0.2s;
             cursor: default;
         }
         .player::after {
@@ -685,7 +685,7 @@
     }
     setInterval(() => {
         createSteam();
-    }, 1800); // чаще, чтобы дыма было больше
+    }, 1800);
 
     // ========== КАПЛИ КРОВИ ==========
     function createBloodDrip() {
@@ -705,58 +705,57 @@
         createBloodDrip();
     }, 700);
 
-    // ========== ЗВУК ПРЕССА (хруст и удар) ==========
+    // ========== АУДИО (с обработкой ошибок) ==========
     let audioContext = null;
-    let musicSource = null;
-    let musicGain = null;
     let soundEnabled = false;
     let tickBuffer = null;
 
     function playCrunchSound() {
         if (!audioContext) return;
-        const now = audioContext.currentTime;
-        const gain = audioContext.createGain();
-        gain.connect(audioContext.destination);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
-        
-        // Шумовой удар
-        const bufferSize = 4096;
-        const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
-        noise.onaudioprocess = function(e) {
-            const output = e.outputBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = (Math.random() - 0.5) * 0.9;
+        try {
+            const now = audioContext.currentTime;
+            const gain = audioContext.createGain();
+            gain.connect(audioContext.destination);
+            gain.gain.setValueAtTime(0.5, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+            // Шумовой удар
+            const bufferSize = 4096;
+            const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
+            noise.onaudioprocess = function(e) {
+                const output = e.outputBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = (Math.random() - 0.5) * 0.9;
+                }
+            };
+            noise.connect(gain);
+            noise.start(now);
+            noise.stop(now + 0.5);
+            // Низкочастотный бум
+            const boomGain = audioContext.createGain();
+            boomGain.connect(audioContext.destination);
+            boomGain.gain.setValueAtTime(0.5, now);
+            boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+            const osc = audioContext.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.value = 80;
+            osc.connect(boomGain);
+            osc.start(now);
+            osc.stop(now + 0.6);
+            // Хрустящие щелчки
+            for (let i = 0; i < 16; i++) {
+                const tickGain = audioContext.createGain();
+                tickGain.connect(audioContext.destination);
+                tickGain.gain.setValueAtTime(0.2, now + i * 0.03);
+                tickGain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.03 + 0.1);
+                const tickOsc = audioContext.createOscillator();
+                tickOsc.type = 'triangle';
+                tickOsc.frequency.value = 300 + Math.random() * 400;
+                tickOsc.connect(tickGain);
+                tickOsc.start(now + i * 0.03);
+                tickOsc.stop(now + i * 0.03 + 0.1);
             }
-        };
-        noise.connect(gain);
-        noise.start(now);
-        noise.stop(now + 0.5);
-        
-        // Дополнительный низкочастотный удар (бум)
-        const boomGain = audioContext.createGain();
-        boomGain.connect(audioContext.destination);
-        boomGain.gain.setValueAtTime(0.5, now);
-        boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
-        const osc = audioContext.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = 80;
-        osc.connect(boomGain);
-        osc.start(now);
-        osc.stop(now + 0.6);
-        
-        // Серия щелчков для хруста
-        for (let i = 0; i < 16; i++) {
-            const tickGain = audioContext.createGain();
-            tickGain.connect(audioContext.destination);
-            tickGain.gain.setValueAtTime(0.2, now + i * 0.03);
-            tickGain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.03 + 0.1);
-            const tickOsc = audioContext.createOscillator();
-            tickOsc.type = 'triangle';
-            tickOsc.frequency.value = 300 + Math.random() * 400;
-            tickOsc.connect(tickGain);
-            tickOsc.start(now + i * 0.03);
-            tickOsc.stop(now + i * 0.03 + 0.1);
+        } catch(e) {
+            console.warn("Ошибка воспроизведения звука:", e);
         }
     }
 
@@ -768,7 +767,8 @@
         for (let i = 0; i < 2205; i++) {
             data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
         }
-        musicGain = audioContext.createGain();
+        // Фоновая музыка
+        const musicGain = audioContext.createGain();
         musicGain.gain.value = 0.25;
         musicGain.connect(audioContext.destination);
         const oscillator = audioContext.createOscillator();
@@ -786,16 +786,17 @@
         noise.connect(musicGain);
         oscillator.start();
         noise.start();
-        musicSource = { osc: oscillator, noise: noise };
         soundEnabled = true;
     }
 
     function playTick() {
         if (!soundEnabled || !audioContext || !tickBuffer) return;
-        const source = audioContext.createBufferSource();
-        source.buffer = tickBuffer;
-        source.connect(audioContext.destination);
-        source.start();
+        try {
+            const source = audioContext.createBufferSource();
+            source.buffer = tickBuffer;
+            source.connect(audioContext.destination);
+            source.start();
+        } catch(e) {}
     }
 
     // ========== ОСНОВНАЯ ЛОГИКА ==========
@@ -863,8 +864,10 @@
     }
 
     function animatePressAndCrush() {
-        // Звук пресса
-        if (audioContext) playCrunchSound();
+        // Воспроизводим звук пресса (безопасно)
+        if (audioContext) {
+            try { playCrunchSound(); } catch(e) {}
+        }
         
         pressDiv.classList.add('press-crush');
         platform.classList.add('shake-platform');
@@ -884,8 +887,10 @@
             }, i*18);
         }
         
+        // Игрок исчезает
         setTimeout(() => {
-            player.style.transform = 'scale(0.1)';
+            player.style.transition = 'transform 0.2s, opacity 0.2s';
+            player.style.transform = 'scale(0.01)';
             player.style.opacity = '0';
             createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
             const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
@@ -943,6 +948,7 @@
     }
 
     startBtn.addEventListener('click', async () => {
+        startBtn.style.pointerEvents = 'none';
         await initAudio();
         startScreen.style.opacity = '0';
         setTimeout(() => {
@@ -954,11 +960,13 @@
     window.addEventListener('load', () => {
         player.style.left = '70px';
         player.style.bottom = '95px';
+        player.style.transform = ''; // сброс
+        player.style.opacity = '1';
         currentLeft = 70;
         const platformRect = platform.getBoundingClientRect();
         const pressRect = pressDiv.getBoundingClientRect();
-        targetLeft = pressRect.left - platformRect.left - 80;
-        if (targetLeft < 200) targetLeft = 800;
+        targetLeft = pressRect.left - platformRect.left - 70;
+        if (targetLeft <= currentLeft) targetLeft = currentLeft + 600;
         setInterval(() => {
             if (!animationActive) {
                 const angle = 30 + Math.random() * 60;
@@ -978,8 +986,8 @@
         if (!animationActive) {
             const platformRect = platform.getBoundingClientRect();
             const pressRect = pressDiv.getBoundingClientRect();
-            targetLeft = pressRect.left - platformRect.left - 80;
-            if (targetLeft < 200) targetLeft = 800;
+            targetLeft = pressRect.left - platformRect.left - 70;
+            if (targetLeft <= currentLeft) targetLeft = currentLeft + 600;
         }
     });
 </script>
