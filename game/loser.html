@@ -745,8 +745,9 @@
             if (moveInterval) clearInterval(moveInterval);
             const platformRect = platform.getBoundingClientRect();
             const pressRect = pressDiv.getBoundingClientRect();
-            let targetLeft = pressRect.left - platformRect.left - 70;
-            if (targetLeft <= 70) targetLeft = 70 + 600; // запас
+            // Цель – немного заехать под пресс
+            let targetLeft = pressRect.left - platformRect.left + 20;
+            if (targetLeft <= 70) targetLeft = 70 + 500;
             let currentLeft = 70;
             playerDiv.style.left = currentLeft + 'px';
             const step = 14;
@@ -798,6 +799,10 @@
             typeText(finalMsg, () => {
                 returnBtn.style.display = 'block';
             });
+            // Запасной таймер на случай, если typeText не сработает
+            setTimeout(() => {
+                returnBtn.style.display = 'block';
+            }, 3000);
         }
 
         function typeText(text, callback) {
@@ -840,7 +845,6 @@
                     }, 1300);
                 });
             } else {
-                // Все сообщения выведены – начинаем движение к прессу
                 setTimeout(() => {
                     startMovingToPress();
                 }, 600);
