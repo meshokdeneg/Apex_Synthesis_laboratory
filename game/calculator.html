@@ -2,201 +2,373 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASL | Мини-игры</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ASL | Калькулятор</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            user-select: none;
         }
 
         body {
             background: url('photo/i.png') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', 'Courier New', monospace;
-            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             min-height: 100vh;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            border: 2px solid #4A90E2;
-            border-radius: 20px;
-            padding: 30px;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 48px;
-            color: #FF8C00;
-            margin-bottom: 40px;
-            text-shadow: 2px 2px 0 #4A90E2;
-        }
-
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 30px;
-        }
-
-        .game-card {
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #4A90E2;
-            border-radius: 20px;
-            overflow: hidden;
-            transition: transform 0.3s, border-color 0.3s;
-        }
-
-        .game-card:hover {
-            transform: translateY(-5px);
-            border-color: #FF8C00;
-        }
-
-        .game-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-bottom: 2px solid #4A90E2;
-        }
-
-        .game-info {
             padding: 20px;
         }
 
-        .game-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        /* Стиль "вид сверху" — имитация настольного калькулятора */
+        .calculator-container {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            border-radius: 40px;
+            padding: 25px;
+            border: 2px solid #FF8C00;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+            width: 100%;
+            max-width: 380px;
+        }
+
+        /* Дисплей */
+        .display {
+            background: #1e2a2f;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: right;
+            border: 1px solid #4A90E2;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .display .expression {
+            color: #aaa;
+            font-size: 18px;
+            min-height: 28px;
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+        .display .result {
             color: #FF8C00;
+            font-size: 42px;
+            font-weight: bold;
+            margin-top: 8px;
+            word-wrap: break-word;
+            word-break: break-all;
+            line-height: 1.2;
         }
 
-        .game-desc {
-            font-size: 14px;
-            color: #ccc;
-            margin-bottom: 20px;
-            line-height: 1.4;
+        /* Сетка кнопок */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
-        .play-btn {
-            display: inline-block;
-            background: #4A90E2;
+        .btn {
+            background: #2c3e2f;
             border: none;
             border-radius: 30px;
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            text-decoration: none;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        .play-btn:hover {
-            background: #FF8C00;
-            transform: scale(1.05);
-        }
-
-        .back-btn {
-            display: inline-block;
-            margin-top: 30px;
-            background: #2c3e2f;
-            border: 2px solid #FF8C00;
-            border-radius: 30px;
-            padding: 10px 25px;
-            font-size: 16px;
+            padding: 18px 0;
+            font-size: 24px;
             font-weight: bold;
             color: #FF8C00;
-            text-decoration: none;
-            transition: 0.2s;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            box-shadow: 0 5px 0 #1a2a1f;
+            font-family: monospace;
+            text-align: center;
+        }
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #1a2a1f;
+        }
+        .btn-ac {
+            background: #8b3a3a;
+            color: #fff;
+            box-shadow: 0 5px 0 #5a1a1a;
+        }
+        .btn-equals {
+            background: #FF8C00;
+            color: #000;
+            box-shadow: 0 5px 0 #b85c00;
+        }
+        .btn-operator {
+            background: #4A90E2;
+            color: #fff;
+            box-shadow: 0 5px 0 #2c5a8c;
+        }
+        .btn-number {
+            background: #2c3e2f;
         }
 
-        .back-btn:hover {
+        /* Кнопка возврата */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #FF8C00;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            border: 1px solid #FF8C00;
+            border-radius: 40px;
+            padding: 8px;
+            transition: 0.2s;
+        }
+        .back-link:hover {
             background: #FF8C00;
             color: #000;
         }
 
-        @media (max-width: 700px) {
-            .container { padding: 20px; }
-            h1 { font-size: 32px; }
+        @media (max-width: 480px) {
+            .btn { padding: 14px 0; font-size: 20px; }
+            .display .result { font-size: 32px; }
+            .calculator-container { padding: 20px; }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>🎮 МИНИ-ИГРЫ ASL</h1>
-    <div class="games-grid">
-        <!-- Тетрис -->
-        <div class="game-card">
-            <img src="photo/minigames/tetris.jpg" alt="Тетрис" onerror="this.src='photo/placeholder.png'">
-            <div class="game-info">
-                <div class="game-title">ТЕТРИС</div>
-                <div class="game-desc">Классическая головоломка. Собирайте линии из падающих блоков.</div>
-                <a href="tetris.html" class="play-btn">▶ ИГРАТЬ</a>
-            </div>
-        </div>
-        <!-- Сапёр -->
-        <div class="game-card">
-            <img src="photo/minigames/minesweeper.jpg" alt="Сапёр" onerror="this.src='photo/placeholder.png'">
-            <div class="game-info">
-                <div class="game-title">САПЁР</div>
-                <div class="game-desc">Открывайте клетки, не наступите на мину. Цифры подскажут опасность.</div>
-                <a href="minesweeper.html" class="play-btn">▶ ИГРАТЬ</a>
-            </div>
-        </div>
-        <!-- Змейка -->
-        <div class="game-card">
-            <img src="photo/minigames/snake.jpg" alt="Змейка" onerror="this.src='photo/placeholder.png'">
-            <div class="game-info">
-                <div class="game-title">ЗМЕЙКА</div>
-                <div class="game-desc">Управляйте змейкой, собирайте еду и не врезайтесь в стены.</div>
-                <a href="snake.html" class="play-btn">▶ ИГРАТЬ</a>
-            </div>
-        </div>
-        <!-- 2048 -->
-        <div class="game-card">
-            <img src="photo/minigames/2048.jpg" alt="2048" onerror="this.src='photo/placeholder.png'">
-            <div class="game-info">
-                <div class="game-title">2048</div>
-                <div class="game-desc">Соединяйте плитки с одинаковыми числами, чтобы получить 2048.</div>
-                <a href="game2048.html" class="play-btn">▶ ИГРАТЬ</a>
-            </div>
-        </div>
-        <!-- Пятнашки -->
-        <div class="game-card">
-            <img src="photo/minigames/puzzle.jpg" alt="Пятнашки" onerror="this.src='photo/placeholder.png'">
-            <div class="game-info">
-                <div class="game-title">ПЯТНАШКИ</div>
-                <div class="game-desc">Соберите картинку, перемещая плитки по порядку.</div>
-                <a href="fifteen.html" class="play-btn">▶ ИГРАТЬ</a>
-            </div>
-        </div>
-        <!-- Крестики-нолики -->
-        <div class="game-card">
-            <img src="photo/minigames/tic-tac-toe.jpg" alt="Крестики-нолики" onerror="this.src='photo/placeholder.png'">
-            <div class="game-info">
-                <div class="game-title">КРЕСТИКИ-НОЛИКИ</div>
-                <div class="game-desc">Классическая игра против компьютера.</div>
-                <a href="tictactoe.html" class="play-btn">▶ ИГРАТЬ</a>
-            </div>
-        </div>
-        <!-- КАЛЬКУЛЯТОР (новая игра) -->
-        <div class="game-card">
-            <img src="photo/minigames/calculator.jpg" alt="Калькулятор" onerror="this.src='photo/placeholder.png'">
-            <div class="game-info">
-                <div class="game-title">🧮 КАЛЬКУЛЯТОР</div>
-                <div class="game-desc">Вид сверху на настольный калькулятор. Рабочие кнопки, все операции.</div>
-                <a href="calculator.html" class="play-btn">▶ ИГРАТЬ</a>
-            </div>
-        </div>
+<div class="calculator-container">
+    <div class="display">
+        <div class="expression" id="expression"></div>
+        <div class="result" id="result">0</div>
     </div>
-    <div style="text-align: center;">
-        <a href="index.html" class="back-btn">← НА ГЛАВНУЮ</a>
+    <div class="buttons">
+        <button class="btn btn-ac" data-action="clear">AC</button>
+        <button class="btn btn-operator" data-op="+/-">±</button>
+        <button class="btn btn-operator" data-op="%">%</button>
+        <button class="btn btn-operator" data-op="/">÷</button>
+
+        <button class="btn btn-number" data-num="7">7</button>
+        <button class="btn btn-number" data-num="8">8</button>
+        <button class="btn btn-number" data-num="9">9</button>
+        <button class="btn btn-operator" data-op="*">×</button>
+
+        <button class="btn btn-number" data-num="4">4</button>
+        <button class="btn btn-number" data-num="5">5</button>
+        <button class="btn btn-number" data-num="6">6</button>
+        <button class="btn btn-operator" data-op="-">−</button>
+
+        <button class="btn btn-number" data-num="1">1</button>
+        <button class="btn btn-number" data-num="2">2</button>
+        <button class="btn btn-number" data-num="3">3</button>
+        <button class="btn btn-operator" data-op="+">+</button>
+
+        <button class="btn btn-number" data-num="0">0</button>
+        <button class="btn btn-number" data-num=".">.</button>
+        <button class="btn btn-operator" data-action="backspace">⌫</button>
+        <button class="btn btn-equals" data-action="equals">=</button>
     </div>
+    <a href="minigames.html" class="back-link">← ВЕРНУТЬСЯ К ИГРАМ</a>
 </div>
+
+<script>
+    // Логика калькулятора
+    let currentExpression = "";   // текущее выражение (для отображения)
+    let currentResult = "0";      // результат вычислений
+    let lastResult = null;        // последний результат (для цепочки вычислений)
+    let waitingForOperand = false; // ожидание следующего операнда
+
+    const expressionDiv = document.getElementById('expression');
+    const resultDiv = document.getElementById('result');
+
+    function updateDisplay() {
+        expressionDiv.innerText = currentExpression || "";
+        resultDiv.innerText = currentResult;
+    }
+
+    // Безопасное вычисление выражения
+    function calculate(expr) {
+        // Заменяем символы для eval
+        let safeExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+        // Проверка на пустое выражение
+        if (!safeExpr.trim()) return "0";
+        try {
+            // Используем Function для безопасности (но в данном случае это локальный калькулятор)
+            let result = Function('"use strict"; return (' + safeExpr + ')')();
+            if (isNaN(result) || !isFinite(result)) throw new Error();
+            // Округление до 10 знаков
+            return parseFloat(result.toFixed(10)).toString();
+        } catch (e) {
+            return "Ошибка";
+        }
+    }
+
+    function handleNumber(num) {
+        if (waitingForOperand) {
+            currentExpression = "";
+            waitingForOperand = false;
+        }
+        // Если текущий результат — ошибка, сбрасываем
+        if (currentResult === "Ошибка") {
+            currentExpression = "";
+            currentResult = "0";
+        }
+        // Если выражение пустое и нажата точка
+        if (num === "." && (currentExpression === "" || currentExpression.endsWith(" "))) {
+            currentExpression = "0.";
+        } else {
+            currentExpression += num;
+        }
+        // Вычисляем промежуточный результат
+        let tempResult = calculate(currentExpression);
+        if (tempResult !== "Ошибка") {
+            currentResult = tempResult;
+        }
+        updateDisplay();
+    }
+
+    function handleOperator(op) {
+        if (waitingForOperand) {
+            // Если ожидаем операнд, просто заменяем последний оператор
+            if (currentExpression.length > 0 && /[+\-*/%]$/.test(currentExpression.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-'))) {
+                currentExpression = currentExpression.slice(0, -1) + op;
+            } else {
+                currentExpression += op;
+            }
+            updateDisplay();
+            waitingForOperand = false;
+            return;
+        }
+        if (currentResult === "Ошибка") {
+            currentExpression = "";
+            currentResult = "0";
+            updateDisplay();
+            return;
+        }
+        // Если есть предыдущий результат, подставляем его в выражение
+        if (currentExpression === "" && lastResult !== null) {
+            currentExpression = lastResult + op;
+        } else if (currentExpression !== "") {
+            currentExpression += op;
+        } else {
+            currentExpression = currentResult + op;
+        }
+        waitingForOperand = true;
+        updateDisplay();
+    }
+
+    function handleEquals() {
+        if (currentResult === "Ошибка") {
+            resetCalculator();
+            return;
+        }
+        let expr = currentExpression;
+        if (expr === "") expr = currentResult;
+        let result = calculate(expr);
+        if (result !== "Ошибка") {
+            lastResult = result;
+            currentResult = result;
+            currentExpression = result;
+            waitingForOperand = true;
+        } else {
+            currentResult = "Ошибка";
+            currentExpression = "";
+        }
+        updateDisplay();
+    }
+
+    function handlePercent() {
+        if (currentResult === "Ошибка") return;
+        let val = parseFloat(currentResult);
+        if (isNaN(val)) return;
+        let percentVal = val / 100;
+        currentResult = percentVal.toString();
+        currentExpression = currentResult;
+        waitingForOperand = true;
+        updateDisplay();
+    }
+
+    function handleSign() {
+        if (currentResult === "Ошибка") return;
+        let val = parseFloat(currentResult);
+        if (isNaN(val)) return;
+        let newVal = (-val).toString();
+        currentResult = newVal;
+        currentExpression = newVal;
+        waitingForOperand = true;
+        updateDisplay();
+    }
+
+    function handleBackspace() {
+        if (currentResult === "Ошибка") {
+            resetCalculator();
+            return;
+        }
+        if (waitingForOperand) {
+            // если ожидаем операнд, то просто очищаем выражение, оставляя результат
+            currentExpression = currentResult;
+            waitingForOperand = false;
+            updateDisplay();
+            return;
+        }
+        if (currentExpression.length > 0) {
+            currentExpression = currentExpression.slice(0, -1);
+            if (currentExpression === "") {
+                currentResult = "0";
+                updateDisplay();
+                return;
+            }
+            let tempResult = calculate(currentExpression);
+            if (tempResult !== "Ошибка") {
+                currentResult = tempResult;
+            } else {
+                currentResult = "Ошибка";
+            }
+            updateDisplay();
+        } else {
+            resetCalculator();
+        }
+    }
+
+    function resetCalculator() {
+        currentExpression = "";
+        currentResult = "0";
+        lastResult = null;
+        waitingForOperand = false;
+        updateDisplay();
+    }
+
+    // Обработчики кликов
+    document.querySelectorAll('.btn-number').forEach(btn => {
+        btn.addEventListener('click', () => {
+            let num = btn.getAttribute('data-num');
+            if (num) handleNumber(num);
+        });
+    });
+    document.querySelectorAll('.btn-operator').forEach(btn => {
+        btn.addEventListener('click', () => {
+            let op = btn.getAttribute('data-op');
+            if (op === '+/-') handleSign();
+            else if (op === '%') handlePercent();
+            else if (op === 'backspace') handleBackspace();
+            else if (op === 'clear') resetCalculator();
+            else if (op) handleOperator(op);
+        });
+    });
+    document.querySelector('.btn-ac').addEventListener('click', resetCalculator);
+    document.querySelector('.btn-equals').addEventListener('click', handleEquals);
+
+    // Поддержка клавиатуры
+    document.addEventListener('keydown', (e) => {
+        const key = e.key;
+        if (/[0-9]/.test(key)) handleNumber(key);
+        else if (key === '.') handleNumber('.');
+        else if (key === '+' || key === '-' || key === '*' || key === '/') {
+            let opMap = {'*':'×', '/':'÷', '-':'−'};
+            let op = opMap[key] || key;
+            handleOperator(op);
+        }
+        else if (key === 'Enter') handleEquals();
+        else if (key === 'Backspace') handleBackspace();
+        else if (key === 'Escape') resetCalculator();
+        else if (key === '%') handlePercent();
+    });
+</script>
 </body>
 </html>
