@@ -23,7 +23,6 @@
             padding: 20px;
         }
 
-        /* Стиль "вид сверху" — имитация настольного калькулятора */
         .calculator-container {
             background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(8px);
@@ -35,7 +34,6 @@
             max-width: 380px;
         }
 
-        /* Дисплей */
         .display {
             background: #1e2a2f;
             border-radius: 20px;
@@ -62,7 +60,6 @@
             line-height: 1.2;
         }
 
-        /* Сетка кнопок */
         .buttons {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -102,11 +99,6 @@
             color: #fff;
             box-shadow: 0 5px 0 #2c5a8c;
         }
-        .btn-number {
-            background: #2c3e2f;
-        }
-
-        /* Кнопка возврата */
         .back-link {
             display: block;
             text-align: center;
@@ -124,7 +116,6 @@
             background: #FF8C00;
             color: #000;
         }
-
         @media (max-width: 480px) {
             .btn { padding: 14px 0; font-size: 20px; }
             .display .result { font-size: 32px; }
@@ -140,8 +131,8 @@
     </div>
     <div class="buttons">
         <button class="btn btn-ac" data-action="clear">AC</button>
-        <button class="btn btn-operator" data-op="+/-">±</button>
-        <button class="btn btn-operator" data-op="%">%</button>
+        <button class="btn btn-operator" data-op="sign">±</button>
+        <button class="btn btn-operator" data-op="percent">%</button>
         <button class="btn btn-operator" data-op="/">÷</button>
 
         <button class="btn btn-number" data-num="7">7</button>
@@ -168,187 +159,223 @@
 </div>
 
 <script>
-    // Логика калькулятора
-    let currentExpression = "";   // текущее выражение (для отображения)
-    let currentResult = "0";      // результат вычислений
-    let lastResult = null;        // последний результат (для цепочки вычислений)
-    let waitingForOperand = false; // ожидание следующего операнда
+    // Состояние калькулятора (простая логика без eval)
+    let currentInput = "0";      // текущее вводимое число
+    let previousInput = null;     // предыдущее число
+    let currentOperator = null;    // текущий оператор
+    let waitingForOperand = false; // ожидание ввода операнда после оператора
+    let expressionDisplay = "";    // для отображения выражения
 
-    const expressionDiv = document.getElementById('expression');
     const resultDiv = document.getElementById('result');
+    const expressionDiv = document.getElementById('expression');
 
     function updateDisplay() {
-        expressionDiv.innerText = currentExpression || "";
-        resultDiv.innerText = currentResult;
+        resultDiv.innerText = currentInput;
+        expressionDiv.innerText = expressionDisplay;
     }
 
-    // Безопасное вычисление выражения
-    function calculate(expr) {
-        // Заменяем символы для eval
-        let safeExpr = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
-        // Проверка на пустое выражение
-        if (!safeExpr.trim()) return "0";
-        try {
-            // Используем Function для безопасности (но в данном случае это локальный калькулятор)
-            let result = Function('"use strict"; return (' + safeExpr + ')')();
-            if (isNaN(result) || !isFinite(result)) throw new Error();
+    // Выполнение вычисления
+    function calculate() {
+        if (previousInput === null || currentOperator === null) return;
+        let prev = parseFloat(previousInput);
+        let current = parseFloat(currentInput);
+        if (isNaN(prev) || isNaN(current)) return;
+        let result;
+        switch (currentOperator) {
+            case '+': result = prev + current; break;
+            case '-': result = prev - current; break;
+            case '*': result = prev * current; break;
+            case '/': 
+                if (current === 0) {
+                    result = "Ошибка";
+                } else {
+                    result = prev / current;
+                }
+                break;
+            default: return;
+        }
+        if (result === "Ошибка") {
+            currentInput = "Ошибка";
+            previousInput = null;
+            currentOperator = null;
+            waitingForOperand = false;
+            expressionDisplay = "";
+        } else {
             // Округление до 10 знаков
-            return parseFloat(result.toFixed(10)).toString();
-        } catch (e) {
-            return "Ошибка";
-        }
-    }
-
-    function handleNumber(num) {
-        if (waitingForOperand) {
-            currentExpression = "";
-            waitingForOperand = false;
-        }
-        // Если текущий результат — ошибка, сбрасываем
-        if (currentResult === "Ошибка") {
-            currentExpression = "";
-            currentResult = "0";
-        }
-        // Если выражение пустое и нажата точка
-        if (num === "." && (currentExpression === "" || currentExpression.endsWith(" "))) {
-            currentExpression = "0.";
-        } else {
-            currentExpression += num;
-        }
-        // Вычисляем промежуточный результат
-        let tempResult = calculate(currentExpression);
-        if (tempResult !== "Ошибка") {
-            currentResult = tempResult;
+            currentInput = parseFloat(result.toFixed(10)).toString();
+            previousInput = null;
+            currentOperator = null;
+            waitingForOperand = true; // после равно ожидаем новый операнд
+            expressionDisplay = "";
         }
         updateDisplay();
     }
 
-    function handleOperator(op) {
+    // Обработка цифр и точки
+    function inputNumber(num) {
+        if (currentInput === "Ошибка") {
+            resetCalculator();
+        }
         if (waitingForOperand) {
-            // Если ожидаем операнд, просто заменяем последний оператор
-            if (currentExpression.length > 0 && /[+\-*/%]$/.test(currentExpression.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-'))) {
-                currentExpression = currentExpression.slice(0, -1) + op;
+            currentInput = num;
+            waitingForOperand = false;
+            expressionDisplay = "";
+        } else {
+            if (num === '.' && currentInput.includes('.')) return;
+            if (currentInput === "0" && num !== '.') {
+                currentInput = num;
             } else {
-                currentExpression += op;
+                currentInput += num;
             }
-            updateDisplay();
-            waitingForOperand = false;
-            return;
         }
-        if (currentResult === "Ошибка") {
-            currentExpression = "";
-            currentResult = "0";
-            updateDisplay();
-            return;
-        }
-        // Если есть предыдущий результат, подставляем его в выражение
-        if (currentExpression === "" && lastResult !== null) {
-            currentExpression = lastResult + op;
-        } else if (currentExpression !== "") {
-            currentExpression += op;
-        } else {
-            currentExpression = currentResult + op;
-        }
-        waitingForOperand = true;
         updateDisplay();
     }
 
-    function handleEquals() {
-        if (currentResult === "Ошибка") {
+    // Обработка операторов
+    function inputOperator(op) {
+        if (currentInput === "Ошибка") {
             resetCalculator();
             return;
         }
-        let expr = currentExpression;
-        if (expr === "") expr = currentResult;
-        let result = calculate(expr);
-        if (result !== "Ошибка") {
-            lastResult = result;
-            currentResult = result;
-            currentExpression = result;
-            waitingForOperand = true;
-        } else {
-            currentResult = "Ошибка";
-            currentExpression = "";
+        // Если уже есть ожидание операнда, просто меняем оператор
+        if (waitingForOperand) {
+            currentOperator = op;
+            // обновляем отображение выражения
+            if (expressionDisplay.length > 0 && /[+\-*/]$/.test(expressionDisplay.slice(-1))) {
+                expressionDisplay = expressionDisplay.slice(0, -1) + getOperatorSymbol(op);
+            } else {
+                expressionDisplay = previousInput + " " + getOperatorSymbol(op);
+            }
+            updateDisplay();
+            return;
         }
+        // Если есть предыдущий оператор, сначала вычисляем
+        if (previousInput !== null && currentOperator !== null) {
+            let prev = parseFloat(previousInput);
+            let current = parseFloat(currentInput);
+            let result;
+            switch (currentOperator) {
+                case '+': result = prev + current; break;
+                case '-': result = prev - current; break;
+                case '*': result = prev * current; break;
+                case '/': 
+                    if (current === 0) result = "Ошибка";
+                    else result = prev / current;
+                    break;
+                default: result = current;
+            }
+            if (result === "Ошибка") {
+                currentInput = "Ошибка";
+                previousInput = null;
+                currentOperator = null;
+                waitingForOperand = false;
+                expressionDisplay = "";
+                updateDisplay();
+                return;
+            }
+            currentInput = parseFloat(result.toFixed(10)).toString();
+        }
+        previousInput = currentInput;
+        currentOperator = op;
+        waitingForOperand = true;
+        expressionDisplay = previousInput + " " + getOperatorSymbol(op);
         updateDisplay();
     }
 
+    function getOperatorSymbol(op) {
+        switch(op) {
+            case '+': return '+';
+            case '-': return '−';
+            case '*': return '×';
+            case '/': return '÷';
+            default: return op;
+        }
+    }
+
+    function handleEquals() {
+        if (currentInput === "Ошибка") {
+            resetCalculator();
+            return;
+        }
+        if (previousInput !== null && currentOperator !== null && !waitingForOperand) {
+            calculate();
+        } else {
+            // если нет операции, просто отображаем текущее число
+            expressionDisplay = "";
+            waitingForOperand = false;
+            updateDisplay();
+        }
+    }
+
     function handlePercent() {
-        if (currentResult === "Ошибка") return;
-        let val = parseFloat(currentResult);
+        if (currentInput === "Ошибка") return;
+        let val = parseFloat(currentInput);
         if (isNaN(val)) return;
         let percentVal = val / 100;
-        currentResult = percentVal.toString();
-        currentExpression = currentResult;
-        waitingForOperand = true;
+        currentInput = percentVal.toString();
+        if (!waitingForOperand) {
+            // если не ждём операнд, то обновляем выражение
+            if (expressionDisplay !== "") {
+                expressionDisplay = currentInput;
+            }
+        }
         updateDisplay();
     }
 
     function handleSign() {
-        if (currentResult === "Ошибка") return;
-        let val = parseFloat(currentResult);
+        if (currentInput === "Ошибка") return;
+        let val = parseFloat(currentInput);
         if (isNaN(val)) return;
-        let newVal = (-val).toString();
-        currentResult = newVal;
-        currentExpression = newVal;
-        waitingForOperand = true;
+        currentInput = (-val).toString();
         updateDisplay();
     }
 
     function handleBackspace() {
-        if (currentResult === "Ошибка") {
+        if (currentInput === "Ошибка") {
             resetCalculator();
             return;
         }
         if (waitingForOperand) {
-            // если ожидаем операнд, то просто очищаем выражение, оставляя результат
-            currentExpression = currentResult;
+            // если ждём операнд, то сброс оператора
+            previousInput = null;
+            currentOperator = null;
             waitingForOperand = false;
+            expressionDisplay = "";
             updateDisplay();
             return;
         }
-        if (currentExpression.length > 0) {
-            currentExpression = currentExpression.slice(0, -1);
-            if (currentExpression === "") {
-                currentResult = "0";
-                updateDisplay();
-                return;
-            }
-            let tempResult = calculate(currentExpression);
-            if (tempResult !== "Ошибка") {
-                currentResult = tempResult;
-            } else {
-                currentResult = "Ошибка";
-            }
-            updateDisplay();
+        if (currentInput.length > 1) {
+            currentInput = currentInput.slice(0, -1);
         } else {
-            resetCalculator();
+            currentInput = "0";
         }
-    }
-
-    function resetCalculator() {
-        currentExpression = "";
-        currentResult = "0";
-        lastResult = null;
-        waitingForOperand = false;
         updateDisplay();
     }
 
-    // Обработчики кликов
+    function resetCalculator() {
+        currentInput = "0";
+        previousInput = null;
+        currentOperator = null;
+        waitingForOperand = false;
+        expressionDisplay = "";
+        updateDisplay();
+    }
+
+    // Привязка кнопок
     document.querySelectorAll('.btn-number').forEach(btn => {
         btn.addEventListener('click', () => {
-            let num = btn.getAttribute('data-num');
-            if (num) handleNumber(num);
+            const num = btn.getAttribute('data-num');
+            if (num) inputNumber(num);
         });
     });
     document.querySelectorAll('.btn-operator').forEach(btn => {
         btn.addEventListener('click', () => {
-            let op = btn.getAttribute('data-op');
-            if (op === '+/-') handleSign();
-            else if (op === '%') handlePercent();
+            const op = btn.getAttribute('data-op');
+            if (op === 'sign') handleSign();
+            else if (op === 'percent') handlePercent();
             else if (op === 'backspace') handleBackspace();
             else if (op === 'clear') resetCalculator();
-            else if (op) handleOperator(op);
+            else if (op) inputOperator(op);
         });
     });
     document.querySelector('.btn-ac').addEventListener('click', resetCalculator);
@@ -357,12 +384,12 @@
     // Поддержка клавиатуры
     document.addEventListener('keydown', (e) => {
         const key = e.key;
-        if (/[0-9]/.test(key)) handleNumber(key);
-        else if (key === '.') handleNumber('.');
+        if (/[0-9]/.test(key)) inputNumber(key);
+        else if (key === '.') inputNumber('.');
         else if (key === '+' || key === '-' || key === '*' || key === '/') {
-            let opMap = {'*':'×', '/':'÷', '-':'−'};
-            let op = opMap[key] || key;
-            handleOperator(op);
+            let opMap = {'*':'*', '/':'/', '-':'-', '+':'+'};
+            let op = opMap[key];
+            if (op) inputOperator(op);
         }
         else if (key === 'Enter') handleEquals();
         else if (key === 'Backspace') handleBackspace();
