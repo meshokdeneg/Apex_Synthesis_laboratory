@@ -47,7 +47,7 @@
             z-index: -2;
         }
 
-        /* ===== ПАР (длиннее и быстрее) ===== */
+        /* ===== ПАР (более длинный, медленный) ===== */
         .steam {
             position: fixed;
             bottom: 0;
@@ -67,7 +67,7 @@
             border-radius: 50%;
             filter: blur(8px);
             opacity: 0;
-            animation: steamRise 3s ease-out forwards; /* быстрее: 3с вместо 4 */
+            animation: steamRise 5s ease-out forwards; /* 5 секунд, дольше */
         }
         @keyframes steamRise {
             0% {
@@ -82,15 +82,15 @@
             }
             100% {
                 opacity: 0;
-                transform: translateY(-600px) scale(1.6); /* длиннее: -600px вместо -400 */
+                transform: translateY(-800px) scale(1.8); /* выше и дальше */
             }
         }
 
-        /* ===== КАПЛИ КРОВИ (чуть больше) ===== */
+        /* ===== КАПЛИ КРОВИ ===== */
         .blood-drip {
             position: fixed;
-            width: 8px;      /* было 6px */
-            height: 16px;    /* было 12px */
+            width: 8px;
+            height: 16px;
             background: #8b0000;
             border-radius: 0 0 50% 50%;
             filter: blur(1px);
@@ -675,17 +675,17 @@
         steam.style.left = leftPos + '%';
         const delay = Math.random() * 3;
         steam.style.animationDelay = delay + 's';
-        const size = 100 + Math.random() * 120;
+        const size = 120 + Math.random() * 140;
         steam.style.width = size + 'px';
         steam.style.height = size + 'px';
         container.appendChild(steam);
         setTimeout(() => {
             if (steam && steam.parentNode) steam.remove();
-        }, 3000 + delay * 1000);
+        }, 5000 + delay * 1000);
     }
     setInterval(() => {
         createSteam();
-    }, 2000); // чаще: 2 сек вместо 2.5
+    }, 1800); // чаще, чтобы дыма было больше
 
     // ========== КАПЛИ КРОВИ ==========
     function createBloodDrip() {
@@ -703,14 +703,62 @@
     }
     setInterval(() => {
         createBloodDrip();
-    }, 700); // чаще: 0.7 сек
+    }, 700);
 
-    // ========== АУДИО ==========
+    // ========== ЗВУК ПРЕССА (хруст и удар) ==========
     let audioContext = null;
     let musicSource = null;
     let musicGain = null;
     let soundEnabled = false;
     let tickBuffer = null;
+
+    function playCrunchSound() {
+        if (!audioContext) return;
+        const now = audioContext.currentTime;
+        const gain = audioContext.createGain();
+        gain.connect(audioContext.destination);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+        
+        // Шумовой удар
+        const bufferSize = 4096;
+        const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
+        noise.onaudioprocess = function(e) {
+            const output = e.outputBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = (Math.random() - 0.5) * 0.9;
+            }
+        };
+        noise.connect(gain);
+        noise.start(now);
+        noise.stop(now + 0.5);
+        
+        // Дополнительный низкочастотный удар (бум)
+        const boomGain = audioContext.createGain();
+        boomGain.connect(audioContext.destination);
+        boomGain.gain.setValueAtTime(0.5, now);
+        boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.8);
+        const osc = audioContext.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.value = 80;
+        osc.connect(boomGain);
+        osc.start(now);
+        osc.stop(now + 0.6);
+        
+        // Серия щелчков для хруста
+        for (let i = 0; i < 16; i++) {
+            const tickGain = audioContext.createGain();
+            tickGain.connect(audioContext.destination);
+            tickGain.gain.setValueAtTime(0.2, now + i * 0.03);
+            tickGain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.03 + 0.1);
+            const tickOsc = audioContext.createOscillator();
+            tickOsc.type = 'triangle';
+            tickOsc.frequency.value = 300 + Math.random() * 400;
+            tickOsc.connect(tickGain);
+            tickOsc.start(now + i * 0.03);
+            tickOsc.stop(now + i * 0.03 + 0.1);
+        }
+    }
 
     async function initAudio() {
         if (audioContext) return;
@@ -815,6 +863,9 @@
     }
 
     function animatePressAndCrush() {
+        // Звук пресса
+        if (audioContext) playCrunchSound();
+        
         pressDiv.classList.add('press-crush');
         platform.classList.add('shake-platform');
         bodyEl.classList.add('shake-cam');
