@@ -47,6 +47,70 @@
             z-index: -2;
         }
 
+        /* ===== ПАР (исходит под давлением с промежутками) ===== */
+        .steam {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .steam-cloud {
+            position: absolute;
+            bottom: -20px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(200,200,200,0.4) 0%, rgba(200,200,200,0) 80%);
+            border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0;
+            animation: steamRise 4s ease-out forwards;
+        }
+        @keyframes steamRise {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.8);
+            }
+            20% {
+                opacity: 0.6;
+            }
+            80% {
+                opacity: 0.4;
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-400px) scale(1.5);
+            }
+        }
+
+        /* ===== КАПЛИ КРОВИ (постоянно капают) ===== */
+        .blood-drip {
+            position: fixed;
+            width: 6px;
+            height: 12px;
+            background: #8b0000;
+            border-radius: 0 0 50% 50%;
+            filter: blur(1px);
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: 150;
+            animation: drip 2s linear forwards;
+        }
+        @keyframes drip {
+            0% {
+                transform: translateY(0);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(300px);
+                opacity: 0;
+            }
+        }
+
+        /* Остальные стили (без изменений) */
         .panel {
             position: absolute;
             background: #1a1a1a;
@@ -509,7 +573,7 @@
             right: auto;
         }
 
-        /* ЭКРАН ЗАГРУЗКИ (тёмный, с кнопкой) */
+        /* ЭКРАН ЗАГРУЗКИ */
         .start-screen {
             position: fixed;
             top: 0;
@@ -560,6 +624,9 @@
     <div class="fog"></div>
 </div>
 
+<!-- Слой для пара -->
+<div class="steam" id="steamContainer"></div>
+
 <div class="platform">
     <div class="conveyor-belt"></div>
     <div class="rollers">
@@ -598,7 +665,55 @@
 </div>
 
 <script>
-    // ========== АУДИО (включается при клике на кнопку) ==========
+    // ========== ГЕНЕРАЦИЯ ПАРА ==========
+    function createSteam() {
+        const container = document.getElementById('steamContainer');
+        if (!container) return;
+        const steam = document.createElement('div');
+        steam.classList.add('steam-cloud');
+        // Случайная позиция по горизонтали
+        const leftPos = Math.random() * 100;
+        steam.style.left = leftPos + '%';
+        // Случайная задержка (0-3 секунды)
+        const delay = Math.random() * 3;
+        steam.style.animationDelay = delay + 's';
+        // Случайный размер
+        const size = 100 + Math.random() * 100;
+        steam.style.width = size + 'px';
+        steam.style.height = size + 'px';
+        container.appendChild(steam);
+        // Удаляем элемент после анимации
+        setTimeout(() => {
+            if (steam && steam.parentNode) steam.remove();
+        }, 4000 + delay * 1000);
+    }
+    // Запускаем генерацию пара с интервалом 2-5 секунд
+    setInterval(() => {
+        createSteam();
+    }, 2500);
+
+    // ========== КАПЛИ КРОВИ (постоянно) ==========
+    function createBloodDrip() {
+        const drip = document.createElement('div');
+        drip.classList.add('blood-drip');
+        // Случайная позиция по горизонтали (в основном над прессом и конвейером)
+        const leftPos = 200 + Math.random() * 800;
+        drip.style.left = leftPos + 'px';
+        drip.style.top = '-20px';
+        // Случайная длительность падения (1.5 - 3 секунды)
+        const duration = 1.5 + Math.random() * 1.5;
+        drip.style.animationDuration = duration + 's';
+        document.body.appendChild(drip);
+        setTimeout(() => {
+            if (drip && drip.parentNode) drip.remove();
+        }, duration * 1000);
+    }
+    // Капли появляются каждые 0.5–1.5 секунды
+    setInterval(() => {
+        createBloodDrip();
+    }, 800);
+
+    // ========== АУДИО ==========
     let audioContext = null;
     let musicSource = null;
     let musicGain = null;
@@ -608,13 +723,11 @@
     async function initAudio() {
         if (audioContext) return;
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        // Буфер для звука печати (короткий "тик")
         tickBuffer = audioContext.createBuffer(1, 2205, 44100);
         let data = tickBuffer.getChannelData(0);
         for (let i = 0; i < 2205; i++) {
             data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
         }
-        // Фоновая музыка – гул (низкий осциллятор + шум)
         musicGain = audioContext.createGain();
         musicGain.gain.value = 0.25;
         musicGain.connect(audioContext.destination);
@@ -661,7 +774,6 @@
     let moveInterval = null;
     let animationActive = false;
 
-    // Эффекты
     function createSpark(x, y) {
         const spark = document.createElement('div');
         spark.classList.add('spark');
@@ -740,7 +852,6 @@
         }, 200);
     }
 
-    // Печать текста со звуком
     let isTyping = false;
     function typeText(text, callback) {
         if (isTyping) return;
@@ -788,21 +899,15 @@
         }
     }
 
-    // Инициализация: всё скрыто за затемнением, анимация не запущена
-    // После клика на кнопку – убираем затемнение, включаем звук и запускаем диалоги
     startBtn.addEventListener('click', async () => {
-        // Включаем звук
         await initAudio();
-        // Убираем стартовый экран
         startScreen.style.opacity = '0';
         setTimeout(() => {
             startScreen.style.display = 'none';
         }, 500);
-        // Запускаем сценарий
         playNextMessage();
     });
 
-    // Рассчёт целевой позиции (для движения игрока)
     window.addEventListener('load', () => {
         player.style.left = '70px';
         player.style.bottom = '95px';
@@ -811,7 +916,6 @@
         const pressRect = pressDiv.getBoundingClientRect();
         targetLeft = pressRect.left - platformRect.left - 80;
         if (targetLeft < 200) targetLeft = 800;
-        // Анимация стрелки манометра
         setInterval(() => {
             if (!animationActive) {
                 const angle = 30 + Math.random() * 60;
