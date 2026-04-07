@@ -27,7 +27,7 @@
             background: #050505;
         }
 
-        /* Стартовая кнопка — череп (как на видео) */
+        /* Стартовая кнопка — череп */
         .start-btn {
             width: 120px;
             height: 120px;
@@ -761,6 +761,7 @@
         }
 
         function animatePressAndCrush() {
+            // Добавляем классы анимации пресса и тряски
             pressDiv.classList.add('press-crush');
             platform.classList.add('shake-platform');
             bodyEl.classList.add('shake-cam');
@@ -781,6 +782,7 @@
                 }, i*18);
             }
             
+            // Игрок исчезает через 200 мс после начала прессования
             setTimeout(() => {
                 playerDiv.style.transition = 'transform 0.2s, opacity 0.2s';
                 playerDiv.style.transform = 'scale(0.01)';
@@ -849,10 +851,14 @@
             playerDiv.style.left = '70px';
             playerDiv.style.bottom = '95px';
             currentLeft = 70;
+            // Гарантируем, что цель будет далеко
             const platformRect = platform.getBoundingClientRect();
             const pressRect = pressDiv.getBoundingClientRect();
-            targetLeft = pressRect.left - platformRect.left - 70;
-            if (targetLeft < currentLeft) targetLeft = currentLeft + 600;
+            let calculatedTarget = pressRect.left - platformRect.left - 70;
+            if (calculatedTarget <= currentLeft) {
+                calculatedTarget = currentLeft + 600;
+            }
+            targetLeft = calculatedTarget;
             playNextMessage();
             setInterval(() => {
                 if (!animationActive) {
@@ -873,8 +879,9 @@
             if (!animationActive && mainScene.classList.contains('visible')) {
                 const platformRect = platform.getBoundingClientRect();
                 const pressRect = pressDiv.getBoundingClientRect();
-                targetLeft = pressRect.left - platformRect.left - 70;
-                if (targetLeft < currentLeft) targetLeft = currentLeft + 600;
+                let newTarget = pressRect.left - platformRect.left - 70;
+                if (newTarget <= currentLeft) newTarget = currentLeft + 600;
+                targetLeft = newTarget;
             }
         });
     </script>
