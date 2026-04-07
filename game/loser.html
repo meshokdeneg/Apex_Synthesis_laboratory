@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>DANGANRONPA | КАЗНЬ</title>
+    <title>ASL | Пресс-наказание</title>
     <style>
         * {
             margin: 0;
@@ -13,61 +13,15 @@
         }
 
         body {
-            background: #000;
+            background: #050505;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Courier New', 'Poppins', monospace;
+            font-family: 'Courier New', monospace;
             overflow: hidden;
             position: relative;
-            transition: background 0.5s ease;
         }
-        body.loaded {
-            background: #111;
-        }
-
-        /* Стартовая кнопка */
-        .start-btn {
-            width: 140px;
-            height: 140px;
-            background: #1a1a1a;
-            border: 4px solid #ff3366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 72px;
-            color: #ff3366;
-            cursor: pointer;
-            box-shadow: 0 0 30px #ff3366, inset 0 0 10px rgba(255,51,102,0.5);
-            transition: transform 0.2s, opacity 0.5s;
-            z-index: 1000;
-            backdrop-filter: blur(4px);
-            text-shadow: 0 0 10px #ff3366;
-        }
-        .start-btn:hover {
-            transform: scale(1.1);
-            background: #ff3366;
-            color: #000;
-            box-shadow: 0 0 60px #ff3366;
-        }
-        .start-btn.hide {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.5);
-        }
-
-        .main-scene {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.8s ease;
-        }
-        .main-scene.visible {
-            display: block;
-            opacity: 1;
-        }
-
         body.shake-cam {
             animation: camShake 0.15s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         }
@@ -79,49 +33,93 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* Фон */
+        /* Индустриальный фон */
         .bg-wall {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #0a0a0a;
-            background-image: repeating-linear-gradient(45deg, #222 0px, #222 2px, #111 2px, #111 20px);
+            background: #0f0f0f;
+            background-image: 
+                repeating-linear-gradient(0deg, #1a1a1a 0px, #1a1a1a 2px, #0a0a0a 2px, #0a0a0a 20px),
+                repeating-linear-gradient(90deg, rgba(30,30,40,0.2) 0px, rgba(30,30,40,0.2) 1px, transparent 1px, transparent 40px);
             z-index: -2;
         }
 
-        .ribbon {
+        .panel {
             position: absolute;
-            background: #ff3366;
-            width: 100%;
-            height: 6px;
-            top: 20%;
-            left: 0;
-            box-shadow: 0 0 10px #ff3366;
+            background: #1a1a1a;
+            border: 2px solid #2a2a2a;
+            border-radius: 8px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 0 1px #3a3a3a;
             z-index: -1;
-            transform: skewY(-5deg);
         }
-        .ribbon2 {
-            bottom: 25%;
-            top: auto;
-            transform: skewY(3deg);
-        }
-        .punishment-title {
+        .panel1 { width: 300px; height: 200px; top: 50px; left: 50px; }
+        .panel2 { width: 400px; height: 250px; bottom: 50px; right: 50px; }
+        .panel3 { width: 250px; height: 150px; top: 300px; left: 600px; }
+
+        .bolt {
             position: absolute;
-            top: 15px;
-            left: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 24px;
-            font-weight: bold;
-            color: #ff3366;
-            text-shadow: 0 0 5px #ff3366;
-            letter-spacing: 4px;
-            z-index: 200;
-            background: rgba(0,0,0,0.6);
-            padding: 4px 12px;
-            border-radius: 30px;
-            backdrop-filter: blur(4px);
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle at 30% 30%, #5a5a5a, #2a2a2a);
+            border-radius: 50%;
+            box-shadow: inset 0 0 2px #aaa, 0 1px 2px black;
+        }
+        .bolt1 { top: 15px; left: 15px; }
+        .bolt2 { top: 15px; right: 15px; }
+        .bolt3 { bottom: 15px; left: 15px; }
+        .bolt4 { bottom: 15px; right: 15px; }
+
+        .pipe {
+            position: absolute;
+            background: #2a2a2a;
+            border-radius: 12px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.6), 0 2px 5px black;
+            z-index: -1;
+        }
+        .pipe-hor { height: 24px; left: 0; right: 0; }
+        .pipe-ver { width: 24px; top: 0; bottom: 0; }
+        .pipe1 { top: 120px; height: 28px; width: 350px; left: -50px; }
+        .pipe2 { top: 480px; height: 32px; width: 450px; right: -100px; }
+        .pipe3 { left: 80px; width: 28px; height: 250px; top: 60px; }
+        .pipe4 { right: 80px; width: 32px; height: 300px; bottom: 20px; }
+        .pipe5 { top: 250px; left: 500px; width: 30px; height: 150px; }
+
+        .valve {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            background: #4a4a4a;
+            border-radius: 50%;
+            border: 2px solid #6a6a6a;
+            box-shadow: inset 0 0 5px black, 0 2px 5px black;
+            z-index: -1;
+        }
+        .valve1 { top: 130px; left: 220px; }
+        .valve2 { top: 490px; right: 160px; }
+        .valve3 { top: 260px; left: 515px; }
+
+        .floor-grate {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: repeating-linear-gradient(90deg, #1a1a1a, #1a1a1a 40px, #2a2a2a 40px, #2a2a2a 80px);
+            border-top: 3px solid #3a3a3a;
+            z-index: -1;
+        }
+        .fog {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 50% 70%, rgba(0,0,0,0.3), rgba(0,0,0,0.8));
+            pointer-events: none;
+            z-index: -1;
         }
 
         .platform {
@@ -132,10 +130,10 @@
             background-image: 
                 linear-gradient(45deg, #2a2a2a 1px, transparent 1px),
                 linear-gradient(-45deg, #2a2a2a 1px, transparent 1px);
-            background-size: 40px 40px;
-            border: 6px solid #ff3366;
-            border-radius: 20px;
-            box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 40px rgba(255,51,102,0.3);
+            background-size: 30px 30px;
+            border: 6px solid #4a4a4a;
+            border-radius: 40px;
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.8), 0 20px 40px rgba(0,0,0,0.6);
             overflow: hidden;
             z-index: 1;
         }
@@ -146,8 +144,8 @@
             left: 0;
             width: 100%;
             height: 90px;
-            background: repeating-linear-gradient(90deg, #444, #444 40px, #555 40px, #555 80px);
-            border-top: 4px solid #ff3366;
+            background: repeating-linear-gradient(90deg, #555, #555 40px, #777 40px, #777 80px);
+            border-top: 4px solid #aaa;
             border-bottom: 4px solid #222;
             animation: beltMove 0.3s linear infinite;
             z-index: 5;
@@ -157,6 +155,7 @@
             0% { background-position: 0 0; }
             100% { background-position: 80px 0; }
         }
+
         .rollers {
             position: absolute;
             bottom: 140px;
@@ -181,11 +180,11 @@
             bottom: 50px;
             width: 320px;
             height: 340px;
-            background: #2a2a2a;
-            background-image: repeating-linear-gradient(0deg, #3a3a3a 0px, #3a3a3a 2px, #1a1a1a 2px, #1a1a1a 10px);
-            border: 6px solid #ff3366;
+            background: #4a4a4a;
+            background-image: repeating-linear-gradient(0deg, #5a5a5a 0px, #5a5a5a 2px, #3a3a3a 2px, #3a3a3a 8px);
+            border: 6px solid #9a9a9a;
             border-radius: 30px;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 0 4px #111, 0 10px 20px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 0 0 4px #222, 0 10px 20px rgba(0,0,0,0.5);
             z-index: 20;
             display: flex;
             flex-direction: column;
@@ -196,14 +195,19 @@
             position: absolute;
             width: 14px;
             height: 14px;
-            background: radial-gradient(circle at 30% 30%, #ff3366, #880000);
+            background: radial-gradient(circle at 30% 30%, #b0b0b0, #505050);
             border-radius: 50%;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 1px 2px black;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 1px 2px black;
         }
         .rivet1 { top: 15px; left: 15px; }
         .rivet2 { top: 15px; right: 15px; }
         .rivet3 { bottom: 15px; left: 15px; }
         .rivet4 { bottom: 15px; right: 15px; }
+        .rivet5 { top: 50%; left: 10px; margin-top: -7px; }
+        .rivet6 { top: 50%; right: 10px; margin-top: -7px; }
+        .rivet7 { top: 30px; left: 50%; margin-left: -7px; }
+        .rivet8 { bottom: 30px; left: 50%; margin-left: -7px; }
+
         .hydraulic-left, .hydraulic-right {
             position: absolute;
             width: 45px;
@@ -212,7 +216,7 @@
             border-radius: 25px;
             top: -80px;
             box-shadow: inset 0 0 8px black, 0 5px 10px rgba(0,0,0,0.6);
-            border: 1px solid #ff3366;
+            border: 1px solid #aaa;
         }
         .hydraulic-left { left: 20px; }
         .hydraulic-right { right: 20px; }
@@ -222,8 +226,50 @@
             bottom: -30px;
             left: -5px;
             font-size: 32px;
-            color: #ff3366;
+            color: #ffaa33;
             filter: drop-shadow(0 0 3px orange);
+        }
+        .hose {
+            position: absolute;
+            width: 12px;
+            height: 70px;
+            background: #2a2a2a;
+            border-radius: 6px;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px black;
+        }
+        .hose::before {
+            content: "💧";
+            position: absolute;
+            top: -15px;
+            left: -8px;
+            font-size: 18px;
+            opacity: 0.4;
+        }
+        .gauge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 55px;
+            height: 55px;
+            background: #ddd;
+            border-radius: 50%;
+            border: 3px solid #333;
+            box-shadow: inset 0 0 5px #fff, 0 2px 5px black;
+            z-index: 30;
+        }
+        .gauge-needle {
+            position: absolute;
+            width: 3px;
+            height: 20px;
+            background: red;
+            top: 50%;
+            left: 50%;
+            transform-origin: top center;
+            transform: translateX(-50%) rotate(45deg);
+            transition: transform 0.1s;
         }
         .press-top {
             position: absolute;
@@ -258,7 +304,7 @@
             opacity: 0.5;
         }
         .press-text {
-            color: #ff3366;
+            color: #ff3300;
             font-weight: bold;
             font-size: 24px;
             text-shadow: 0 0 8px darkred;
@@ -281,14 +327,13 @@
             100% { transform: translateX(0); }
         }
 
-        /* Игрок (стоит на месте) */
         .player {
             position: absolute;
-            left: 400px;      /* расположим ближе к прессу, но не двигаем */
+            left: 70px;
             bottom: 95px;
             width: 70px;
             height: 70px;
-            background: radial-gradient(circle at 30% 30%, #ffaa44, #cc7700);
+            background: radial-gradient(circle at 30% 30%, #f5b042, #d97a00);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -296,12 +341,12 @@
             font-size: 48px;
             box-shadow: 0 0 25px rgba(255,100,0,0.8);
             z-index: 25;
-            transition: transform 0.2s, opacity 0.2s;
+            transition: left 0.04s linear;
             cursor: default;
-            border: 2px solid #ff3366;
         }
-        .player .avatar-symbol {
-            font-size: 52px;
+        .player::after {
+            content: "😨";
+            font-size: 54px;
             filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.5));
         }
 
@@ -361,14 +406,14 @@
             top: 20px;
             left: 20px;
             max-width: 550px;
-            background: rgba(0, 0, 0, 0.9);
-            border-left: 8px solid #ff3366;
+            background: rgba(0, 0, 0, 0.85);
+            border-left: 8px solid #00FF9D;
             border-radius: 24px;
             padding: 18px 22px;
             backdrop-filter: blur(12px);
             font-family: monospace;
             z-index: 100;
-            box-shadow: 0 5px 25px rgba(255,51,102,0.3);
+            box-shadow: 0 5px 25px rgba(0,255,157,0.2);
         }
         .gluk-header {
             display: flex;
@@ -379,7 +424,7 @@
         .gluk-avatar {
             width: 44px;
             height: 44px;
-            background: #ff3366;
+            background: #00FF9D;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -387,17 +432,16 @@
             font-size: 30px;
             color: black;
             font-weight: bold;
-            box-shadow: 0 0 8px #ff3366;
+            box-shadow: 0 0 8px #0f0;
         }
         .gluk-name {
-            color: #ff3366;
+            color: #FF8C00;
             font-weight: bold;
             font-size: 20px;
             letter-spacing: 1px;
-            text-shadow: 0 0 2px #ff3366;
         }
         .gluk-text {
-            color: #fff;
+            color: #0f0;
             font-size: 18px;
             line-height: 1.45;
             white-space: pre-wrap;
@@ -406,7 +450,7 @@
             display: inline-block;
             width: 8px;
             height: 17px;
-            background: #ff3366;
+            background: #0f0;
             vertical-align: middle;
             margin-left: 5px;
             animation: blink 1s step-end infinite;
@@ -420,13 +464,13 @@
             position: absolute;
             bottom: 30px;
             right: 30px;
-            background: linear-gradient(145deg, #4a2a2a, #2a1a1a);
-            border: 2px solid #ff3366;
+            background: linear-gradient(145deg, #5a3a2a, #3a2a1a);
+            border: 2px solid #aa6a3a;
             padding: 14px 32px;
             border-radius: 60px;
             font-size: 18px;
             font-weight: bold;
-            color: #ff3366;
+            color: #ffaa66;
             cursor: pointer;
             z-index: 200;
             transition: 0.2s;
@@ -436,10 +480,10 @@
             text-shadow: 0 0 3px black;
         }
         .return-btn:hover {
-            background: #ff3366;
+            background: #8a4a2a;
             transform: translateY(-2px);
-            box-shadow: 0 8px 0 #880000;
-            color: #000;
+            box-shadow: 0 8px 0 #2a1a0a;
+            color: #ffcc88;
         }
 
         .alert-light {
@@ -448,9 +492,9 @@
             right: 20px;
             width: 24px;
             height: 24px;
-            background: #ff3366;
+            background: red;
             border-radius: 50%;
-            box-shadow: 0 0 15px #ff3366;
+            box-shadow: 0 0 15px red;
             animation: pulseRed 0.5s infinite;
             z-index: 200;
         }
@@ -464,291 +508,333 @@
             left: 20px;
             right: auto;
         }
+
+        /* ЭКРАН ЗАГРУЗКИ (тёмный, с кнопкой) */
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s;
+        }
+        .start-btn {
+            width: 120px;
+            height: 120px;
+            background: rgba(30,30,30,0.8);
+            border: 3px solid #FF8C00;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 0 20px rgba(255,140,0,0.5);
+        }
+        .start-btn:hover {
+            transform: scale(1.05);
+            background: rgba(255,140,0,0.3);
+            box-shadow: 0 0 30px rgba(255,140,0,0.8);
+        }
+        .start-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
-    <div class="start-btn" id="startBtn">💀</div>
-    <div class="main-scene" id="mainScene">
-        <div class="bg-wall">
-            <div class="ribbon"></div>
-            <div class="ribbon ribbon2"></div>
-            <div class="punishment-title">⚡ PUNISHMENT ⚡</div>
-        </div>
-        <div class="platform">
-            <div class="conveyor-belt"></div>
-            <div class="rollers">
-                <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
-                <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
-                <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
-            </div>
-            <div class="press">
-                <div class="rivet rivet1"></div><div class="rivet rivet2"></div>
-                <div class="rivet rivet3"></div><div class="rivet rivet4"></div>
-                <div class="hydraulic-left"></div><div class="hydraulic-right"></div>
-                <div class="press-top"></div>
-                <div class="press-bottom"></div>
-                <div class="press-text">⚠️ ГИДРАВЛИЧЕСКИЙ ПРЕСС ⚠️</div>
-            </div>
-            <div class="player" id="player"><div class="avatar-symbol" id="avatarSymbol">⚛️</div></div>
-            <div class="gluk-box" id="glukBox">
-                <div class="gluk-header">
-                    <div class="gluk-avatar">🟩</div>
-                    <div class="gluk-name">ГЛюК (главный логический компьютер)</div>
-                </div>
-                <div class="gluk-text" id="glukText"></div>
-            </div>
-            <button id="returnBtn" class="return-btn">💀 ВЕРНУТЬСЯ В МЕНЮ 💀</button>
-            <div class="alert-light"></div>
-            <div class="alert-light alert-light2"></div>
-        </div>
+<div class="bg-wall">
+    <div class="panel panel1"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+    <div class="panel panel2"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+    <div class="panel panel3"><div class="bolt bolt1"></div><div class="bolt bolt2"></div><div class="bolt bolt3"></div><div class="bolt bolt4"></div></div>
+    <div class="pipe pipe1 pipe-hor"></div>
+    <div class="pipe pipe2 pipe-hor"></div>
+    <div class="pipe pipe3 pipe-ver"></div>
+    <div class="pipe pipe4 pipe-ver"></div>
+    <div class="pipe pipe5 pipe-ver"></div>
+    <div class="valve valve1"></div>
+    <div class="valve valve2"></div>
+    <div class="valve valve3"></div>
+    <div class="floor-grate"></div>
+    <div class="fog"></div>
+</div>
+
+<div class="platform">
+    <div class="conveyor-belt"></div>
+    <div class="rollers">
+        <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
+        <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
+        <div class="roller"></div><div class="roller"></div><div class="roller"></div><div class="roller"></div>
     </div>
+    <div class="press">
+        <div class="rivet rivet1"></div><div class="rivet rivet2"></div>
+        <div class="rivet rivet3"></div><div class="rivet rivet4"></div>
+        <div class="rivet rivet5"></div><div class="rivet rivet6"></div>
+        <div class="rivet rivet7"></div><div class="rivet rivet8"></div>
+        <div class="hydraulic-left"></div><div class="hydraulic-right"></div>
+        <div class="hose"></div>
+        <div class="gauge"><div class="gauge-needle" id="gaugeNeedle"></div></div>
+        <div class="press-top"></div>
+        <div class="press-bottom"></div>
+        <div class="press-text">⚠️ ГИДРАВЛИЧЕСКИЙ ПРЕСС ⚠️</div>
+    </div>
+    <div class="player" id="player"></div>
+    <div class="gluk-box" id="glukBox">
+        <div class="gluk-header">
+            <div class="gluk-avatar">🟩</div>
+            <div class="gluk-name">ГЛюК (главный логический компьютер)</div>
+        </div>
+        <div class="gluk-text" id="glukText"></div>
+    </div>
+    <button id="returnBtn" class="return-btn">💀 ВЕРНУТЬСЯ В МЕНЮ 💀</button>
+    <div class="alert-light"></div>
+    <div class="alert-light alert-light2"></div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+<!-- Экран затемнения с кнопкой -->
+<div class="start-screen" id="startScreen">
+    <div class="start-btn" id="startBtn"></div>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
-            authDomain: "apex-8f11e.firebaseapp.com",
-            databaseURL: "https://apex-8f11e-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "apex-8f11e",
-            storageBucket: "apex-8f11e.firebasestorage.app",
-            messagingSenderId: "923734077108",
-            appId: "1:923734077108:web:f6d2d4059972c215c371e1"
-        };
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+<script>
+    // ========== АУДИО (включается при клике на кнопку) ==========
+    let audioContext = null;
+    let musicSource = null;
+    let musicGain = null;
+    let soundEnabled = false;
+    let tickBuffer = null;
 
-        // ========== ЗВУКИ ==========
-        let audioContext = null;
-        let tickBuffer = null;
-        let soundEnabled = false;
+    async function initAudio() {
+        if (audioContext) return;
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Буфер для звука печати (короткий "тик")
+        tickBuffer = audioContext.createBuffer(1, 2205, 44100);
+        let data = tickBuffer.getChannelData(0);
+        for (let i = 0; i < 2205; i++) {
+            data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
+        }
+        // Фоновая музыка – гул (низкий осциллятор + шум)
+        musicGain = audioContext.createGain();
+        musicGain.gain.value = 0.25;
+        musicGain.connect(audioContext.destination);
+        const oscillator = audioContext.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 55;
+        oscillator.connect(musicGain);
+        const noise = audioContext.createBufferSource();
+        const noiseBuffer = audioContext.createBuffer(1, 44100 * 2, 44100);
+        let noiseData = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < 44100 * 2; i++) {
+            noiseData[i] = (Math.random() - 0.5) * 0.1;
+        }
+        noise.buffer = noiseBuffer;
+        noise.loop = true;
+        noise.connect(musicGain);
+        oscillator.start();
+        noise.start();
+        musicSource = { osc: oscillator, noise: noise };
+        soundEnabled = true;
+    }
 
-        function playCrunchSound() {
-            if (!audioContext) return;
-            const now = audioContext.currentTime;
-            const gain = audioContext.createGain();
-            gain.connect(audioContext.destination);
-            gain.gain.setValueAtTime(0.3, now);
-            gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
-            const bufferSize = 4096;
-            const noise = audioContext.createScriptProcessor(bufferSize, 1, 1);
-            noise.onaudioprocess = function(e) {
-                const output = e.outputBuffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() - 0.5) * 0.8;
-            };
-            noise.connect(gain);
-            noise.start(now);
-            noise.stop(now + 0.4);
-            for (let i = 0; i < 12; i++) {
-                const osc = audioContext.createOscillator();
-                const oscGain = audioContext.createGain();
-                osc.type = 'triangle';
-                osc.frequency.value = 200 + Math.random() * 400;
-                osc.connect(oscGain);
-                oscGain.connect(audioContext.destination);
-                oscGain.gain.setValueAtTime(0.15, now + i * 0.03);
-                oscGain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.03 + 0.1);
-                osc.start(now + i * 0.03);
-                osc.stop(now + i * 0.03 + 0.1);
+    function playTick() {
+        if (!soundEnabled || !audioContext || !tickBuffer) return;
+        const source = audioContext.createBufferSource();
+        source.buffer = tickBuffer;
+        source.connect(audioContext.destination);
+        source.start();
+    }
+
+    // ========== ОСНОВНАЯ ЛОГИКА ==========
+    const player = document.getElementById('player');
+    const pressDiv = document.querySelector('.press');
+    const returnBtn = document.getElementById('returnBtn');
+    const glukTextDiv = document.getElementById('glukText');
+    const platform = document.querySelector('.platform');
+    const bodyEl = document.body;
+    const gaugeNeedle = document.getElementById('gaugeNeedle');
+    const startScreen = document.getElementById('startScreen');
+    const startBtn = document.getElementById('startBtn');
+
+    let currentLeft = 70;
+    let targetLeft = 0;
+    let moveInterval = null;
+    let animationActive = false;
+
+    // Эффекты
+    function createSpark(x, y) {
+        const spark = document.createElement('div');
+        spark.classList.add('spark');
+        spark.style.left = x + 'px';
+        spark.style.top = y + 'px';
+        document.body.appendChild(spark);
+        setTimeout(() => spark.remove(), 200);
+    }
+    function createSmoke(x, y) {
+        const smoke = document.createElement('div');
+        smoke.classList.add('smoke');
+        smoke.style.left = x + 'px';
+        smoke.style.top = y + 'px';
+        document.body.appendChild(smoke);
+        setTimeout(() => smoke.remove(), 800);
+    }
+    function createBloodSpray(x, y) {
+        for(let i=0;i<40;i++) {
+            const drop = document.createElement('div');
+            drop.classList.add('blood');
+            drop.style.width = Math.random()*8+3 + 'px';
+            drop.style.height = drop.style.width;
+            drop.style.left = x + (Math.random()-0.5)*70 + 'px';
+            drop.style.top = y + (Math.random()-0.5)*80 + 'px';
+            drop.style.opacity = Math.random()*0.7+0.2;
+            document.body.appendChild(drop);
+            setTimeout(() => drop.remove(), 2000);
+        }
+    }
+
+    function startMovingToPress() {
+        if (moveInterval) clearInterval(moveInterval);
+        animationActive = true;
+        const step = 14;
+        moveInterval = setInterval(() => {
+            if (currentLeft < targetLeft) {
+                currentLeft += step;
+                player.style.left = currentLeft + 'px';
+                const rect = player.getBoundingClientRect();
+                createSpark(rect.left + 20, rect.bottom - 12);
+                if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
+            } else {
+                clearInterval(moveInterval);
+                animatePressAndCrush();
             }
-        }
+        }, 40);
+    }
 
-        function playTick() {
-            if (!soundEnabled || !audioContext || !tickBuffer) return;
-            const source = audioContext.createBufferSource();
-            source.buffer = tickBuffer;
-            source.connect(audioContext.destination);
-            source.start();
+    function animatePressAndCrush() {
+        pressDiv.classList.add('press-crush');
+        platform.classList.add('shake-platform');
+        bodyEl.classList.add('shake-cam');
+        setTimeout(() => bodyEl.classList.remove('shake-cam'), 300);
+        setTimeout(() => platform.classList.remove('shake-platform'), 400);
+        
+        const pressRect = pressDiv.getBoundingClientRect();
+        for(let i=0;i<70;i++) {
+            setTimeout(() => {
+                createSpark(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
+            }, i*10);
         }
-
-        async function initAudio() {
-            if (audioContext) return;
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            tickBuffer = audioContext.createBuffer(1, 2205, 44100);
-            let data = tickBuffer.getChannelData(0);
-            for (let i = 0; i < 2205; i++) data[i] = Math.sin(i * 0.05) * 0.15 * (1 - i/2205);
-            const musicGain = audioContext.createGain();
-            musicGain.gain.value = 0.25;
-            musicGain.connect(audioContext.destination);
-            const oscillator = audioContext.createOscillator();
-            oscillator.type = 'sine';
-            oscillator.frequency.value = 55;
-            oscillator.connect(musicGain);
-            const noise = audioContext.createBufferSource();
-            const noiseBuffer = audioContext.createBuffer(1, 44100 * 2, 44100);
-            let noiseData = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < 44100 * 2; i++) noiseData[i] = (Math.random() - 0.5) * 0.1;
-            noise.buffer = noiseBuffer;
-            noise.loop = true;
-            noise.connect(musicGain);
-            oscillator.start();
-            noise.start();
-            soundEnabled = true;
+        for(let i=0;i<40;i++) {
+            setTimeout(() => {
+                createSmoke(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
+            }, i*18);
         }
-
-        // ========== ЗАГРУЗКА АВАТАРА ==========
-        async function loadUserAvatar() {
-            return new Promise((resolve) => {
-                onAuthStateChanged(auth, async (user) => {
-                    if (user) {
-                        const snapshot = await get(ref(db, 'users/' + user.uid));
-                        if (snapshot.exists()) {
-                            const userData = snapshot.val();
-                            resolve(userData.avatar || '⚛️');
-                        } else resolve('⚛️');
-                    } else resolve('⚛️');
-                });
-            });
-        }
-
-        // ========== ОСНОВНАЯ ЛОГИКА (БЕЗ ДВИЖЕНИЯ) ==========
-        const startBtn = document.getElementById('startBtn');
-        const mainScene = document.getElementById('mainScene');
-        const playerDiv = document.getElementById('player');
-        const avatarSymbolSpan = document.getElementById('avatarSymbol');
-        const pressDiv = document.querySelector('.press');
-        const returnBtn = document.getElementById('returnBtn');
-        const glukTextDiv = document.getElementById('glukText');
-        const platform = document.querySelector('.platform');
-        const bodyEl = document.body;
-
-        let crushTriggered = false;
-        let msgIndex = 0;
-        let isTyping = false;
-
-        function createSpark(x, y) {
-            const spark = document.createElement('div');
-            spark.classList.add('spark');
-            spark.style.left = x + 'px';
-            spark.style.top = y + 'px';
-            document.body.appendChild(spark);
-            setTimeout(() => spark.remove(), 200);
-        }
-        function createSmoke(x, y) {
-            const smoke = document.createElement('div');
-            smoke.classList.add('smoke');
-            smoke.style.left = x + 'px';
-            smoke.style.top = y + 'px';
-            document.body.appendChild(smoke);
-            setTimeout(() => smoke.remove(), 800);
-        }
-        function createBloodSpray(x, y) {
-            for(let i=0;i<40;i++) {
-                const drop = document.createElement('div');
-                drop.classList.add('blood');
-                drop.style.width = Math.random()*8+3 + 'px';
-                drop.style.height = drop.style.width;
-                drop.style.left = x + (Math.random()-0.5)*70 + 'px';
-                drop.style.top = y + (Math.random()-0.5)*80 + 'px';
-                drop.style.opacity = Math.random()*0.7+0.2;
-                document.body.appendChild(drop);
-                setTimeout(() => drop.remove(), 2000);
-            }
-        }
-
-        // Прямое плющение без движения
-        function crushPlayer() {
-            if (crushTriggered) return;
-            crushTriggered = true;
-            
-            pressDiv.classList.add('press-crush');
-            platform.classList.add('shake-platform');
-            bodyEl.classList.add('shake-cam');
-            setTimeout(() => bodyEl.classList.remove('shake-cam'), 300);
-            setTimeout(() => platform.classList.remove('shake-platform'), 400);
-            
-            if (audioContext) playCrunchSound();
-            
-            const pressRect = pressDiv.getBoundingClientRect();
-            for(let i=0;i<70;i++) {
-                setTimeout(() => {
-                    createSpark(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-                }, i*10);
-            }
-            for(let i=0;i<40;i++) {
-                setTimeout(() => {
-                    createSmoke(pressRect.left + Math.random()*pressRect.width, pressRect.top + Math.random()*pressRect.height);
-                }, i*18);
-            }
-            
-            // Игрок исчезает
-            playerDiv.style.transition = 'transform 0.2s, opacity 0.2s';
-            playerDiv.style.transform = 'scale(0.01)';
-            playerDiv.style.opacity = '0';
+        
+        setTimeout(() => {
+            player.style.transform = 'scale(0.1)';
+            player.style.opacity = '0';
             createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
-            
-            const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Казнь завершена.";
+            const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
             typeText(finalMsg, () => {
                 returnBtn.style.display = 'block';
             });
-            setTimeout(() => {
-                returnBtn.style.display = 'block';
-            }, 2500);
-        }
+        }, 200);
+    }
 
-        function typeText(text, callback) {
-            if (isTyping) return;
-            isTyping = true;
-            glukTextDiv.innerHTML = '';
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < text.length) {
-                    glukTextDiv.innerHTML += text[i];
-                    if (soundEnabled) playTick();
-                    i++;
-                } else {
-                    clearInterval(interval);
-                    isTyping = false;
-                    const cursorSpan = document.createElement('span');
-                    cursorSpan.className = 'cursor';
-                    glukTextDiv.appendChild(cursorSpan);
-                    if (callback) callback();
-                }
-            }, 45);
-        }
-
-        const messages = [
-            "ПЯТЬ поражений в крестиках-ноликах. ПЯТЬ! Это клинический случай.",
-            "Даже мой старый холодильник (сервер) обыграл бы тебя с закрытыми глазами.",
-            "Правила элементарны: три в ряд. Но ты, видимо, решил проверить, что будет, если играть без мозгов.",
-            "Теперь ты отправишься в промышленный пресс. Таков закон ASL.",
-            "Надеюсь, хоть сейчас до тебя дойдёт, что надо блокировать ходы соперника, а не ставить крестики в угол для красоты.",
-            "Ладно, хватит слов. Конвейер уже ждёт."
-        ];
-
-        function playNextMessage() {
-            if (msgIndex < messages.length) {
-                typeText(messages[msgIndex], () => {
-                    msgIndex++;
-                    setTimeout(() => {
-                        glukTextDiv.innerHTML = '';
-                        playNextMessage();
-                    }, 1300);
-                });
+    // Печать текста со звуком
+    let isTyping = false;
+    function typeText(text, callback) {
+        if (isTyping) return;
+        isTyping = true;
+        glukTextDiv.innerHTML = '';
+        let i = 0;
+        const interval = setInterval(() => {
+            if (i < text.length) {
+                glukTextDiv.innerHTML += text[i];
+                if (soundEnabled) playTick();
+                i++;
             } else {
-                setTimeout(() => {
-                    crushPlayer();
-                }, 600);
+                clearInterval(interval);
+                isTyping = false;
+                const cursorSpan = document.createElement('span');
+                cursorSpan.className = 'cursor';
+                glukTextDiv.appendChild(cursorSpan);
+                if (callback) callback();
             }
+        }, 45);
+    }
+
+    const messages = [
+        "ПЯТЬ поражений в крестиках-ноликах. ПЯТЬ! Это клинический случай.",
+        "Даже мой старый холодильник (сервер) обыграл бы тебя с закрытыми глазами.",
+        "Правила элементарны: три в ряд. Но ты, видимо, решил проверить, что будет, если играть без мозгов.",
+        "Теперь ты отправишься в промышленный пресс. Таков закон ASL.",
+        "Надеюсь, хоть сейчас до тебя дойдёт, что надо блокировать ходы соперника, а не ставить крестики в угол для красоты.",
+        "Ладно, хватит слов. Конвейер уже ждёт."
+    ];
+    let msgIndex = 0;
+    function playNextMessage() {
+        if (msgIndex < messages.length) {
+            typeText(messages[msgIndex], () => {
+                msgIndex++;
+                setTimeout(() => {
+                    glukTextDiv.innerHTML = '';
+                    playNextMessage();
+                }, 1300);
+            });
+        } else {
+            setTimeout(() => {
+                startMovingToPress();
+            }, 600);
         }
+    }
 
-        startBtn.addEventListener('click', async () => {
-            startBtn.classList.add('hide');
-            await initAudio();
-            const avatar = await loadUserAvatar();
-            avatarSymbolSpan.textContent = avatar;
-            mainScene.classList.add('visible');
-            document.body.classList.add('loaded');
-            playNextMessage();
-        });
+    // Инициализация: всё скрыто за затемнением, анимация не запущена
+    // После клика на кнопку – убираем затемнение, включаем звук и запускаем диалоги
+    startBtn.addEventListener('click', async () => {
+        // Включаем звук
+        await initAudio();
+        // Убираем стартовый экран
+        startScreen.style.opacity = '0';
+        setTimeout(() => {
+            startScreen.style.display = 'none';
+        }, 500);
+        // Запускаем сценарий
+        playNextMessage();
+    });
 
-        returnBtn.addEventListener('click', () => {
-            localStorage.removeItem('ttt_losses');
-            window.location.href = '../minigames.html';
-        });
-    </script>
+    // Рассчёт целевой позиции (для движения игрока)
+    window.addEventListener('load', () => {
+        player.style.left = '70px';
+        player.style.bottom = '95px';
+        currentLeft = 70;
+        const platformRect = platform.getBoundingClientRect();
+        const pressRect = pressDiv.getBoundingClientRect();
+        targetLeft = pressRect.left - platformRect.left - 80;
+        if (targetLeft < 200) targetLeft = 800;
+        // Анимация стрелки манометра
+        setInterval(() => {
+            if (!animationActive) {
+                const angle = 30 + Math.random() * 60;
+                gaugeNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+            } else {
+                gaugeNeedle.style.transform = `translateX(-50%) rotate(80deg)`;
+            }
+        }, 800);
+    });
+
+    returnBtn.addEventListener('click', () => {
+        localStorage.removeItem('ttt_losses');
+        window.location.href = '../minigames.html';
+    });
+
+    window.addEventListener('resize', () => {
+        if (!animationActive) {
+            const platformRect = platform.getBoundingClientRect();
+            const pressRect = pressDiv.getBoundingClientRect();
+            targetLeft = pressRect.left - platformRect.left - 80;
+            if (targetLeft < 200) targetLeft = 800;
+        }
+    });
+</script>
 </body>
 </html>
