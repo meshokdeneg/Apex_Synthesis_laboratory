@@ -705,12 +705,9 @@
         const bodyEl = document.body;
         const gaugeNeedle = document.getElementById('gaugeNeedle');
 
-        let currentLeft = 70;
-        let targetLeft = 0;
-        let moveInterval = null;
-        let animationActive = false;
         let msgIndex = 0;
         let isTyping = false;
+        let crushTriggered = false;
 
         function createSpark(x, y) {
             const spark = document.createElement('div');
@@ -742,26 +739,11 @@
             }
         }
 
-        function startMovingToPress() {
-            if (moveInterval) clearInterval(moveInterval);
-            animationActive = true;
-            const step = 14;
-            moveInterval = setInterval(() => {
-                if (currentLeft < targetLeft) {
-                    currentLeft += step;
-                    playerDiv.style.left = currentLeft + 'px';
-                    const rect = playerDiv.getBoundingClientRect();
-                    createSpark(rect.left + 20, rect.bottom - 12);
-                    if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
-                } else {
-                    clearInterval(moveInterval);
-                    animatePressAndCrush();
-                }
-            }, 40);
-        }
-
-        function animatePressAndCrush() {
-            // Добавляем классы анимации пресса и тряски
+        function crushPlayer() {
+            if (crushTriggered) return;
+            crushTriggered = true;
+            
+            // Анимация пресса
             pressDiv.classList.add('press-crush');
             platform.classList.add('shake-platform');
             bodyEl.classList.add('shake-cam');
@@ -782,17 +764,17 @@
                 }, i*18);
             }
             
-            // Игрок исчезает через 200 мс после начала прессования
-            setTimeout(() => {
-                playerDiv.style.transition = 'transform 0.2s, opacity 0.2s';
-                playerDiv.style.transform = 'scale(0.01)';
-                playerDiv.style.opacity = '0';
-                createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
-                const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
-                typeText(finalMsg, () => {
-                    returnBtn.style.display = 'block';
-                });
-            }, 200);
+            // Игрок исчезает
+            playerDiv.style.transition = 'transform 0.2s, opacity 0.2s';
+            playerDiv.style.transform = 'scale(0.01)';
+            playerDiv.style.opacity = '0';
+            createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
+            
+            // Финальный текст и кнопка
+            const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
+            typeText(finalMsg, () => {
+                returnBtn.style.display = 'block';
+            });
         }
 
         function typeText(text, callback) {
@@ -835,8 +817,9 @@
                     }, 1300);
                 });
             } else {
+                // После всех сообщений запускаем прессование
                 setTimeout(() => {
-                    startMovingToPress();
+                    crushPlayer();
                 }, 600);
             }
         }
@@ -848,20 +831,9 @@
             avatarSymbolSpan.textContent = avatar;
             mainScene.classList.add('visible');
             document.body.classList.add('loaded');
-            playerDiv.style.left = '70px';
-            playerDiv.style.bottom = '95px';
-            currentLeft = 70;
-            // Гарантируем, что цель будет далеко
-            const platformRect = platform.getBoundingClientRect();
-            const pressRect = pressDiv.getBoundingClientRect();
-            let calculatedTarget = pressRect.left - platformRect.left - 70;
-            if (calculatedTarget <= currentLeft) {
-                calculatedTarget = currentLeft + 600;
-            }
-            targetLeft = calculatedTarget;
             playNextMessage();
             setInterval(() => {
-                if (!animationActive) {
+                if (!crushTriggered) {
                     const angle = 30 + Math.random() * 60;
                     gaugeNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
                 } else {
@@ -873,16 +845,6 @@
         returnBtn.addEventListener('click', () => {
             localStorage.removeItem('ttt_losses');
             window.location.href = '../minigames.html';
-        });
-
-        window.addEventListener('resize', () => {
-            if (!animationActive && mainScene.classList.contains('visible')) {
-                const platformRect = platform.getBoundingClientRect();
-                const pressRect = pressDiv.getBoundingClientRect();
-                let newTarget = pressRect.left - platformRect.left - 70;
-                if (newTarget <= currentLeft) newTarget = currentLeft + 600;
-                targetLeft = newTarget;
-            }
         });
     </script>
 </body>
