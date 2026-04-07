@@ -47,7 +47,7 @@
             z-index: -2;
         }
 
-        /* ===== ПАР (исходит под давлением с промежутками) ===== */
+        /* ===== ПАР (длиннее и быстрее) ===== */
         .steam {
             position: fixed;
             bottom: 0;
@@ -67,7 +67,7 @@
             border-radius: 50%;
             filter: blur(8px);
             opacity: 0;
-            animation: steamRise 4s ease-out forwards;
+            animation: steamRise 3s ease-out forwards; /* быстрее: 3с вместо 4 */
         }
         @keyframes steamRise {
             0% {
@@ -82,15 +82,15 @@
             }
             100% {
                 opacity: 0;
-                transform: translateY(-400px) scale(1.5);
+                transform: translateY(-600px) scale(1.6); /* длиннее: -600px вместо -400 */
             }
         }
 
-        /* ===== КАПЛИ КРОВИ (постоянно капают) ===== */
+        /* ===== КАПЛИ КРОВИ (чуть больше) ===== */
         .blood-drip {
             position: fixed;
-            width: 6px;
-            height: 12px;
+            width: 8px;      /* было 6px */
+            height: 16px;    /* было 12px */
             background: #8b0000;
             border-radius: 0 0 50% 50%;
             filter: blur(1px);
@@ -671,36 +671,29 @@
         if (!container) return;
         const steam = document.createElement('div');
         steam.classList.add('steam-cloud');
-        // Случайная позиция по горизонтали
         const leftPos = Math.random() * 100;
         steam.style.left = leftPos + '%';
-        // Случайная задержка (0-3 секунды)
         const delay = Math.random() * 3;
         steam.style.animationDelay = delay + 's';
-        // Случайный размер
-        const size = 100 + Math.random() * 100;
+        const size = 100 + Math.random() * 120;
         steam.style.width = size + 'px';
         steam.style.height = size + 'px';
         container.appendChild(steam);
-        // Удаляем элемент после анимации
         setTimeout(() => {
             if (steam && steam.parentNode) steam.remove();
-        }, 4000 + delay * 1000);
+        }, 3000 + delay * 1000);
     }
-    // Запускаем генерацию пара с интервалом 2-5 секунд
     setInterval(() => {
         createSteam();
-    }, 2500);
+    }, 2000); // чаще: 2 сек вместо 2.5
 
-    // ========== КАПЛИ КРОВИ (постоянно) ==========
+    // ========== КАПЛИ КРОВИ ==========
     function createBloodDrip() {
         const drip = document.createElement('div');
         drip.classList.add('blood-drip');
-        // Случайная позиция по горизонтали (в основном над прессом и конвейером)
         const leftPos = 200 + Math.random() * 800;
         drip.style.left = leftPos + 'px';
         drip.style.top = '-20px';
-        // Случайная длительность падения (1.5 - 3 секунды)
         const duration = 1.5 + Math.random() * 1.5;
         drip.style.animationDuration = duration + 's';
         document.body.appendChild(drip);
@@ -708,10 +701,9 @@
             if (drip && drip.parentNode) drip.remove();
         }, duration * 1000);
     }
-    // Капли появляются каждые 0.5–1.5 секунды
     setInterval(() => {
         createBloodDrip();
-    }, 800);
+    }, 700); // чаще: 0.7 сек
 
     // ========== АУДИО ==========
     let audioContext = null;
