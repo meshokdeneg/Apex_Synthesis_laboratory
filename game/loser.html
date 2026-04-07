@@ -705,9 +705,10 @@
         const bodyEl = document.body;
         const gaugeNeedle = document.getElementById('gaugeNeedle');
 
+        let moveInterval = null;
+        let crushTriggered = false;
         let msgIndex = 0;
         let isTyping = false;
-        let crushTriggered = false;
 
         function createSpark(x, y) {
             const spark = document.createElement('div');
@@ -739,11 +740,34 @@
             }
         }
 
+        // Движение игрока к прессу
+        function startMovingToPress() {
+            if (moveInterval) clearInterval(moveInterval);
+            const platformRect = platform.getBoundingClientRect();
+            const pressRect = pressDiv.getBoundingClientRect();
+            let targetLeft = pressRect.left - platformRect.left - 70;
+            if (targetLeft <= 70) targetLeft = 70 + 600; // запас
+            let currentLeft = 70;
+            playerDiv.style.left = currentLeft + 'px';
+            const step = 14;
+            moveInterval = setInterval(() => {
+                if (currentLeft < targetLeft) {
+                    currentLeft += step;
+                    playerDiv.style.left = currentLeft + 'px';
+                    const rect = playerDiv.getBoundingClientRect();
+                    createSpark(rect.left + 20, rect.bottom - 12);
+                    if (Math.random() < 0.25) createSmoke(rect.left + 15, rect.bottom - 8);
+                } else {
+                    clearInterval(moveInterval);
+                    crushPlayer();
+                }
+            }, 40);
+        }
+
         function crushPlayer() {
             if (crushTriggered) return;
             crushTriggered = true;
             
-            // Анимация пресса
             pressDiv.classList.add('press-crush');
             platform.classList.add('shake-platform');
             bodyEl.classList.add('shake-cam');
@@ -770,7 +794,6 @@
             playerDiv.style.opacity = '0';
             createBloodSpray(pressRect.left + pressRect.width/2, pressRect.top + pressRect.height/2);
             
-            // Финальный текст и кнопка
             const finalMsg = " ... Хруст. Очередной болван спрессован в кубик. Иди тренируйся, неудачник.";
             typeText(finalMsg, () => {
                 returnBtn.style.display = 'block';
@@ -817,9 +840,9 @@
                     }, 1300);
                 });
             } else {
-                // После всех сообщений запускаем прессование
+                // Все сообщения выведены – начинаем движение к прессу
                 setTimeout(() => {
-                    crushPlayer();
+                    startMovingToPress();
                 }, 600);
             }
         }
