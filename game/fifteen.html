@@ -61,6 +61,72 @@
         }
         button:hover { background: #FF8C00; }
         a { color: #FF8C00; text-decoration: none; }
+
+        /* Модальное окно ГЛюКа */
+        .gluk-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .gluk-content {
+            background: #1a2a2f;
+            border: 3px solid #FF8C00;
+            border-radius: 30px;
+            max-width: 450px;
+            width: 90%;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(255,140,0,0.3);
+        }
+        .gluk-avatar {
+            background: #00FF9D;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 15px #0f0;
+        }
+        .gluk-name {
+            color: #FF8C00;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        .gluk-message {
+            color: #0f0;
+            font-size: 18px;
+            line-height: 1.4;
+            margin-bottom: 25px;
+            font-family: monospace;
+        }
+        .gluk-close {
+            background: #4A90E2;
+            border: none;
+            border-radius: 40px;
+            padding: 10px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .gluk-close:hover {
+            background: #FF8C00;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -70,10 +136,36 @@
     <button id="shuffle">🔀 Перемешать</button>
     <div><a href="../minigames.html">← К списку игр</a></div>
 </div>
+
+<!-- Модальное окно ГЛюКа -->
+<div id="glukModal" class="gluk-modal">
+    <div class="gluk-content">
+        <div class="gluk-avatar">🟩</div>
+        <div class="gluk-name">ГЛюК (главный логический компьютер)</div>
+        <div class="gluk-message" id="glukMessage"></div>
+        <button class="gluk-close" id="glukCloseBtn">🔁 НОВАЯ ИГРА</button>
+    </div>
+</div>
+
 <script>
     const size = 4;
     let tiles = [];
     let emptyRow = 3, emptyCol = 3;
+    let gameLocked = false; // блокировка ходов после победы
+
+    // Массив фраз ГЛюКа с подколами
+    const victoryMessages = [
+        "Ну наконец-то! Я уже думал, ты будешь собирать эти пятнашки до конца времён.",
+        "Поздравляю... Но знаешь, даже мой холодильник собирает их быстрее.",
+        "Справился. Удивительно. Видимо, у тебя есть свободное время.",
+        "О, смотрите, кто-то победил! Наверное, это был просто случайный ход?",
+        "Неужели ты смог? А я уже приготовил пресс... Ладно, повезло тебе.",
+        "Победа? Да ты просто перебирал варианты, пока не повезло.",
+        "Поздравляю. Но в следующий раз я сделаю пятнашки 6x6, посмотрим, как ты запоешь.",
+        "Хм. Одна победа из тысячи попыток. Неплохо для болвана.",
+        "Ты это серьёзно? Пять минут возился с простейшей головоломкой. Ладно, забирай свою победу.",
+        "Собрал. И что? Теперь чувствуешь себя гением? Иди дальше, не задерживайся."
+    ];
 
     function initBoard() {
         tiles = [];
@@ -86,6 +178,7 @@
         tiles[size-1][size-1] = 0;
         emptyRow = size-1;
         emptyCol = size-1;
+        gameLocked = false;
         render();
     }
 
@@ -112,6 +205,7 @@
     }
 
     function moveTile(row, col) {
+        if (gameLocked) return;
         if ((Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1) {
             tiles[emptyRow][emptyCol] = tiles[row][col];
             tiles[row][col] = 0;
@@ -119,11 +213,13 @@
             emptyCol = col;
             render();
             if (checkWin()) {
-                setTimeout(() => alert("Поздравляем! Вы собрали пятнашки!"), 50);
+                gameLocked = true;
+                showVictoryModal();
             }
         }
     }
 
+    // Проверка победы (все клетки по порядку, последняя пустая)
     function checkWin() {
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
@@ -134,7 +230,8 @@
         return true;
     }
 
-    function shuffle() {
+    // Перемешивание случайными ходами из пустой клетки (гарантирует разрешимость)
+    function shuffleBoard() {
         for (let step = 0; step < 500; step++) {
             let moves = [];
             if (emptyRow > 0) moves.push([emptyRow-1, emptyCol]);
@@ -142,16 +239,46 @@
             if (emptyCol > 0) moves.push([emptyRow, emptyCol-1]);
             if (emptyCol < size-1) moves.push([emptyRow, emptyCol+1]);
             let random = moves[Math.floor(Math.random() * moves.length)];
+            // временно отключаем блокировку, чтобы перемешать
+            let wasLocked = gameLocked;
+            gameLocked = false;
             moveTile(random[0], random[1]);
+            gameLocked = wasLocked;
         }
     }
 
-    document.getElementById('shuffle').addEventListener('click', () => {
+    // Показать модальное окно с случайной фразой
+    function showVictoryModal() {
+        const modal = document.getElementById('glukModal');
+        const msgSpan = document.getElementById('glukMessage');
+        const randomIndex = Math.floor(Math.random() * victoryMessages.length);
+        msgSpan.innerHTML = victoryMessages[randomIndex];
+        modal.style.display = 'flex';
+    }
+
+    // Закрыть модалку и начать новую игру
+    function closeModalAndRestart() {
+        const modal = document.getElementById('glukModal');
+        modal.style.display = 'none';
+        // Сброс доски и перемешивание
         initBoard();
-        shuffle();
+        shuffleBoard();
+    }
+
+    // Обработчики
+    document.getElementById('shuffle').addEventListener('click', () => {
+        if (gameLocked) {
+            // если игра заблокирована победой, сначала сбросим флаг
+            gameLocked = false;
+        }
+        initBoard();
+        shuffleBoard();
     });
+    document.getElementById('glukCloseBtn').addEventListener('click', closeModalAndRestart);
+
+    // Старт игры
     initBoard();
-    shuffle(); // стартовая перемешка
+    shuffleBoard(); // начальная перемешка
 </script>
 </body>
 </html>
