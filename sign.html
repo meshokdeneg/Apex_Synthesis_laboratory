@@ -4,61 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>ASL | Бейдж ASL</title>
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-        // ТВОИ РЕАЛЬНЫЕ ДАННЫЕ ИЗ FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
-            authDomain: "apex-8f11e.firebaseapp.com",
-            databaseURL: "https://apex-8f11e-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "apex-8f11e",
-            storageBucket: "apex-8f11e.firebasestorage.app",
-            messagingSenderId: "923734077108",
-            appId: "1:923734077108:web:f6d2d4059972c215c371e1",
-            measurementId: "G-WTKS5JQ7Z5"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        const form = document.getElementById('loginForm');
-        const errorDiv = document.getElementById('errorMsg');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                showError('Заполните оба поля');
-                return;
-            }
-
-            try {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                alert('✅ Добро пожаловать, ' + userCredential.user.email);
-                // ПЕРЕНАПРАВЛЕНИЕ НА index.html
-                window.location.href = 'index.html';
-            } catch (error) {
-                let message = 'Ошибка входа. Проверьте ник (email) и пароль.';
-                if (error.code === 'auth/user-not-found') message = 'Пользователь не найден';
-                if (error.code === 'auth/wrong-password') message = 'Неверный пароль';
-                if (error.code === 'auth/invalid-email') message = 'Неверный формат email';
-                showError(message);
-            }
-        });
-
-        function showError(text) {
-            errorDiv.style.display = 'block';
-            errorDiv.innerHTML = `⚠️ ${text}`;
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 4000);
-        }
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -79,7 +27,6 @@
             align-items: center;
         }
 
-        /* Контейнер — усиленный контур, чтобы не сливался с фоном */
         .badge-container {
             max-width: 550px;
             width: 100%;
@@ -91,7 +38,6 @@
             overflow: hidden;
         }
 
-        /* Шапка — как на странице "О ASL" */
         .badge-header {
             background: #1a2a2f;
             padding: 22px 30px;
@@ -112,7 +58,6 @@
             margin-top: 8px;
         }
 
-        /* Основное тело */
         .badge-body {
             padding: 32px 30px 35px;
         }
@@ -126,7 +71,6 @@
             text-align: center;
         }
 
-        /* Поля ввода */
         .input-group {
             text-align: left;
             margin-bottom: 22px;
@@ -158,7 +102,6 @@
             box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.2);
         }
 
-        /* Кнопка — как в футере страницы "О ASL" */
         .login-btn {
             width: 100%;
             padding: 12px;
@@ -183,7 +126,6 @@
             box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
         }
 
-        /* Ссылка назад */
         .back-link {
             display: inline-block;
             margin-top: 25px;
@@ -198,7 +140,6 @@
             border-bottom-color: #FF8C00;
         }
 
-        /* Футер */
         .asl-footer {
             margin-top: 30px;
             padding-top: 18px;
@@ -209,7 +150,6 @@
             font-family: monospace;
         }
 
-        /* Ошибка */
         .error-message {
             background: #fff2f0;
             border-left: 3px solid #d32f2f;
@@ -223,7 +163,14 @@
             border-radius: 6px;
         }
 
-        /* Адаптация под телефон */
+        .loading-message {
+            text-align: center;
+            margin-top: 15px;
+            color: #FF8C00;
+            font-size: 13px;
+            display: none;
+        }
+
         @media (max-width: 600px) {
             .badge-header h1 {
                 font-size: 26px;
@@ -247,26 +194,25 @@
 </head>
 <body>
     <div class="badge-container">
-        <!-- Шапка -->
         <div class="badge-header">
             <h1>🏷️ БЕЙДЖ ASL</h1>
             <p>Авторизация в системе</p>
         </div>
 
-        <!-- Тело -->
         <div class="badge-body">
             <div class="badge-sub">Доступ к защищённым протоколам</div>
 
             <div class="error-message" id="errorMsg"></div>
+            <div class="loading-message" id="loadingMsg">⏳ Поиск аккаунта...</div>
 
             <form id="loginForm">
                 <div class="input-group">
-                    <label>Идентификатор сотрудника</label>
-                    <input type="text" id="username" placeholder="ник" autocomplete="off">
+                    <label>Идентификатор сотрудника (ник)</label>
+                    <input type="text" id="username" placeholder="Ваш никнейм" autocomplete="off">
                 </div>
                 <div class="input-group">
                     <label>Код доступа</label>
-                    <input type="password" id="password" placeholder="пароль">
+                    <input type="password" id="password" placeholder="Пароль">
                 </div>
                 <button type="submit" class="login-btn">ВОЙТИ →</button>
             </form>
@@ -280,5 +226,108 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ========== FIREBASE КОНФИГ ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyAuCRlflkjJQeKd4EyBGQIa6wUNWLNKo3c",
+            authDomain: "apex-8f11e.firebaseapp.com",
+            projectId: "apex-8f11e",
+            storageBucket: "apex-8f11e.firebasestorage.app",
+            messagingSenderId: "923734077108",
+            appId: "1:923734077108:web:f6d2d4059972c215c371e1",
+            measurementId: "G-WTKS5JQ7Z5"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const form = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('errorMsg');
+        const loadingMsg = document.getElementById('loadingMsg');
+
+        function showError(text) {
+            errorMsg.style.display = 'block';
+            errorMsg.innerHTML = `⚠️ ${text}`;
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 4000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!username || !password) {
+                showError('Заполните оба поля');
+                return;
+            }
+            
+            errorMsg.style.display = 'none';
+            loadingMsg.style.display = 'block';
+            
+            try {
+                // 1. Ищем пользователя в Firestore по нику
+                const usersRef = db.collection('users');
+                const querySnapshot = await usersRef.where('username', '==', username).get();
+                
+                if (querySnapshot.empty) {
+                    throw new Error('Пользователь с таким ником не найден');
+                }
+                
+                let userData = null;
+                let userId = null;
+                querySnapshot.forEach(doc => {
+                    userData = doc.data();
+                    userId = doc.id;
+                });
+                
+                if (!userData || !userData.email) {
+                    throw new Error('У пользователя не найден email для входа');
+                }
+                
+                const email = userData.email;
+                
+                // 2. Вход в Firebase Auth по email
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // 3. Сохраняем в localStorage
+                localStorage.setItem('asl_user', JSON.stringify({
+                    uid: user.uid,
+                    username: userData.username,
+                    email: email,
+                    bio: userData.bio || 'Новый сотрудник ASL',
+                    avatar: userData.avatar || '🧊',
+                    level: userData.level || 1,
+                    cubes: userData.cubes || 100
+                }));
+                
+                // 4. Перенаправляем на главную
+                window.location.href = 'index.html';
+                
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                loadingMsg.style.display = 'none';
+                
+                if (error.message === 'Пользователь с таким ником не найден') {
+                    showError('❌ Пользователь с таким ником не найден');
+                } else if (error.code === 'auth/wrong-password') {
+                    showError('❌ Неверный пароль');
+                } else if (error.code === 'auth/user-not-found') {
+                    showError('❌ Пользователь не найден');
+                } else {
+                    showError('❌ Ошибка входа: ' + (error.message || 'Неизвестная ошибка'));
+                }
+            }
+        });
+    </script>
 </body>
 </html>
