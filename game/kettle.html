@@ -86,7 +86,6 @@
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
         }
 
-        /* Нагретая конфорка */
         .stove-hot {
             background: #4a1a1a;
             animation: stoveGlow 0.5s infinite alternate;
@@ -211,6 +210,53 @@
         @keyframes steamFloat {
             0% { transform: translateX(-50%) translateY(0) scale(1); opacity: 0.6; }
             100% { transform: translateX(-50%) translateY(-25px) scale(1.6); opacity: 0; }
+        }
+
+        /* Анимация взрыва и исчезновения чайника */
+        .kettle.explode {
+            animation: kettleExplode 0.5s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes kettleExplode {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1);
+            }
+            30% {
+                transform: scale(1.2) rotate(10deg);
+                opacity: 0.8;
+                filter: brightness(1.5);
+            }
+            100% {
+                transform: scale(0) rotate(45deg);
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+
+        /* Осколки (имитация взрыва) */
+        .debris {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #c0c0c0;
+            border-radius: 2px;
+            pointer-events: none;
+            z-index: 10;
+            animation: debrisFly 0.6s forwards;
+        }
+
+        @keyframes debrisFly {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         /* Шкала температуры */
@@ -338,30 +384,6 @@
             background: #FF8C00;
             color: #000;
         }
-
-        @keyframes shake {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(5px, -5px) rotate(5deg); }
-            50% { transform: translate(-5px, 2px) rotate(-3deg); }
-            75% { transform: translate(3px, -2px) rotate(2deg); }
-            100% { transform: translate(0, 0) rotate(0); }
-        }
-
-        .cube-explode {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            background: #FF8C00;
-            border: 2px solid #fff;
-            transform: rotate(45deg);
-            pointer-events: none;
-            z-index: 1000;
-            animation: flyCube 1.5s forwards;
-        }
-        @keyframes flyCube {
-            0% { transform: rotate(45deg) scale(0.5); opacity: 1; }
-            100% { transform: rotate(360deg) translateY(-300px) translateX(100px) scale(1.5); opacity: 0; }
-        }
     </style>
 </head>
 <body>
@@ -370,9 +392,8 @@
     <div class="sub">отдел экспериментальной термодинамики</div>
 
     <div class="kettle-area">
-        <!-- Плита (конфорка) -->
         <div class="stove" id="stove"></div>
-        <!-- Чайник -->
+        <!-- Чайник и его детали -->
         <div class="kettle" id="kettle">
             <div class="spout"></div>
             <div class="lid"></div>
@@ -476,17 +497,23 @@
             tempFill.style.background = "linear-gradient(90deg, #00ff00, #ffff00, #ff3300)";
         }
         
-        // Эффект кипения и накала плиты
-        if (temperature > 80 && !isExploded && !isVictory) {
-            kettleEl.classList.add('boiling');
-            if (temperature > 100) {
-                stoveEl.classList.add('stove-hot');
+        // Эффект кипения и накала плиты (только если чайник существует)
+        if (!isExploded && !isVictory) {
+            if (temperature > 80) {
+                kettleEl.classList.add('boiling');
+                if (temperature > 100) {
+                    stoveEl.classList.add('stove-hot');
+                } else {
+                    stoveEl.classList.remove('stove-hot');
+                }
+                if (temperature > 120) {
+                    kettleEl.style.filter = "drop-shadow(0 0 8px #ff6600)";
+                } else {
+                    kettleEl.style.filter = "";
+                }
             } else {
+                kettleEl.classList.remove('boiling');
                 stoveEl.classList.remove('stove-hot');
-            }
-            if (temperature > 120) {
-                kettleEl.style.filter = "drop-shadow(0 0 8px #ff6600)";
-            } else {
                 kettleEl.style.filter = "";
             }
         } else {
@@ -499,7 +526,7 @@
         if (isVictory) {
             statusDiv.innerHTML = "🏆 ПОБЕДА! Вы достигли цели! Нажмите «Сброс» для новой игры. 🏆";
         } else if (isExploded) {
-            statusDiv.innerHTML = "💀 ЧАЙНИК УНИЧТОЖЕН! Нажми «Сброс», чтобы начать заново 💀";
+            statusDiv.innerHTML = "💀 ЧАЙНИК УНИЧТОЖЕН! Нажми «Сброс», чтобы восстановить 💀";
         } else if (temperature === 0) {
             statusDiv.innerHTML = "🧊 Чайник ледяной. Зажми кнопку, чтобы нагреть и заработать очки!";
         } else if (temperature < 50) {
@@ -548,19 +575,72 @@
         let winMsg = victoryMessages[Math.floor(Math.random() * victoryMessages.length)];
         glukMsgDiv.innerHTML = "🏆 ГЛюК: " + winMsg;
         statusDiv.innerHTML = "🎉 ПОБЕДА! Вы набрали 10 000 очков! Нажмите «Сброс», чтобы начать заново. 🎉";
-        // Фейерверк кубов
-        for (let i = 0; i < 70; i++) {
+        // Показываем эффект звёздочек (без кубов)
+        for (let i = 0; i < 50; i++) {
             setTimeout(() => {
-                const cube = document.createElement('div');
-                cube.className = 'cube-explode';
-                cube.style.left = (Math.random() * window.innerWidth) + 'px';
-                cube.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * 200) + 'px';
-                cube.style.background = `hsl(${Math.random() * 360}, 70%, 55%)`;
-                cube.style.transform = `rotate(${Math.random() * 360}deg)`;
-                document.body.appendChild(cube);
-                setTimeout(() => cube.remove(), 1500);
+                const star = document.createElement('div');
+                star.textContent = "✨";
+                star.style.position = "fixed";
+                star.style.left = (Math.random() * window.innerWidth) + 'px';
+                star.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * 200) + 'px';
+                star.style.fontSize = "24px";
+                star.style.pointerEvents = "none";
+                star.style.zIndex = "1000";
+                star.style.opacity = "1";
+                star.style.transition = "opacity 1s";
+                document.body.appendChild(star);
+                setTimeout(() => star.remove(), 1000);
             }, i * 30);
         }
+    }
+    
+    // Взрыв с исчезновением чайника (без кубов)
+    function explode() {
+        if (isExploded) return;
+        isExploded = true;
+        stopHeating();
+        stopCooling();
+        
+        // Добавляем класс взрыва для анимации исчезновения
+        kettleEl.classList.add('explode');
+        
+        // Генерируем осколки (мелкие частицы)
+        const rect = kettleEl.getBoundingClientRect();
+        const containerRect = document.querySelector('.kettle-area').getBoundingClientRect();
+        for (let i = 0; i < 30; i++) {
+            const debris = document.createElement('div');
+            debris.className = 'debris';
+            const angle = Math.random() * 2 * Math.PI;
+            const speed = 50 + Math.random() * 80;
+            const dx = Math.cos(angle) * speed;
+            const dy = Math.sin(angle) * speed - 20;
+            debris.style.setProperty('--dx', dx + 'px');
+            debris.style.setProperty('--dy', dy + 'px');
+            debris.style.left = (rect.left - containerRect.left + Math.random() * rect.width) + 'px';
+            debris.style.top = (rect.top - containerRect.top + Math.random() * rect.height) + 'px';
+            document.querySelector('.kettle-area').appendChild(debris);
+            setTimeout(() => debris.remove(), 600);
+        }
+        
+        // Красная вспышка
+        const container = document.querySelector('.game-container');
+        container.style.transition = '0.05s';
+        container.style.background = '#8b0000';
+        setTimeout(() => { container.style.background = ''; }, 200);
+        
+        let explMsg = explosionMessages[Math.floor(Math.random() * explosionMessages.length)];
+        glukMsgDiv.innerHTML = "💥 ГЛюК: " + explMsg;
+        statusDiv.innerHTML = "💀 ВЗРЫВ! Чайник уничтожен. Нажми «Сброс», чтобы восстановить. 💀";
+        
+        // Сброс очков и температуры, но чайник исчез
+        score = 0;
+        temperature = EXPLOSION_TEMP;
+        updateUI();
+        
+        // Скрываем чайник после анимации (он уже невидим)
+        setTimeout(() => {
+            kettleEl.style.visibility = 'hidden';
+        }, 500);
     }
     
     function startCooling() {
@@ -621,55 +701,21 @@
         }
     }
     
-    function explode() {
-        if (isExploded) return;
-        isExploded = true;
-        stopHeating();
-        stopCooling();
-        
-        // Взрывная анимация
-        for (let i = 0; i < 60; i++) {
-            setTimeout(() => {
-                const cube = document.createElement('div');
-                cube.className = 'cube-explode';
-                cube.style.left = (Math.random() * window.innerWidth) + 'px';
-                cube.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * 200) + 'px';
-                cube.style.background = `hsl(${Math.random() * 360}, 70%, 55%)`;
-                document.body.appendChild(cube);
-                setTimeout(() => cube.remove(), 1500);
-            }, i * 40);
-        }
-        
-        const container = document.querySelector('.game-container');
-        container.style.transition = '0.05s';
-        container.style.background = '#8b0000';
-        setTimeout(() => { container.style.background = ''; }, 200);
-        
-        let explMsg = explosionMessages[Math.floor(Math.random() * explosionMessages.length)];
-        glukMsgDiv.innerHTML = "💥 ГЛюК: " + explMsg;
-        statusDiv.innerHTML = "💀 ВЗРЫВ! Все очки сброшены. Нажми «Сброс», чтобы восстановить. 💀";
-        
-        score = 0;
-        temperature = EXPLOSION_TEMP;
-        updateUI();
-        
-        kettleEl.style.animation = 'shake 0.3s ease-in-out 3';
-        setTimeout(() => {
-            kettleEl.style.animation = '';
-        }, 900);
-    }
-    
     function resetGame() {
+        // Полный сброс
         isExploded = false;
         isVictory = false;
         temperature = 0;
         score = 0;
         stopHeating();
         stopCooling();
-        updateUI();
+        // Возвращаем видимость чайника
+        kettleEl.style.visibility = 'visible';
+        kettleEl.classList.remove('explode');
+        kettleEl.style.animation = '';
         kettleEl.style.filter = "";
-        kettleEl.style.animation = "";
         stoveEl.classList.remove('stove-hot');
+        updateUI();
         glukMsgDiv.innerHTML = "🟩 ГЛюК: Чайник как новый. Цель — 10 000 очков. Удерживай кнопку для нагрева.";
         statusDiv.innerHTML = "Чайник остыл. Можно начинать заново.";
         startCooling();
@@ -680,7 +726,7 @@
         if (isExploded || isVictory) return;
         startHeating();
         heatBtn.classList.add('heat-active');
-        heatBtn.textContent = "🔥 НАГРЕВАЮ... ОТПУСТИ, ЧТОБЫ ОСТАНОВИТЬ";
+        heatBtn.textContent = "🔥 НАГРЕВАЮ...";
     }
     
     function onHeatEnd(e) {
