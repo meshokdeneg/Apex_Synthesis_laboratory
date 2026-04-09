@@ -2,7 +2,7 @@
 
 Сайт-лаборатория с головоломками, лором и экспериментами.
 
-🌐 Сайт: [https://meshokdeneg.github.io/Apex_Synthesis_laboratory/)
+🌐 Сайт: https://meshokdeneg.github.io/Apex_Synthesis_laboratory/
 
 ---
 
