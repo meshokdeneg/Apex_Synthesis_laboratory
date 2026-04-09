@@ -877,6 +877,44 @@
             }
         }
 
+        /* Сообщение таймера (больше и заметнее) */
+        .timer-message {
+            position: fixed;
+            bottom: 120px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            border: 3px solid #FF8C00;
+            border-radius: 60px;
+            padding: 16px 28px;
+            font-family: 'Segoe UI', monospace;
+            font-size: 24px;
+            font-weight: bold;
+            color: #FF8C00;
+            white-space: nowrap;
+            z-index: 10001;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 30px rgba(255,140,0,0.8);
+            animation: timerFloatUp 5s forwards;
+        }
+
+        @keyframes timerFloatUp {
+            0% {
+                bottom: 120px;
+                opacity: 1;
+                transform: scale(0.9);
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                bottom: calc(100% - 80px);
+                opacity: 0;
+                transform: scale(1.1);
+            }
+        }
+
         .drawer {
             position: fixed;
             left: 0;
@@ -947,7 +985,7 @@
             pointer-events: none;
         }
 
-        /* ===== НОВЫЕ СТИЛИ ДЛЯ МОДАЛЬНОГО ОКНА ВЫБОРА ===== */
+        /* Модальное окно выбора */
         .auth-modal {
             position: fixed;
             top: 0;
@@ -1483,6 +1521,41 @@
             e.preventDefault();
             openAuthModal();
         });
+
+        // ========== ТАЙМЕР НА 15 МИНУТ ==========
+        let timerTimeout = null;
+        
+        function showTimerMessage() {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'timer-message';
+            msgDiv.textContent = '🟩 ГЛюК: Ты всё ещё здесь? Я начинаю волноваться...';
+            document.body.appendChild(msgDiv);
+            setTimeout(() => {
+                if (msgDiv && msgDiv.parentNode) msgDiv.remove();
+            }, 5000);
+        }
+
+        // Запускаем таймер при загрузке страницы
+        function startInactivityTimer() {
+            if (timerTimeout) clearTimeout(timerTimeout);
+            timerTimeout = setTimeout(() => {
+                showTimerMessage();
+            }, 15 * 60 * 1000); // 15 минут
+        }
+
+        // Сбрасываем таймер при любой активности пользователя
+        function resetTimer() {
+            if (timerTimeout) clearTimeout(timerTimeout);
+            startInactivityTimer();
+        }
+
+        // Отслеживаем действия пользователя
+        window.addEventListener('load', startInactivityTimer);
+        window.addEventListener('mousemove', resetTimer);
+        window.addEventListener('click', resetTimer);
+        window.addEventListener('keydown', resetTimer);
+        window.addEventListener('scroll', resetTimer);
+        window.addEventListener('touchstart', resetTimer);
     </script>
 </body>
 </html>
