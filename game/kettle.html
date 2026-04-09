@@ -49,87 +49,168 @@
             margin-bottom: 20px;
         }
 
-        /* Чайник */
+        /* Область чайника с плитой */
         .kettle-area {
             background: #1e2a2f;
             border-radius: 60px;
-            padding: 25px;
+            padding: 25px 25px 35px 25px;
             margin-bottom: 20px;
             position: relative;
             border: 2px solid #4A90E2;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
         }
 
+        /* Плита (конфорка) */
+        .stove {
+            position: relative;
+            width: 200px;
+            height: 40px;
+            margin: 0 auto;
+            background: #2c2c2c;
+            border-radius: 40px;
+            box-shadow: 0 8px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .stove::before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 160px;
+            height: 30px;
+            background: radial-gradient(ellipse at center, #444, #222);
+            border-radius: 30px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Нагретая конфорка */
+        .stove-hot {
+            background: #4a1a1a;
+            animation: stoveGlow 0.5s infinite alternate;
+        }
+        .stove-hot::before {
+            background: radial-gradient(ellipse at center, #ff6600, #aa3300);
+            box-shadow: 0 0 20px #ff3300;
+        }
+
+        @keyframes stoveGlow {
+            from { box-shadow: 0 0 5px #ff3300; }
+            to { box-shadow: 0 0 20px #ff6600; }
+        }
+
+        /* Чайник (улучшенная графика) */
         .kettle {
             position: relative;
             width: 220px;
-            height: 220px;
-            margin: 0 auto;
-            background: linear-gradient(145deg, #d0d0d0, #a0a0a0);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.6);
+            height: 200px;
+            margin: 0 auto 15px auto;
+            background: radial-gradient(ellipse at 30% 35%, #e8e8e8, #b0b0b0);
+            border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.8);
             transition: transform 0.1s;
+            z-index: 5;
         }
 
+        /* Блик на чайнике */
         .kettle::before {
             content: "";
             position: absolute;
-            top: 50px;
-            right: -30px;
-            width: 50px;
-            height: 35px;
-            background: #b0b0b0;
-            border-radius: 0 40% 40% 0;
-            transform: rotate(15deg);
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            top: 15%;
+            left: 20%;
+            width: 40%;
+            height: 30%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.6), rgba(255,255,255,0));
+            border-radius: 50%;
+            pointer-events: none;
         }
 
-        .kettle::after {
+        /* Носик */
+        .spout {
+            position: absolute;
+            top: 35px;
+            right: -25px;
+            width: 55px;
+            height: 40px;
+            background: linear-gradient(145deg, #c0c0c0, #909090);
+            border-radius: 0 50% 50% 0;
+            transform: rotate(10deg);
+            box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), inset 1px 1px 2px rgba(255,255,255,0.6);
+        }
+        .spout::after {
             content: "";
             position: absolute;
-            top: -15px;
+            top: -5px;
+            left: -10px;
+            width: 20px;
+            height: 15px;
+            background: #a0a0a0;
+            border-radius: 50%;
+        }
+
+        /* Крышка */
+        .lid {
+            position: absolute;
+            top: -18px;
             left: 50%;
             transform: translateX(-50%);
-            width: 70px;
-            height: 20px;
-            background: #888;
-            border-radius: 20px 20px 10px 10px;
-            box-shadow: inset 0 1px 3px rgba(255,255,255,0.5), 0 3px 5px rgba(0,0,0,0.2);
+            width: 80px;
+            height: 22px;
+            background: linear-gradient(145deg, #c8c8c8, #888);
+            border-radius: 40px 40px 20px 20px;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 5px 8px rgba(0,0,0,0.2);
+        }
+        .lid::after {
+            content: "●";
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #FF8C00;
+            text-shadow: 0 0 3px #ff6600;
         }
 
+        /* Ручка */
         .handle {
             position: absolute;
-            top: 30px;
-            left: -35px;
-            width: 50px;
-            height: 70px;
-            border: 6px solid #6a6a6a;
-            border-radius: 30px;
+            top: 20px;
+            left: -40px;
+            width: 55px;
+            height: 80px;
+            border: 8px solid #6a6a6a;
+            border-radius: 50px;
             background: transparent;
             transform: rotate(-20deg);
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.3), 2px 5px 8px rgba(0,0,0,0.2);
         }
 
+        /* Пар */
         .steam {
             position: absolute;
-            top: -30px;
+            top: -35px;
             left: 50%;
             width: 20px;
-            height: 40px;
+            height: 50px;
             background: rgba(255,255,255,0.6);
-            filter: blur(6px);
+            filter: blur(8px);
             border-radius: 50%;
             opacity: 0;
             transition: opacity 0.2s;
             pointer-events: none;
+            z-index: 6;
         }
 
         .kettle.boiling .steam {
-            opacity: 0.8;
-            animation: steamFloat 0.5s infinite alternate;
+            opacity: 0.9;
+            animation: steamFloat 0.4s infinite alternate;
         }
 
         @keyframes steamFloat {
-            0% { transform: translateX(-50%) translateY(0) scale(1); opacity: 0.5; }
-            100% { transform: translateX(-50%) translateY(-20px) scale(1.5); opacity: 0; }
+            0% { transform: translateX(-50%) translateY(0) scale(1); opacity: 0.6; }
+            100% { transform: translateX(-50%) translateY(-25px) scale(1.6); opacity: 0; }
         }
 
         /* Шкала температуры */
@@ -285,11 +366,16 @@
 </head>
 <body>
 <div class="game-container">
-    <h1>🔥 ЧАЙНИК 2D: высокотехнологично</h1>
+    <h1>🔥 ЧАЙНИК 2D: ПЛИТА И ПАР</h1>
     <div class="sub">отдел экспериментальной термодинамики</div>
 
     <div class="kettle-area">
+        <!-- Плита (конфорка) -->
+        <div class="stove" id="stove"></div>
+        <!-- Чайник -->
         <div class="kettle" id="kettle">
+            <div class="spout"></div>
+            <div class="lid"></div>
             <div class="handle"></div>
             <div class="steam" id="steam"></div>
         </div>
@@ -308,10 +394,10 @@
     </div>
 
     <div class="controls">
-        <button id="heatBtn" class="heat-btn">🔥 нагрев</button>
-        <button id="resetBtn" class="danger-btn">🧊 сброс</button>
+        <button id="heatBtn" class="heat-btn">🔥 НАГРЕВ</button>
+        <button id="resetBtn" class="danger-btn">🧊 СБРОС</button>
     </div>
-    <div class="status" id="statusText">Чайник холодный. Зажми кнопку, чтобы нагреть. Не перегрей!</div>
+    <div class="status" id="statusText">Чайник холодный. Зажми кнопку — плита нагревается, чайник греется.</div>
     <div class="gluk-message" id="glukMsg">🟩 ГЛюК: Удерживай кнопку — температура растёт. Отпусти — остывает. Цель — 10 000 очков.</div>
     <a href="../minigames.html" class="back-link">← ВЕРНУТЬСЯ К ИГРАМ</a>
 </div>
@@ -322,17 +408,18 @@
     let score = 0;                   // очки (каждый градус нагрева даёт +1, остывание не отнимает)
     let isExploded = false;
     let isVictory = false;
-    let heatingInterval = null;       // интервал нагрева при зажатой кнопке
-    let coolingInterval = null;       // интервал естественного остывания
+    let heatingInterval = null;
+    let coolingInterval = null;
     
     const MAX_TEMP = 150;
-    const OVERHEAT_TEMP = 120;        // зона риска
+    const OVERHEAT_TEMP = 120;
     const EXPLOSION_TEMP = 150;
-    const HEAT_RATE = 8;              // градусов в секунду (при зажатии)
-    const COOLING_RATE = 1.2;         // градусов в секунду (остывание)
+    const HEAT_RATE = 8;              // градусов в секунду
+    const COOLING_RATE = 1.2;
     const GOAL_SCORE = 10000;
     
     const kettleEl = document.getElementById('kettle');
+    const stoveEl = document.getElementById('stove');
     const tempFill = document.getElementById('tempFill');
     const tempSpan = document.getElementById('tempValue');
     const statusDiv = document.getElementById('statusText');
@@ -380,7 +467,7 @@
         tempFill.style.width = percent + '%';
         tempSpan.innerText = Math.floor(temperature);
         
-        // Цветовая индикация
+        // Цветовая индикация шкалы
         if (temperature >= EXPLOSION_TEMP) {
             tempFill.style.background = "#ff0000";
         } else if (temperature >= OVERHEAT_TEMP) {
@@ -389,9 +476,14 @@
             tempFill.style.background = "linear-gradient(90deg, #00ff00, #ffff00, #ff3300)";
         }
         
-        // Эффект кипения
+        // Эффект кипения и накала плиты
         if (temperature > 80 && !isExploded && !isVictory) {
             kettleEl.classList.add('boiling');
+            if (temperature > 100) {
+                stoveEl.classList.add('stove-hot');
+            } else {
+                stoveEl.classList.remove('stove-hot');
+            }
             if (temperature > 120) {
                 kettleEl.style.filter = "drop-shadow(0 0 8px #ff6600)";
             } else {
@@ -399,14 +491,15 @@
             }
         } else {
             kettleEl.classList.remove('boiling');
+            stoveEl.classList.remove('stove-hot');
             kettleEl.style.filter = "";
         }
         
         // Текст статуса
         if (isVictory) {
-            statusDiv.innerHTML = "🏆 ПОБЕДА! Вы достигли цели! Нажмите «Остудить» для новой игры. 🏆";
+            statusDiv.innerHTML = "🏆 ПОБЕДА! Вы достигли цели! Нажмите «Сброс» для новой игры. 🏆";
         } else if (isExploded) {
-            statusDiv.innerHTML = "💀 ЧАЙНИК УНИЧТОЖЕН! Нажми «Остудить», чтобы начать заново 💀";
+            statusDiv.innerHTML = "💀 ЧАЙНИК УНИЧТОЖЕН! Нажми «Сброс», чтобы начать заново 💀";
         } else if (temperature === 0) {
             statusDiv.innerHTML = "🧊 Чайник ледяной. Зажми кнопку, чтобы нагреть и заработать очки!";
         } else if (temperature < 50) {
@@ -425,7 +518,7 @@
         if (goalPercent > 100) goalPercent = 100;
         goalFill.style.width = goalPercent + '%';
         
-        // Проверка победы (только если не взорвался и не победил ранее)
+        // Проверка победы
         if (!isExploded && !isVictory && score >= GOAL_SCORE) {
             victory();
         }
@@ -454,7 +547,7 @@
         stopCooling();
         let winMsg = victoryMessages[Math.floor(Math.random() * victoryMessages.length)];
         glukMsgDiv.innerHTML = "🏆 ГЛюК: " + winMsg;
-        statusDiv.innerHTML = "🎉 ПОБЕДА! Вы набрали 10 000 очков! Нажмите «Остудить», чтобы начать заново. 🎉";
+        statusDiv.innerHTML = "🎉 ПОБЕДА! Вы набрали 10 000 очков! Нажмите «Сброс», чтобы начать заново. 🎉";
         // Фейерверк кубов
         for (let i = 0; i < 70; i++) {
             setTimeout(() => {
@@ -468,7 +561,6 @@
                 setTimeout(() => cube.remove(), 1500);
             }, i * 30);
         }
-        // Блокируем дальнейший нагрев
     }
     
     function startCooling() {
@@ -478,9 +570,6 @@
             if (!isExploded && !isVictory && temperature > 0) {
                 temperature = Math.max(0, temperature - COOLING_RATE);
                 updateUI();
-                if (temperature === 0 && coolingInterval) {
-                    // можно ничего не делать
-                }
             } else if (isExploded || isVictory) {
                 stopCooling();
             }
@@ -516,17 +605,13 @@
                 return;
             }
             temperature = newTemp;
-            // Начисляем очки за каждый шаг нагрева
             if (!isExploded && !isVictory) {
                 score += HEAT_RATE;
                 if (score > GOAL_SCORE) score = GOAL_SCORE;
             }
             updateUI();
-            
-            // Вибрация при высокой температуре
             if (temperature > 100 && navigator.vibrate) navigator.vibrate(50);
-        }, 1000 / HEAT_RATE); // чтобы HEAT_RATE градусов в секунду (интервал = 1/HEAT_RATE секунды)
-        // Например, HEAT_RATE=8 → интервал 125ms
+        }, 1000 / HEAT_RATE);
     }
     
     function stopHeating() {
@@ -555,7 +640,6 @@
             }, i * 40);
         }
         
-        // Красная вспышка
         const container = document.querySelector('.game-container');
         container.style.transition = '0.05s';
         container.style.background = '#8b0000';
@@ -563,9 +647,8 @@
         
         let explMsg = explosionMessages[Math.floor(Math.random() * explosionMessages.length)];
         glukMsgDiv.innerHTML = "💥 ГЛюК: " + explMsg;
-        statusDiv.innerHTML = "💀 ВЗРЫВ! Все очки сброшены. Нажми «Остудить», чтобы восстановить. 💀";
+        statusDiv.innerHTML = "💀 ВЗРЫВ! Все очки сброшены. Нажми «Сброс», чтобы восстановить. 💀";
         
-        // Сброс счёта и температуры
         score = 0;
         temperature = EXPLOSION_TEMP;
         updateUI();
@@ -577,7 +660,6 @@
     }
     
     function resetGame() {
-        // Полный сброс
         isExploded = false;
         isVictory = false;
         temperature = 0;
@@ -587,12 +669,12 @@
         updateUI();
         kettleEl.style.filter = "";
         kettleEl.style.animation = "";
+        stoveEl.classList.remove('stove-hot');
         glukMsgDiv.innerHTML = "🟩 ГЛюК: Чайник как новый. Цель — 10 000 очков. Удерживай кнопку для нагрева.";
         statusDiv.innerHTML = "Чайник остыл. Можно начинать заново.";
         startCooling();
     }
     
-    // Обработчики для зажатия кнопки
     function onHeatStart(e) {
         e.preventDefault();
         if (isExploded || isVictory) return;
@@ -605,14 +687,12 @@
         e.preventDefault();
         stopHeating();
         heatBtn.classList.remove('heat-active');
-        heatBtn.textContent = "🔥 УДЕРЖИВАЙ ДЛЯ НАГРЕВА";
-        // Остывание уже идёт через coolingInterval
+        heatBtn.textContent = "🔥 УДЕРЖИВАЙ НАГРЕВ";
     }
     
-    // События мыши и касания
     heatBtn.addEventListener('mousedown', onHeatStart);
     heatBtn.addEventListener('mouseup', onHeatEnd);
-    heatBtn.addEventListener('mouseleave', onHeatEnd); // если курсор ушёл с кнопки
+    heatBtn.addEventListener('mouseleave', onHeatEnd);
     heatBtn.addEventListener('touchstart', onHeatStart, {passive: false});
     heatBtn.addEventListener('touchend', onHeatEnd);
     heatBtn.addEventListener('touchcancel', onHeatEnd);
