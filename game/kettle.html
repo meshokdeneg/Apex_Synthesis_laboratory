@@ -73,6 +73,7 @@
             overflow: hidden;
             z-index: 2;
         }
+
         .stove::before {
             content: "";
             position: absolute;
@@ -85,6 +86,7 @@
             border-radius: 30px;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
         }
+
         .stove-hot {
             background: #4a1a1a;
             animation: stoveGlow 0.5s infinite alternate;
@@ -93,35 +95,26 @@
             background: radial-gradient(ellipse at center, #ff6600, #aa3300);
             box-shadow: 0 0 20px #ff3300;
         }
+
         @keyframes stoveGlow {
             from { box-shadow: 0 0 5px #ff3300; }
             to { box-shadow: 0 0 20px #ff6600; }
         }
 
-        /* Чайник — нормальная вёрстка без абсолютного позиционирования каждой детали */
+        /* Чайник (старая, хорошая версия) */
         .kettle {
             position: relative;
-            width: 240px;
+            width: 220px;
             height: 200px;
             margin: 0 auto 15px auto;
-            z-index: 5;
-        }
-
-        /* Корпус чайника (основная часть) */
-        .kettle-body {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 160px;
             background: radial-gradient(ellipse at 30% 35%, #e8e8e8, #b0b0b0);
             border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
             box-shadow: 0 15px 25px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.8);
             transition: transform 0.1s;
+            z-index: 5;
         }
 
-        /* Блик на корпусе */
-        .kettle-body::before {
+        .kettle::before {
             content: "";
             position: absolute;
             top: 15%;
@@ -133,10 +126,9 @@
             pointer-events: none;
         }
 
-        /* Носик чайника */
         .spout {
             position: absolute;
-            top: 30px;
+            top: 35px;
             right: -25px;
             width: 55px;
             height: 40px;
@@ -144,7 +136,6 @@
             border-radius: 0 50% 50% 0;
             transform: rotate(10deg);
             box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), inset 1px 1px 2px rgba(255,255,255,0.6);
-            z-index: 6;
         }
         .spout::after {
             content: "";
@@ -157,18 +148,16 @@
             border-radius: 50%;
         }
 
-        /* Крышка */
         .lid {
             position: absolute;
-            top: -15px;
+            top: -18px;
             left: 50%;
             transform: translateX(-50%);
-            width: 85px;
+            width: 80px;
             height: 22px;
             background: linear-gradient(145deg, #c8c8c8, #888);
             border-radius: 40px 40px 20px 20px;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 5px 8px rgba(0,0,0,0.2);
-            z-index: 7;
         }
         .lid::after {
             content: "●";
@@ -181,30 +170,27 @@
             text-shadow: 0 0 3px #ff6600;
         }
 
-        /* Ручка */
         .handle {
             position: absolute;
-            top: 15px;
-            left: -45px;
-            width: 60px;
+            top: 20px;
+            left: -40px;
+            width: 55px;
             height: 80px;
             border: 8px solid #6a6a6a;
             border-radius: 50px;
             background: transparent;
             transform: rotate(-20deg);
             box-shadow: inset 0 0 3px rgba(0,0,0,0.3), 2px 5px 8px rgba(0,0,0,0.2);
-            z-index: 8;
         }
 
-        /* Пар */
         .steam {
             position: absolute;
-            top: -30px;
+            top: -35px;
             left: 50%;
-            width: 24px;
+            width: 20px;
             height: 50px;
-            background: rgba(255,255,255,0.7);
-            filter: blur(10px);
+            background: rgba(255,255,255,0.6);
+            filter: blur(8px);
             border-radius: 50%;
             opacity: 0;
             transition: opacity 0.2s;
@@ -223,12 +209,11 @@
         }
 
         /* Анимация взрыва и исчезновения чайника */
-        .kettle.explode .kettle-body,
-        .kettle.explode .spout,
-        .kettle.explode .lid,
-        .kettle.explode .handle {
+        .kettle.explode {
             animation: kettleExplode 0.5s forwards;
+            pointer-events: none;
         }
+
         @keyframes kettleExplode {
             0% { transform: scale(1) rotate(0deg); opacity: 1; filter: brightness(1); }
             30% { transform: scale(1.2) rotate(10deg); opacity: 0.8; filter: brightness(1.5); }
@@ -251,7 +236,6 @@
             100% { transform: translate(var(--dx), var(--dy)) rotate(360deg); opacity: 0; }
         }
 
-        /* Дым и искры */
         .smoke-puff {
             position: absolute;
             background: radial-gradient(circle, #555, #222);
@@ -265,6 +249,7 @@
             0% { opacity: 0.7; transform: scale(0.5); }
             100% { opacity: 0; transform: scale(3); }
         }
+
         .shockwave {
             position: absolute;
             border-radius: 50%;
@@ -286,6 +271,7 @@
             padding: 4px;
             margin: 15px 0;
         }
+
         .temp-fill {
             height: 20px;
             width: 0%;
@@ -293,6 +279,7 @@
             border-radius: 30px;
             transition: width 0.1s linear;
         }
+
         .temp-value {
             font-size: 24px;
             font-weight: bold;
@@ -338,6 +325,7 @@
             justify-content: center;
             margin: 20px 0;
         }
+
         button {
             background: #4A90E2;
             border: none;
@@ -374,6 +362,7 @@
             margin: 15px 0;
             color: #FF8C00;
         }
+
         .gluk-message {
             background: rgba(0,0,0,0.8);
             border-left: 6px solid #00FF9D;
@@ -384,6 +373,7 @@
             font-size: 14px;
             text-align: left;
         }
+
         .back-link {
             display: inline-block;
             margin-top: 20px;
@@ -407,8 +397,8 @@
 
     <div class="kettle-area">
         <div class="stove" id="stove"></div>
+        <!-- Чайник и его детали (старый, хороший вариант) -->
         <div class="kettle" id="kettle">
-            <div class="kettle-body"></div>
             <div class="spout"></div>
             <div class="lid"></div>
             <div class="handle"></div>
