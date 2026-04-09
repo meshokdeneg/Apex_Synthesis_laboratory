@@ -73,7 +73,6 @@
             overflow: hidden;
             z-index: 2;
         }
-
         .stove::before {
             content: "";
             position: absolute;
@@ -86,7 +85,6 @@
             border-radius: 30px;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
         }
-
         .stove-hot {
             background: #4a1a1a;
             animation: stoveGlow 0.5s infinite alternate;
@@ -95,26 +93,35 @@
             background: radial-gradient(ellipse at center, #ff6600, #aa3300);
             box-shadow: 0 0 20px #ff3300;
         }
-
         @keyframes stoveGlow {
             from { box-shadow: 0 0 5px #ff3300; }
             to { box-shadow: 0 0 20px #ff6600; }
         }
 
-        /* Чайник (улучшенная графика) */
+        /* Чайник — нормальная вёрстка без абсолютного позиционирования каждой детали */
         .kettle {
             position: relative;
-            width: 220px;
+            width: 240px;
             height: 200px;
             margin: 0 auto 15px auto;
+            z-index: 5;
+        }
+
+        /* Корпус чайника (основная часть) */
+        .kettle-body {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 160px;
             background: radial-gradient(ellipse at 30% 35%, #e8e8e8, #b0b0b0);
             border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
             box-shadow: 0 15px 25px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.8);
             transition: transform 0.1s;
-            z-index: 5;
         }
 
-        .kettle::before {
+        /* Блик на корпусе */
+        .kettle-body::before {
             content: "";
             position: absolute;
             top: 15%;
@@ -126,9 +133,10 @@
             pointer-events: none;
         }
 
+        /* Носик чайника */
         .spout {
             position: absolute;
-            top: 35px;
+            top: 30px;
             right: -25px;
             width: 55px;
             height: 40px;
@@ -136,6 +144,7 @@
             border-radius: 0 50% 50% 0;
             transform: rotate(10deg);
             box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), inset 1px 1px 2px rgba(255,255,255,0.6);
+            z-index: 6;
         }
         .spout::after {
             content: "";
@@ -148,16 +157,18 @@
             border-radius: 50%;
         }
 
+        /* Крышка */
         .lid {
             position: absolute;
-            top: -18px;
+            top: -15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
+            width: 85px;
             height: 22px;
             background: linear-gradient(145deg, #c8c8c8, #888);
             border-radius: 40px 40px 20px 20px;
             box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 5px 8px rgba(0,0,0,0.2);
+            z-index: 7;
         }
         .lid::after {
             content: "●";
@@ -170,27 +181,30 @@
             text-shadow: 0 0 3px #ff6600;
         }
 
+        /* Ручка */
         .handle {
             position: absolute;
-            top: 20px;
-            left: -40px;
-            width: 55px;
+            top: 15px;
+            left: -45px;
+            width: 60px;
             height: 80px;
             border: 8px solid #6a6a6a;
             border-radius: 50px;
             background: transparent;
             transform: rotate(-20deg);
             box-shadow: inset 0 0 3px rgba(0,0,0,0.3), 2px 5px 8px rgba(0,0,0,0.2);
+            z-index: 8;
         }
 
+        /* Пар */
         .steam {
             position: absolute;
-            top: -35px;
+            top: -30px;
             left: 50%;
-            width: 20px;
+            width: 24px;
             height: 50px;
-            background: rgba(255,255,255,0.6);
-            filter: blur(8px);
+            background: rgba(255,255,255,0.7);
+            filter: blur(10px);
             border-radius: 50%;
             opacity: 0;
             transition: opacity 0.2s;
@@ -209,11 +223,12 @@
         }
 
         /* Анимация взрыва и исчезновения чайника */
-        .kettle.explode {
+        .kettle.explode .kettle-body,
+        .kettle.explode .spout,
+        .kettle.explode .lid,
+        .kettle.explode .handle {
             animation: kettleExplode 0.5s forwards;
-            pointer-events: none;
         }
-
         @keyframes kettleExplode {
             0% { transform: scale(1) rotate(0deg); opacity: 1; filter: brightness(1); }
             30% { transform: scale(1.2) rotate(10deg); opacity: 0.8; filter: brightness(1.5); }
@@ -236,7 +251,7 @@
             100% { transform: translate(var(--dx), var(--dy)) rotate(360deg); opacity: 0; }
         }
 
-        /* Дым и искры для масштабного взрыва */
+        /* Дым и искры */
         .smoke-puff {
             position: absolute;
             background: radial-gradient(circle, #555, #222);
@@ -250,7 +265,6 @@
             0% { opacity: 0.7; transform: scale(0.5); }
             100% { opacity: 0; transform: scale(3); }
         }
-
         .shockwave {
             position: absolute;
             border-radius: 50%;
@@ -394,6 +408,7 @@
     <div class="kettle-area">
         <div class="stove" id="stove"></div>
         <div class="kettle" id="kettle">
+            <div class="kettle-body"></div>
             <div class="spout"></div>
             <div class="lid"></div>
             <div class="handle"></div>
@@ -425,38 +440,31 @@
 <script>
     // ==================== ЗВУКИ ====================
     let audioCtx = null;
-    let boilingSource = null;    // источник для звука кипения
+    let boilingSource = null;
     let boilingGain = null;
     let isBoilingPlaying = false;
 
-    // Инициализация аудио при первом действии пользователя
     function initAudio() {
         if (audioCtx) return;
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        // создаём узел для кипения
         boilingGain = audioCtx.createGain();
         boilingGain.gain.value = 0;
         boilingGain.connect(audioCtx.destination);
     }
 
-    // Запуск звука кипения (шум с нарастанием)
     function startBoilingSound() {
         if (!audioCtx) return;
         if (isBoilingPlaying) return;
-        // Создаём буфер шума
         const bufferSize = 4096;
         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = (Math.random() - 0.5) * 0.4;
-        }
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() - 0.5) * 0.4;
         boilingSource = audioCtx.createBufferSource();
         boilingSource.buffer = noiseBuffer;
         boilingSource.loop = true;
         boilingSource.connect(boilingGain);
         boilingSource.start();
         isBoilingPlaying = true;
-        // плавное увеличение громкости
         boilingGain.gain.linearRampToValueAtTime(0.25, audioCtx.currentTime + 0.5);
     }
 
@@ -470,7 +478,6 @@
         isBoilingPlaying = false;
     }
 
-    // Звук взрыва (громкий бас + треск)
     function playExplosionSound() {
         if (!audioCtx) return;
         const now = audioCtx.currentTime;
@@ -479,7 +486,6 @@
         gain.gain.setValueAtTime(0.8, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
         
-        // Низкочастотный удар
         const osc = audioCtx.createOscillator();
         osc.type = 'sine';
         osc.frequency.value = 60;
@@ -487,19 +493,16 @@
         osc.start(now);
         osc.stop(now + 0.6);
         
-        // Шумовой треск
         const bufferSize = 4096;
         const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = noiseBuffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() - 0.5) * 0.9;
         const noiseSource = audioCtx.createBufferSource();
         noiseSource.buffer = noiseBuffer;
-        noiseSource.loop = false;
         noiseSource.connect(gain);
         noiseSource.start(now);
         noiseSource.stop(now + 0.5);
         
-        // Дополнительные хрустящие щелчки
         for (let i = 0; i < 12; i++) {
             const tickGain = audioCtx.createGain();
             tickGain.connect(audioCtx.destination);
@@ -577,13 +580,11 @@
         else if (temperature >= OVERHEAT_TEMP) tempFill.style.background = "#ff6600";
         else tempFill.style.background = "linear-gradient(90deg, #00ff00, #ffff00, #ff3300)";
         
-        // Управление звуком кипения
         if (!isExploded && !isVictory && temperature > 80 && !isBoilingPlaying && audioCtx) {
             startBoilingSound();
         } else if ((isExploded || isVictory || temperature <= 80) && isBoilingPlaying) {
             stopBoilingSound();
         }
-        // регулировка громкости кипения в зависимости от температуры
         if (isBoilingPlaying && audioCtx && boilingGain) {
             let targetGain = Math.min(0.5, (temperature - 80) / 70) * 0.5;
             boilingGain.gain.linearRampToValueAtTime(targetGain, audioCtx.currentTime + 0.2);
@@ -674,7 +675,7 @@
         kettleEl.classList.add('explode');
         const rect = kettleEl.getBoundingClientRect();
         const containerRect = document.querySelector('.kettle-area').getBoundingClientRect();
-        // Осколки
+        
         for (let i = 0; i < 60; i++) {
             const debris = document.createElement('div');
             debris.className = 'debris';
@@ -689,7 +690,6 @@
             document.querySelector('.kettle-area').appendChild(debris);
             setTimeout(() => debris.remove(), 700);
         }
-        // Дым
         for (let i = 0; i < 25; i++) {
             const smoke = document.createElement('div');
             smoke.className = 'smoke-puff';
@@ -700,7 +700,6 @@
             document.querySelector('.kettle-area').appendChild(smoke);
             setTimeout(() => smoke.remove(), 800);
         }
-        // Ударная волна
         const wave = document.createElement('div');
         wave.className = 'shockwave';
         wave.style.left = (rect.left - containerRect.left + rect.width/2) + 'px';
@@ -710,7 +709,6 @@
         document.querySelector('.kettle-area').appendChild(wave);
         setTimeout(() => wave.remove(), 400);
         
-        // Тряска экрана и красная вспышка
         const container = document.querySelector('.game-container');
         container.style.transition = '0.05s';
         container.style.background = '#8b0000';
@@ -724,7 +722,9 @@
         score = 0;
         temperature = EXPLOSION_TEMP;
         updateUI();
-        setTimeout(() => kettleEl.style.visibility = 'hidden', 500);
+        setTimeout(() => {
+            kettleEl.style.visibility = 'hidden';
+        }, 500);
     }
     
     function startCooling() {
@@ -795,7 +795,6 @@
     updateUI();
     startCooling();
     
-    // Стиль для тряски камеры
     const style = document.createElement('style');
     style.textContent = `
         @keyframes camShake {
