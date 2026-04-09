@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>ASL | Симулятор чайника</title>
+    <title>ASL | Симулятор чайника 2D — Цель: 10 000 очков</title>
     <style>
         * {
             margin: 0;
@@ -31,7 +31,7 @@
             border: 2px solid #FF8C00;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
             text-align: center;
-            max-width: 550px;
+            max-width: 600px;
             width: 100%;
             transition: 0.2s;
         }
@@ -49,7 +49,7 @@
             margin-bottom: 20px;
         }
 
-        /* Котейник (чайник) */
+        /* Чайник */
         .kettle-area {
             background: #1e2a2f;
             border-radius: 60px;
@@ -64,14 +64,12 @@
             width: 220px;
             height: 220px;
             margin: 0 auto;
-            background: #c0c0c0;
             background: linear-gradient(145deg, #d0d0d0, #a0a0a0);
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3), inset 0 2px 5px rgba(255,255,255,0.6);
             transition: transform 0.1s;
         }
 
-        /* Носик */
         .kettle::before {
             content: "";
             position: absolute;
@@ -85,7 +83,6 @@
             box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
         }
 
-        /* Крышка */
         .kettle::after {
             content: "";
             position: absolute;
@@ -99,7 +96,6 @@
             box-shadow: inset 0 1px 3px rgba(255,255,255,0.5), 0 3px 5px rgba(0,0,0,0.2);
         }
 
-        /* Ручка */
         .handle {
             position: absolute;
             top: 30px;
@@ -112,7 +108,6 @@
             transform: rotate(-20deg);
         }
 
-        /* Пар (анимация) */
         .steam {
             position: absolute;
             top: -30px;
@@ -137,7 +132,7 @@
             100% { transform: translateX(-50%) translateY(-20px) scale(1.5); opacity: 0; }
         }
 
-        /* Шкала нагрева */
+        /* Шкала температуры */
         .temp-bar {
             width: 100%;
             background: #2c3e2f;
@@ -159,6 +154,38 @@
             font-weight: bold;
             color: #FF8C00;
             margin: 5px 0;
+        }
+
+        /* Счёт и цель */
+        .score-board {
+            background: #1a2a2f;
+            border-radius: 40px;
+            padding: 10px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+        .score-item {
+            background: #2c3e2f;
+            padding: 8px 15px;
+            border-radius: 30px;
+            color: #FF8C00;
+        }
+        .goal-progress {
+            background: #2c3e2f;
+            border-radius: 20px;
+            height: 12px;
+            width: 100%;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        .goal-fill {
+            width: 0%;
+            height: 100%;
+            background: #FF8C00;
+            transition: width 0.2s;
         }
 
         .controls {
@@ -198,24 +225,6 @@
             color: #FF8C00;
         }
 
-        /* Летающие кубы при взрыве */
-        .cube-explode {
-            position: fixed;
-            width: 40px;
-            height: 40px;
-            background: #FF8C00;
-            border: 2px solid #fff;
-            transform: rotate(45deg);
-            pointer-events: none;
-            z-index: 1000;
-            animation: flyCube 1.5s forwards;
-        }
-
-        @keyframes flyCube {
-            0% { transform: rotate(45deg) scale(0.5); opacity: 1; }
-            100% { transform: rotate(360deg) translateY(-300px) translateX(100px) scale(1.5); opacity: 0; }
-        }
-
         .gluk-message {
             background: rgba(0,0,0,0.8);
             border-left: 6px solid #00FF9D;
@@ -241,12 +250,20 @@
             background: #FF8C00;
             color: #000;
         }
+
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(5px, -5px) rotate(5deg); }
+            50% { transform: translate(-5px, 2px) rotate(-3deg); }
+            75% { transform: translate(3px, -2px) rotate(2deg); }
+            100% { transform: translate(0, 0) rotate(0); }
+        }
     </style>
 </head>
 <body>
 <div class="game-container">
-    <h1>⚡ СИМУЛЯТОР ЧАЙНИКА ⚡</h1>
-    <div class="sub">ASL — отдел бытовой термодинамики</div>
+    <h1>🔥 ЧАЙНИК 2D: ТЕРМИЧЕСКИЙ КОШМАР</h1>
+    <div class="sub">ASL — отдел экспериментальной термодинамики</div>
 
     <div class="kettle-area">
         <div class="kettle" id="kettle">
@@ -259,29 +276,37 @@
         <div class="temp-value">🌡️ <span id="tempValue">0</span>°C</div>
     </div>
 
-    <div class="controls">
-        <button id="heatBtn">🔥 НАГРЕТЬ</button>
-        <button id="resetBtn" class="danger-btn">🧊 ОСТУДИТЬ</button>
+    <div class="score-board">
+        <div class="score-item">🏆 СЧЁТ: <span id="scoreValue">0</span></div>
+        <div class="score-item">🎯 ЦЕЛЬ: 10 000</div>
     </div>
-    <div class="status" id="statusText">Чайник холодный. Пора греть!</div>
-    <div class="gluk-message" id="glukMsg">🟩 ГЛюК: Не перегрей, а то будет весело...</div>
+    <div class="goal-progress">
+        <div class="goal-fill" id="goalFill"></div>
+    </div>
+
+    <div class="controls">
+        <button id="heatBtn">🔥 НАГРЕТЬ (+15°C)</button>
+        <button id="resetBtn" class="danger-btn">🧊 ОСТУДИТЬ (сброс)</button>
+    </div>
+    <div class="status" id="statusText">Чайник холодный. Начинай нагрев, но не перегрей!</div>
+    <div class="gluk-message" id="glukMsg">🟩 ГЛюК: Цель — 10 000 очков. Каждое очко = 1°C нагрева. Действуй аккуратно...</div>
     <a href="../minigames.html" class="back-link">← ВЕРНУТЬСЯ К ИГРАМ</a>
 </div>
 
 <script>
-    // Состояние
-    let temperature = 0;          // 0..150
+    // --- Параметры сложности ---
+    let temperature = 0;              // 0..150
+    let score = 0;                   // очки (каждый градус нагрева даёт +1, остывание не отнимает)
     let isExploded = false;
     let heatInterval = null;
     let coolingInterval = null;
-    let explosionTimeout = null;
     
     const MAX_TEMP = 150;
-    const OVERHEAT_TEMP = 130;    // зона риска
+    const OVERHEAT_TEMP = 120;       // зона риска (раньше 130)
     const EXPLOSION_TEMP = 150;
-    
-    const heatStep = 12;          // градусов за клик
-    const coolingRate = 0.5;      // остывание в секунду
+    const HEAT_STEP = 15;            // градусов за клик (быстрее)
+    const COOLING_RATE = 0.9;        // остывание в секунду (быстрее)
+    const GOAL_SCORE = 10000;
     
     const kettleEl = document.getElementById('kettle');
     const tempFill = document.getElementById('tempFill');
@@ -290,19 +315,21 @@
     const glukMsgDiv = document.getElementById('glukMsg');
     const heatBtn = document.getElementById('heatBtn');
     const resetBtn = document.getElementById('resetBtn');
+    const scoreSpan = document.getElementById('scoreValue');
+    const goalFill = document.getElementById('goalFill');
     
-    // Фразы ГЛюКа (обычные и предупреждения)
+    // Фразы ГЛюКа (обычные, предупреждения, победа)
     const normalMessages = [
-        "Греешь? Надеюсь, ты знаешь предел прочности этого чайника.",
-        "ASL одобряет нагрев, но не одобрит взрыв лаборатории.",
-        "Осторожно, пар! Ты хоть предохранитель проверил?",
-        "Ещё чуть-чуть и начнётся синтез чая...",
+        "Греешь? Помни, каждый градус — это очко. Но если перегреешь — всё пропало.",
+        "ASL одобряет риск, но не одобрит взрыв лаборатории. Балансируй.",
+        "Осторожно, пар! Скорость нагрева выше, чем твоя реакция?",
+        "Ещё чуть-чуть и начнётся синтез чая... и взрыв.",
         "Я бы посоветовал прекратить, но люблю смотреть за катастрофами.",
         "Ты знаешь, что при 150 градусах вода превращается в плазму? Нет? Сейчас узнаешь."
     ];
     
     const warningMessages = [
-        "⚠️ Чайник свистит! Температура зашкаливает!",
+        "⚠️ Чайник свистит! Температура зашкаливает! Остужай немедленно!",
         "⚠️ Крышка трясётся! Остановись, пока не поздно!",
         "⚠️ Из носика пошёл пар с искрами! Срочно остуди!",
         "⚠️ Корпус краснеет! Ты что, устроить хочешь?",
@@ -310,11 +337,18 @@
     ];
     
     const explosionMessages = [
-        "💥 БА-БАХ! Чайник разлетелся на молекулы! Ты гений разрушения.",
+        "💥 БА-БАХ! Чайник разлетелся на молекулы! Ты потерял все очки.",
         "💥 Поздравляю! Лаборатория ASL временно потеряла один чайник. Надеюсь, ты доволен.",
-        "💥 Теперь понятно, почему у нас в отделе пожарная сигналиция воет каждые 5 минут.",
-        "💥 Рекорд! Ты перегрел чайник до плазмы. Кубов летает больше, чем молекул.",
-        "💥 ... Ну, я же предупреждал. Админы сейчас придут ругаться."
+        "💥 Теперь понятно, почему у нас в отделе пожарная сигнализация воет каждые 5 минут.",
+        "💥 Рекорд! Ты перегрел чайник до плазмы. Очки обнулены.",
+        "💥 ... Ну, я же предупреждал. Начинай заново."
+    ];
+    
+    const victoryMessages = [
+        "🏆 НЕВЕРОЯТНО! Ты набрал 10 000 очков, не взорвав чайник! ГЛюК в шоке.",
+        "🏆 ПОБЕДА! Ты прошёл термическое испытание. Чайник выжил, очки засчитаны.",
+        "🏆 Ты доказал, что способен контролировать тепло. ASL гордится тобой (почти).",
+        "🏆 10 000 очков! Теперь ты официально мастер чайников. Но не расслабляйся — следующий взрыв будет больнее."
     ];
     
     function updateUI() {
@@ -348,32 +382,67 @@
         if (isExploded) {
             statusDiv.innerHTML = "💀 ЧАЙНИК УНИЧТОЖЕН! Нажми «Остудить», чтобы начать заново 💀";
         } else if (temperature === 0) {
-            statusDiv.innerHTML = "🧊 Чайник ледяной. Нажми «Нагреть» для начала эксперимента.";
+            statusDiv.innerHTML = "🧊 Чайник ледяной. Нагревай, чтобы заработать очки!";
         } else if (temperature < 50) {
-            statusDiv.innerHTML = "🌡️ Вода тёплая, но чай ещё не заварится.";
+            statusDiv.innerHTML = "🌡️ Вода тёплая, но очков ещё мало. Продолжай нагрев.";
         } else if (temperature < 90) {
-            statusDiv.innerHTML = "☕ Идеальная температура для чая! Наслаждайся, пока не перегрел.";
+            statusDiv.innerHTML = "☕ Идеальная температура для чая! Очки растут, но будь осторожен.";
         } else if (temperature < EXPLOSION_TEMP) {
-            statusDiv.innerHTML = "💨 КИПИТ! Почти опасно, остуди, если не хочешь взрыва.";
+            statusDiv.innerHTML = "💨 КИПИТ! Опасно близко к взрыву, сбавь темп!";
         } else {
             statusDiv.innerHTML = "💥 КРИТИЧЕСКИЙ ПЕРЕГРЕВ! НЕМЕДЛЕННО ОСТУДИ!";
         }
         
-        // Случайные фразы ГЛюКа (только не при взрыве)
-        if (!isExploded && temperature > 0 && Math.random() < 0.08) {
+        // Обновление счёта и прогресса цели
+        scoreSpan.innerText = score;
+        let goalPercent = (score / GOAL_SCORE) * 100;
+        if (goalPercent > 100) goalPercent = 100;
+        goalFill.style.width = goalPercent + '%';
+        
+        // Проверка победы
+        if (score >= GOAL_SCORE && !isExploded) {
+            victory();
+        }
+        
+        // Случайные фразы ГЛюКа (только не при взрыве и не при победе)
+        if (!isExploded && score < GOAL_SCORE && temperature > 0 && Math.random() < 0.06) {
             let msg = normalMessages[Math.floor(Math.random() * normalMessages.length)];
             glukMsgDiv.innerHTML = "🟩 ГЛюК: " + msg;
             setTimeout(() => {
-                if (!isExploded && glukMsgDiv.innerHTML.includes("ГЛюК"))
-                    glukMsgDiv.innerHTML = "🟩 ГЛюК: Не перегрей, а то будет весело...";
-            }, 3000);
+                if (!isExploded && glukMsgDiv.innerHTML.includes("ГЛюК") && score < GOAL_SCORE)
+                    glukMsgDiv.innerHTML = "🟩 ГЛюК: Цель — 10 000 очков. Не взорви чайник!";
+            }, 3500);
         }
         
         // Предупреждения при высокой температуре
-        if (!isExploded && temperature >= OVERHEAT_TEMP && temperature < EXPLOSION_TEMP && Math.random() < 0.1) {
+        if (!isExploded && temperature >= OVERHEAT_TEMP && temperature < EXPLOSION_TEMP && Math.random() < 0.12) {
             let warn = warningMessages[Math.floor(Math.random() * warningMessages.length)];
             glukMsgDiv.innerHTML = "🟩 ГЛюК: " + warn;
         }
+    }
+    
+    function victory() {
+        if (isExploded) return;
+        isExploded = true;
+        stopHeating();
+        stopCooling();
+        let winMsg = victoryMessages[Math.floor(Math.random() * victoryMessages.length)];
+        glukMsgDiv.innerHTML = "🏆 ГЛюК: " + winMsg;
+        statusDiv.innerHTML = "🎉 ПОБЕДА! Вы набрали 10 000 очков! Нажмите «Остудить», чтобы начать заново. 🎉";
+        // Эффект фейерверка (кубы)
+        for (let i = 0; i < 60; i++) {
+            setTimeout(() => {
+                const cube = document.createElement('div');
+                cube.className = 'cube-explode';
+                cube.style.left = (Math.random() * window.innerWidth) + 'px';
+                cube.style.top = (window.innerHeight / 2 + (Math.random() - 0.5) * 200) + 'px';
+                cube.style.background = `hsl(${Math.random() * 360}, 70%, 55%)`;
+                cube.style.transform = `rotate(${Math.random() * 360}deg)`;
+                document.body.appendChild(cube);
+                setTimeout(() => cube.remove(), 1500);
+            }, i * 30);
+        }
+        // Блокируем нагрев
     }
     
     function startCooling() {
@@ -381,7 +450,7 @@
         if (isExploded) return;
         coolingInterval = setInterval(() => {
             if (!isExploded && temperature > 0) {
-                temperature = Math.max(0, temperature - coolingRate);
+                temperature = Math.max(0, temperature - COOLING_RATE);
                 updateUI();
                 if (temperature === 0) stopCooling();
             } else if (isExploded) {
@@ -411,7 +480,7 @@
         stopCooling();
         
         // Взрывная анимация: летящие кубы
-        for (let i = 0; i < 40; i++) {
+        for (let i = 0; i < 50; i++) {
             setTimeout(() => {
                 const cube = document.createElement('div');
                 cube.className = 'cube-explode';
@@ -424,7 +493,7 @@
             }, i * 40);
         }
         
-        // Красная вспышка фона
+        // Красная вспышка
         const container = document.querySelector('.game-container');
         container.style.transition = '0.05s';
         container.style.background = '#8b0000';
@@ -433,29 +502,34 @@
         // Сообщение ГЛюКа о взрыве
         let explMsg = explosionMessages[Math.floor(Math.random() * explosionMessages.length)];
         glukMsgDiv.innerHTML = "💥 ГЛюК: " + explMsg;
-        statusDiv.innerHTML = "💀 ВЗРЫВ! Чайник уничтожен. Нажми «Остудить», чтобы восстановить. 💀";
+        statusDiv.innerHTML = "💀 ВЗРЫВ! Все очки сброшены. Нажми «Остудить», чтобы восстановить. 💀";
         
-        // Скрываем чайник? Не скрываем, но делаем тряску
+        // Сброс счёта и температуры
+        score = 0;
+        temperature = EXPLOSION_TEMP;
+        updateUI();
+        
+        // Тряска чайника
         kettleEl.style.animation = 'shake 0.3s ease-in-out 3';
         setTimeout(() => {
             kettleEl.style.animation = '';
         }, 900);
-        
-        // Сброс температуры (на экране оставляем 150, но при ресете сбросится)
-        temperature = EXPLOSION_TEMP;
-        updateUI();
     }
     
     function heat() {
         if (isExploded) {
-            glukMsgDiv.innerHTML = "🟩 ГЛюК: Чайника больше нет. Нажми «Остудить», чтобы начать заново.";
+            glukMsgDiv.innerHTML = "🟩 ГЛюК: Чайник уничтожен. Нажми «Остудить», чтобы начать заново.";
+            return;
+        }
+        if (score >= GOAL_SCORE) {
+            glukMsgDiv.innerHTML = "🏆 ГЛюК: Ты уже победил! Нажми «Остудить» для новой игры.";
             return;
         }
         if (temperature >= EXPLOSION_TEMP) {
             explode();
             return;
         }
-        let newTemp = temperature + heatStep;
+        let newTemp = temperature + HEAT_STEP;
         if (newTemp >= EXPLOSION_TEMP) {
             temperature = EXPLOSION_TEMP;
             updateUI();
@@ -463,50 +537,64 @@
             return;
         }
         temperature = newTemp;
+        // Начисляем очки: +HEAT_STEP за каждый клик (даже если перегреем, но до взрыва не доходим)
+        if (temperature <= EXPLOSION_TEMP) {
+            score += HEAT_STEP;
+            if (score > GOAL_SCORE) score = GOAL_SCORE;
+        }
         if (temperature > MAX_TEMP) temperature = MAX_TEMP;
         updateUI();
         
-        // Запускаем остывание после нагрева
+        // Запускаем остывание
         startCooling();
         
-        // Вибрация телефона (если поддерживается)
+        // Вибрация при высокой температуре
         if (temperature > 100 && navigator.vibrate) navigator.vibrate(100);
     }
     
     function reset() {
-        if (explosionTimeout) clearTimeout(explosionTimeout);
+        // Полный сброс игры
         isExploded = false;
         temperature = 0;
+        score = 0;
         stopHeating();
         stopCooling();
         updateUI();
         kettleEl.style.filter = "";
         kettleEl.style.animation = "";
-        glukMsgDiv.innerHTML = "🟩 ГЛюК: Чайник как новый. Не взорви снова, ладно?";
+        glukMsgDiv.innerHTML = "🟩 ГЛюК: Чайник как новый. Цель — 10 000 очков. Не взорвись!";
         statusDiv.innerHTML = "Чайник остыл. Можно начинать заново.";
-        startCooling(); // медленное остывание при нуле не нужно, но запустим для порядка
+        startCooling();
     }
     
     // Обработчики кнопок
     heatBtn.addEventListener('click', heat);
     resetBtn.addEventListener('click', reset);
     
-    // Анимация встряски при взрыве
-    const styleShake = document.createElement('style');
-    styleShake.textContent = `
-        @keyframes shake {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(5px, -5px) rotate(5deg); }
-            50% { transform: translate(-5px, 2px) rotate(-3deg); }
-            75% { transform: translate(3px, -2px) rotate(2deg); }
-            100% { transform: translate(0, 0) rotate(0); }
+    // Стиль для летающих кубов (добавляем динамически)
+    const style = document.createElement('style');
+    style.textContent = `
+        .cube-explode {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            background: #FF8C00;
+            border: 2px solid #fff;
+            transform: rotate(45deg);
+            pointer-events: none;
+            z-index: 1000;
+            animation: flyCube 1.5s forwards;
+        }
+        @keyframes flyCube {
+            0% { transform: rotate(45deg) scale(0.5); opacity: 1; }
+            100% { transform: rotate(360deg) translateY(-300px) translateX(100px) scale(1.5); opacity: 0; }
         }
     `;
-    document.head.appendChild(styleShake);
+    document.head.appendChild(style);
     
     // Инициализация
     updateUI();
-    startCooling(); // чтобы чайник остывал сам по себе
+    startCooling();
 </script>
 </body>
 </html>
