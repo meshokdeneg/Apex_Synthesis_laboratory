@@ -1556,6 +1556,46 @@
         window.addEventListener('keydown', resetTimer);
         window.addEventListener('scroll', resetTimer);
         window.addEventListener('touchstart', resetTimer);
+
+        // ========== KONAMI CODE: ↑↑↓↓←→←→ A S L ==========
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyA', 'KeyS', 'KeyL'];
+        let konamiIndex = 0;
+
+        document.addEventListener('keydown', (e) => {
+            // Преобразуем код клавиши: для букв используем e.code, для стрелок e.key
+            let key = e.code;
+            // Если нажата буква A, S или L – e.code уже 'KeyA', 'KeyS', 'KeyL'
+            // Стрелки: e.key 'ArrowUp' и т.д., но e.code тоже 'ArrowUp' — используем e.key для единообразия
+            let pressed;
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                pressed = e.key;
+            } else {
+                pressed = e.code;
+            }
+            
+            if (pressed === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    // Код введён
+                    konamiIndex = 0;
+                    // Показываем сообщение и перенаправляем
+                    const msg = document.createElement('div');
+                    msg.className = 'float-message';
+                    msg.textContent = '🔓 Код Konami активирован! Перенаправление...';
+                    msg.style.background = 'rgba(0,0,0,0.9)';
+                    msg.style.border = '3px solid #FF8C00';
+                    msg.style.fontSize = '20px';
+                    msg.style.padding = '15px 25px';
+                    document.body.appendChild(msg);
+                    setTimeout(() => msg.remove(), 2000);
+                    setTimeout(() => {
+                        window.location.href = '/singularity';
+                    }, 800);
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
     </script>
 </body>
 </html>
