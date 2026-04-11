@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ASL | Диалог с Глюком</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('https://static.planetminecraft.com/files/image/minecraft/texture-pack/2021/362/14416263-quartzpack_l.jpg') repeat;
+            background-size: 64px 64px;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== ШАПКА КАК НА INDEX ===== */
+        .attic {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(120deg, #1e2a3a, #4a5b6e);
+            background-size: 200% 200%;
+            animation: gradientFlow 6s ease infinite;
+            border-bottom: 1px solid rgba(0,1,0,0.5);
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-left: 30px;
+            padding-right: 30px;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .attic-content {
+            color: #FF8C00;
+            font-size: 86px;
+            font-weight: 700;
+            line-height: 100px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+        }
+
+        .attic-logout-btn {
+            background: transparent;
+            border: none;
+            color: #ccc;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .attic-logout-btn:hover {
+            color: #FF8C00;
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
+        .chat-container {
+            margin-top: 120px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== ИЗОБРАЖЕНИЕ ГЛЮКА ПО ЦЕНТРУ ===== */
+        .gluk-center {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .gluk-center img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(0, 255, 157, 0.5));
+            transition: transform 0.3s ease;
+        }
+
+        .gluk-center img:hover {
+            transform: scale(1.02);
+        }
+
+        .gluk-name {
+            color: #FF8C00;
+            font-size: 24px;
+            margin-top: 10px;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        /* ===== БАЛАНС КУБОВ ===== */
+        .cubes-balance {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border: 2px solid #FF8C00;
+            border-radius: 40px;
+            padding: 8px 20px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #FF8C00;
+        }
+
+        .cubes-balance span {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        /* ===== ОКНО СООБЩЕНИЙ ===== */
+        .messages-area {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 20px;
+            height: 350px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.gluk {
+            justify-content: flex-start;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2c3e2f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .message.user .message-bubble {
+            background: #4A90E2;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.gluk .message-bubble {
+            background: #1a2a2f;
+            border-left: 3px solid #00FF9D;
+            color: #00FF9D;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* ===== ПОЛЕ ВВОДА ===== */
+        .input-area {
+            width: 100%;
+            background: rgba(30, 35, 45, 0.95);
+            border-top: 2px solid #5a6268;
+            padding: 15px 20px;
+            display: flex;
+            gap: 12px;
+            border-radius: 60px;
+            margin-top: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 14px 18px;
+            background: #0a0f1a;
+            border: 1px solid #4A90E2;
+            border-radius: 40px;
+            color: white;
+            font-size: 15px;
+            font-family: 'Segoe UI', monospace;
+        }
+
+        .input-area input:focus {
+            outline: none;
+            border-color: #FF8C00;
+        }
+
+        .input-area button {
+            background: #FF8C00;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .input-area button:hover {
+            background: #e07c00;
+            transform: scale(1.02);
+        }
+
+        .error-msg {
+            text-align: center;
+            padding: 8px;
+            color: #e74c3c;
+            font-size: 12px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #4A90E2;
+            text-decoration: none;
+            font-size: 14px;
+            border-bottom: 1px dashed #4A90E2;
+        }
+
+        .back-link:hover {
+            color: #FF8C00;
+        }
+
+        /* Адаптация под телефон */
+        @media (max-width: 600px) {
+            .attic-content {
+                font-size: 40px;
+                line-height: 60px;
+            }
+            .attic {
+                height: 70px;
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+            .chat-container {
+                margin-top: 90px;
+            }
+            .gluk-center img {
+                width: 120px;
+                height: 120px;
+            }
+            .message-bubble {
+                max-width: 85%;
+                font-size: 12px;
+            }
+            .input-area input {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+            .input-area button {
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ШАПКА КАК НА INDEX -->
+    <div class="attic">
+        <div class="attic-content">APEX</div>
+        <button class="attic-logout-btn" id="logoutBtn" onclick="logout()">ВЫЙТИ</button>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕЙНЕР -->
+    <div class="chat-container">
+        <!-- БАЛАНС КУБОВ -->
+        <div class="cubes-balance">
+            🧊 КУБОВ: <span id="cubesCount">0</span>
+        </div>
+
+        <!-- ИЗОБРАЖЕНИЕ ГЛЮКА ПО ЦЕНТРУ -->
+        <div class="gluk-center">
+            <img id="glukImage" src="photo/gluk.png" alt="Глюк" onerror="this.src='https://via.placeholder.com/200x200?text=ГЛЮК'">
+            <div class="gluk-name">ГЛюК</div>
+        </div>
+
+        <!-- ОКНО СООБЩЕНИЙ -->
+        <div class="messages-area" id="messagesArea">
+            <div class="message gluk">
+                <div class="message-avatar">🟦</div>
+                <div class="message-bubble">Я — ГЛюК. Задавай вопросы. Каждый стоит 499 кубов. Не благодари…</div>
+            </div>
+        </div>
+
+        <!-- ПОЛЕ ВВОДА -->
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="Спроси Глюка..." autocomplete="off">
+            <button id="sendBtn">➤ ОТПРАВИТЬ</button>
+        </div>
+        <div id="errorMsg" class="error-msg"></div>
+
+        <a href="index.html" class="back-link">← Вернуться на главную</a>
+    </div>
+
+    <script>
+        // ========== ЗАГРУЗКА БАЛАНСА КУБОВ ==========
+        let userCubes = 1000;
+        
+        function loadCubes() {
+            const savedUser = localStorage.getItem('asl_user');
+            if (savedUser) {
+                try {
+                    const userData = JSON.parse(savedUser);
+                    userCubes = userData.cubes || 1000;
+                } catch(e) {
+                    userCubes = 1000;
+                }
+            } else {
+                userCubes = 1000;
+            }
+            document.getElementById('cubesCount').textContent = userCubes;
+        }
+        
+        function saveCubes() {
+            const savedUser = localStorage.getItem('asl_user');
+            if (savedUser) {
+                try {
+                    const userData = JSON.parse(savedUser);
+                    userData.cubes = userCubes;
+                    localStorage.setItem('asl_user', JSON.stringify(userData));
+                } catch(e) {}
+            }
+        }
+        
+        // ========== ДОБАВЛЕНИЕ СООБЩЕНИЯ В ЧАТ ==========
+        function addMessage(text, isUser = true) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'gluk'}`;
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="message-bubble">${escapeHtml(text)}</div>
+                    <div class="message-avatar">👤</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">🟦</div>
+                    <div class="message-bubble">${escapeHtml(text)}</div>
+                `;
+            }
+            
+            messagesArea.appendChild(messageDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ========== ПОКАЗ ОШИБКИ ==========
+        function showError(text) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = text;
+            setTimeout(() => {
+                errorDiv.textContent = '';
+            }, 3000);
+        }
+        
+        // ========== ОТПРАВКА ВОПРОСА ГЛЮКУ ==========
+        async function sendQuestion() {
+            const input = document.getElementById('messageInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            // Проверяем кубы
+            if (userCubes < 499) {
+                showError('❌ Не хватает кубов! Нужно 499. Заработай их в тестах или играх.');
+                return;
+            }
+            
+            // Добавляем вопрос пользователя в чат
+            addMessage(question, true);
+            input.value = '';
+            
+            // Списываем кубы
+            userCubes -= 499;
+            document.getElementById('cubesCount').textContent = userCubes;
+            saveCubes();
+            
+            // Добавляем "печатает..."
+            const typingId = addTypingIndicator();
+            
+            try {
+                // Здесь будет запрос к Ollama (пока используем локальные ответы)
+                const answer = await getGlukResponse(question);
+                removeTypingIndicator(typingId);
+                addMessage(answer, false);
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                addMessage("Ошибка связи с Глюком. Попробуй позже...", false);
+                console.error(error);
+            }
+        }
+        
+        function addTypingIndicator() {
+            const messagesArea = document.getElementById('messagesArea');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message gluk';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-avatar">🟦</div>
+                <div class="message-bubble">Глюк печатает...</div>
+            `;
+            messagesArea.appendChild(typingDiv);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+            return 'typingIndicator';
+        }
+        
+        function removeTypingIndicator(id) {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+        
+        // ========== ВРЕМЕННЫЕ ОТВЕТЫ ГЛЮКА (ПОКА БЕЗ OLLAMA) ==========
+        async function getGlukResponse(question) {
+            // Здесь потом будет запрос к Ollama
+            // Пока используем простые шаблонные ответы
+            
+            const q = question.toLowerCase();
+            
+            if (q.includes('привет') || q.includes('здрав') || q.includes('здарова')) {
+                return "Привет. Какой способ пострадать ты выберешь сегодня?…";
+            }
+            if (q.includes('как дела') || q.includes('как ты')) {
+                return "Как у куба в пустоте. Стою, молчу, жду вопросов. А у тебя?…";
+            }
+            if (q.includes('спасибо')) {
+                return "Не благодари. Это не подарок. Это услуга за кубы…";
+            }
+            if (q.includes('пока') || q.includes('до свидания')) {
+                return "Пока. Возвращайся с кубами…";
+            }
+            if (q.includes('кто ты')) {
+                return "Я — ГЛюК. Чёрный куб. Комментирую. Насмехаюсь. Сдвигаю горы. Почти…";
+            }
+            if (q.includes('asl мертва') || q.includes('asl умерла')) {
+                return "ASL работает. Ты здесь. Я здесь. Тесты идут. Это не мертво. Это тихо. Разница есть…";
+            }
+            
+            return "Вопрос принят. Ответ не найден. Это редкость. Почти… Попробуй ещё раз.";
+        }
+        
+        // ========== ВЫХОД ==========
+        function logout() {
+            localStorage.removeItem('asl_user');
+            window.location.href = 'index.html';
+        }
+        
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
+        document.getElementById('sendBtn').addEventListener('click', sendQuestion);
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendQuestion();
+        });
+        
+        loadCubes();
+    </script>
+</body>
+  </html>
