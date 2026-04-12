@@ -1330,22 +1330,27 @@
         }
 
         function cubeClick() {
-            // Анимация куба
-            const cube = document.getElementById('test-cube');
-            cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
-            setTimeout(() => { cube.style.transform = ''; }, 200);
+    // Анимация куба
+    const cube = document.getElementById('test-cube');
+    cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
+    setTimeout(() => { cube.style.transform = ''; }, 200);
 
-            // Всегда показываем фразу (но с разной редкостью)
-            const randomPhrase = getRandomPhrase();
+    // Шанс появления сообщения (например, 30%)
+    const messageChance = 0.3; // 30%
+    if (Math.random() > messageChance) {
+        return; // Без сообщения
+    }
 
-            const msg = document.createElement('div');
-            msg.textContent = randomPhrase;
-            msg.className = 'float-message';
-            const randomBottom = 80 + Math.random() * 40;
-            msg.style.bottom = randomBottom + 'px';
-            document.body.appendChild(msg);
-            setTimeout(() => msg.remove(), 4000);
-        }
+    // Показываем фразу с учётом редкости
+    const randomPhrase = getRandomPhrase();
+    const msg = document.createElement('div');
+    msg.textContent = randomPhrase;
+    msg.className = 'float-message';
+    const randomBottom = 80 + Math.random() * 40;
+    msg.style.bottom = randomBottom + 'px';
+    document.body.appendChild(msg);
+    setTimeout(() => msg.remove(), 4000);
+}
 
         function redButtonClick() {
             decorativeCount++;
