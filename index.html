@@ -1253,15 +1253,9 @@
             cube.style.transform = `rotateX(${Date.now() / 50 % 360}deg) rotateY(${Date.now() / 100 % 360}deg)`;
         }, 50);
 
-        function cubeClick() {
-            if (Math.random() > 0.1) {
-                const cube = document.getElementById('test-cube');
-                cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
-                setTimeout(() => { cube.style.transform = ''; }, 200);
-                return;
-            }
-
-            const phrases = [
+        // ========== ФРАЗЫ С РЕДКОСТЬЮ ==========
+        const phrasesByRarity = {
+            common: [
                 "😊", "😂", "😎", "🤔", "😱", "🤯", "🥳", "😈", "👾", "🤖",
                 "глюк: Эй, полегче с кубом!",
                 "глюк: Ты чего такой агрессивный?",
@@ -1274,6 +1268,19 @@
                 "глюк: Зачем ты это делаешь?",
                 "глюк: Кубу плевать!",
                 "глюк: Осторожно! Вам может надоесть!",
+                "куб: Чё дерёшся!?",
+                "куб: И сколько это будет продолжаться?",
+                "куб: ПРЕКРАТИ!",
+                "глюк: Да, жми на куб... Ему это нравится)",
+                "куб: Ну-да, я же просто игрушка.",
+                "куб: Шёлб, ты нахрен отсюда!!!",
+                "куб: да за что мне это?",
+                "куб: И сколько мне это терпеть?",
+                "куб: Ну тебя!",
+                "куб: Злюка!",
+                "куб: Только и делаешь что бъёшь меня?"
+            ],
+            rare: [
                 "глюк: Пока ты жал на куб, я сделал 25 полезных дел...",
                 "глюк: Поздровляю! Ты нажал куб!",
                 "глюк: Ты получил достижение 'Кликер'!",
@@ -1281,25 +1288,55 @@
                 "куб:  Тебе делать нечего?",
                 "глюк: Займись делом!",
                 "куб: ... ЭТОГО КАЗИНО!",
-                "куб: Чё дерёшся!?",
-                "глюк: Да, жми на куб... Ему это нравиться)",
-                "куб: И сколько это будет продолжаться?",
-                "куб: ПРЕКРАТИ!",
+                "глюк: Ты пытаешься побить рекорд",
                 "куб: ХВАТИТ!",
                 "куб: ПЕРЕСТАНЬ!!!",
-                "глюк: Ты пытаешься побить рекорд",
-                "куб: Ну-да, я же просто игрушка.",
-                "куб: Шёлб, ты нахрен отсюда!!!",
-                "куб: да за что мне это?",
-                "куб: И сколько мне это терпеть?",
-                "куб: Ну тебя!",
-                "куб: Злюка!",
-                "куб: Только и делаешь что бъёшь меня?",
                 "глюк: Кубы может что-то чувствуют?",
                 "куб: ыапрьтим5нб",
-                "глюк: РОМА ДУРАК, самый тупой тестер",
-            ];
-            const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+                "глюк: РОМА ДУРАК, самый тупой тестер"
+            ],
+            legendary: [
+                "глюк: 🧬 Внимание! Обнаружена аномалия в секторе 7G.",
+                "глюк: 📡 Сигнал извне... Кто-то наблюдает за тобой.",
+                "куб: ...Я ЖИВОЙ...",
+                "глюк: ⚠️ СИСТЕМНОЕ СООБЩЕНИЕ: Квантовая запутанность куба нарушена.",
+                "глюк: 🔮 Ты открыл портал в Бездну. Слышишь ветер?",
+                "куб: ██████████ [ДАННЫЕ УДАЛЕНЫ]",
+                "глюк: 🕳️ Ты упал в колбу. Замедление 255."
+            ]
+        };
+
+        // Веса категорий (должны суммироваться в 100)
+        const rarityWeights = {
+            common: 70,
+            rare: 25,
+            legendary: 5
+        };
+
+        function getRandomPhrase() {
+            // Выбираем категорию по весу
+            const rand = Math.random() * 100;
+            let cumulative = 0;
+            let selectedRarity = 'common';
+            for (const [rarity, weight] of Object.entries(rarityWeights)) {
+                cumulative += weight;
+                if (rand < cumulative) {
+                    selectedRarity = rarity;
+                    break;
+                }
+            }
+            const phrases = phrasesByRarity[selectedRarity];
+            return phrases[Math.floor(Math.random() * phrases.length)];
+        }
+
+        function cubeClick() {
+            // Анимация куба
+            const cube = document.getElementById('test-cube');
+            cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
+            setTimeout(() => { cube.style.transform = ''; }, 200);
+
+            // Всегда показываем фразу (но с разной редкостью)
+            const randomPhrase = getRandomPhrase();
 
             const msg = document.createElement('div');
             msg.textContent = randomPhrase;
@@ -1308,12 +1345,6 @@
             msg.style.bottom = randomBottom + 'px';
             document.body.appendChild(msg);
             setTimeout(() => msg.remove(), 4000);
-
-            const cube = document.getElementById('test-cube');
-            cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
-            setTimeout(() => {
-                cube.style.transform = '';
-            }, 200);
         }
 
         function redButtonClick() {
