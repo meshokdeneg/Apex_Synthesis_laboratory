@@ -671,33 +671,19 @@
         }
 
         .quartz-wall {
-           background: linear-gradient(120deg, 
-     #fff) no-repeat center center;
+            background: linear-gradient(120deg, #fff) no-repeat center center;
             background-size: cover;
             position: relative;
             padding: 30px 30px 64px 30px;
             border: 2px solid #b0b0b0;
             border-radius: 4px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
+            /* Усиленное затемнение по контуру */
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9), 0 0 0 4px rgba(0,0,0,0.7), 0 8px 20px rgba(0,0,0,0.4);
             max-width: 1400px;
             width: 90%;
             margin: 20px auto;
             z-index: 5;
         }
-
-        .rivet {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background: radial-gradient(circle at 30% 30%, #c0c0c0, #4a4a4a);
-            border-radius: 50%;
-            box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), 0 1px 2px rgba(0,0,0,0.4);
-            z-index: 6;
-        }
-        .rivet-tl { top: 12px; left: 12px; }
-        .rivet-tr { top: 12px; right: 12px; }
-        .rivet-bl { bottom: 12px; left: 12px; }
-        .rivet-br { bottom: 12px; right: 12px; }
 
         .attic {
             position: fixed;
@@ -1131,11 +1117,6 @@
     </div>
 
     <div class="quartz-wall">
-        <div class="rivet rivet-tl"></div>
-        <div class="rivet rivet-tr"></div>
-        <div class="rivet rivet-bl"></div>
-        <div class="rivet rivet-br"></div>
-
         <div class="container" id="main-container">
             <div class="logo">
                 A<span>S</span>L<span class="logo-tagline">-Если это можно вообразить, это можно создать!</span>
@@ -1298,9 +1279,9 @@
 
         // Веса категорий (должны суммироваться в 100)
         const rarityWeights = {
-            common: 5,
-            rare: 1,
-            legendary: 0.1
+            common: 70,
+            rare: 25,
+            legendary: 5
         };
 
         function getRandomPhrase() {
@@ -1320,27 +1301,27 @@
         }
 
         function cubeClick() {
-    // Анимация куба
-    const cube = document.getElementById('test-cube');
-    cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
-    setTimeout(() => { cube.style.transform = ''; }, 200);
+            // Анимация куба
+            const cube = document.getElementById('test-cube');
+            cube.style.transform = 'scale(1.2) rotateX(30deg) rotateY(30deg)';
+            setTimeout(() => { cube.style.transform = ''; }, 200);
 
-    // Шанс появления сообщения (например, 30%)
-    const messageChance = 0.3; // 30%
-    if (Math.random() > messageChance) {
-        return; // Без сообщения
-    }
+            // Шанс появления сообщения (например, 30%)
+            const messageChance = 0.3; // 30%
+            if (Math.random() > messageChance) {
+                return; // Без сообщения
+            }
 
-    // Показываем фразу с учётом редкости
-    const randomPhrase = getRandomPhrase();
-    const msg = document.createElement('div');
-    msg.textContent = randomPhrase;
-    msg.className = 'float-message';
-    const randomBottom = 80 + Math.random() * 40;
-    msg.style.bottom = randomBottom + 'px';
-    document.body.appendChild(msg);
-    setTimeout(() => msg.remove(), 4000);
-}
+            // Показываем фразу с учётом редкости
+            const randomPhrase = getRandomPhrase();
+            const msg = document.createElement('div');
+            msg.textContent = randomPhrase;
+            msg.className = 'float-message';
+            const randomBottom = 80 + Math.random() * 40;
+            msg.style.bottom = randomBottom + 'px';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 4000);
+        }
 
         function redButtonClick() {
             decorativeCount++;
